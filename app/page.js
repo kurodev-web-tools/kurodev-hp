@@ -2,10 +2,8 @@ import { PrimaryButton, GhostButton } from "@/components/ui/buttons";
 import { SectionHeader } from "@/components/ui/section-header";
 import { BentoCard } from "@/components/ui/bento-card";
 import { ProjectCard } from "@/components/ui/project-card";
-import { SkillGroup } from "@/components/ui/skill-group";
-import { StatCard } from "@/components/ui/stat-card";
 import { Tag } from "@/components/ui/tag";
-import { featuredHighlights, profileStats, skillGroups, webProjects } from "@/lib/site-data";
+import { featuredHighlights, webProjects } from "@/lib/site-data";
 
 export default function HomePage() {
   return (
@@ -22,11 +20,11 @@ export default function HomePage() {
               <PrimaryButton href="/web">View Projects</PrimaryButton>
               <GhostButton href="/contact">相談する</GhostButton>
             </div>
-            <div className="mt-8 flex flex-wrap gap-2">
-              <Tag>Next.js</Tag>
-              <Tag>Portal Design</Tag>
-              <Tag>HP-portal</Tag>
-            </div>
+            <p className="mt-8 max-w-xl text-sm leading-7 text-[var(--text-soft)]">
+              制作の入口はこのページ、詳細なプロフィールや扱う技術は <span className="font-medium text-[var(--text)]">Profile</span>
+              、進行中の実績は <span className="font-medium text-[var(--text)]">Web</span> と
+              <span className="font-medium text-[var(--text)]"> Tool</span> に分けて整理しています。
+            </p>
           </div>
           <BentoCard className="relative min-h-[260px] overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.3),transparent_38%)] opacity-80" />
@@ -38,42 +36,46 @@ export default function HomePage() {
                   AI を魔法として見せるより、制作と改善を回すための熟練した道具として扱います。
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                {profileStats.slice(0, 2).map((stat) => (
-                  <div key={stat.label} className="rounded-3xl border border-[var(--border)] bg-[var(--panel-muted)] p-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-faint)]">{stat.label}</p>
-                    <p className="mt-3 text-2xl font-semibold">{stat.value}</p>
-                  </div>
-                ))}
+              <div className="max-w-[240px] border-t border-[var(--border)] pt-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-faint)]">focus</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Tag>Portal Design</Tag>
+                  <Tag>HP-portal</Tag>
+                </div>
               </div>
             </div>
           </BentoCard>
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.8fr)]">
-        <div className="grid gap-6">
-          <ProjectCard project={webProjects[0]} />
-          <div className="grid gap-6 md:grid-cols-2">
+      <section className="grid gap-6">
+        <ProjectCard project={webProjects[0]} />
+      </section>
+
+      <section className="grid gap-10 border-t border-[var(--border)] pt-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] xl:items-start">
+        <div className="max-w-2xl">
+          <p className="section-kicker">what this site handles</p>
+          <div className="mt-5 space-y-5 text-sm leading-7 text-[var(--text-soft)]">
             {featuredHighlights.map((item) => (
-              <BentoCard key={item.title}>
-                <p className="text-sm font-medium text-[var(--text)]">{item.title}</p>
-                <p className="mt-4 text-sm leading-7 text-[var(--text-soft)]">{item.body}</p>
-              </BentoCard>
+              <div key={item.title}>
+                <p className="text-base font-medium text-[var(--text)]">{item.title}</p>
+                <p className="mt-2">{item.body}</p>
+              </div>
             ))}
           </div>
         </div>
-        <div className="grid gap-6">
-          {profileStats.map((stat) => (
-            <StatCard key={stat.label} {...stat} />
-          ))}
-        </div>
-      </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
-        {skillGroups.map((group) => (
-          <SkillGroup key={group.title} {...group} />
-        ))}
+        <div className="space-y-4 border-t border-[var(--border)] pt-4 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0">
+          <p className="section-kicker">next move</p>
+          <div className="space-y-3 text-sm leading-7 text-[var(--text-soft)]">
+            <p>制作スタンスや扱う技術を見たい場合は `Profile` へ。</p>
+            <p>進行中の実績や公開中の導線は `Web` を起点に確認できます。</p>
+            <p>今後公開する内部ツールや運用補助ツールは `Tool` にまとめていきます。</p>
+          </div>
+          <div className="pt-2">
+            <GhostButton href="/profile">Profile を見る</GhostButton>
+          </div>
+        </div>
       </section>
     </>
   );

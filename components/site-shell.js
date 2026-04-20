@@ -3,14 +3,18 @@ import { Sidebar } from "@/components/sidebar";
 
 export function SiteShell({ children }) {
   return (
-    <div className="mx-auto max-w-[1440px] px-4 py-4 md:px-6 lg:px-6">
-      <MobileNav />
-      <div className="mt-4 flex gap-6 lg:mt-0">
-        <Sidebar />
-        <main className="min-w-0 flex-1">
-          <div className="space-y-6">{children}</div>
-        </main>
+    <div className="min-h-screen lg:flex">
+      <div className="px-4 py-4 md:px-6 lg:hidden">
+        <MobileNav />
       </div>
+      <div className="hidden lg:block lg:w-[296px] lg:shrink-0">
+        <Sidebar />
+      </div>
+      <main className="min-w-0 flex-1">
+        <div className="px-4 pb-6 md:px-6 lg:px-8 lg:py-8">
+          <div className="mx-auto max-w-[1120px] space-y-6">{children}</div>
+        </div>
+      </main>
     </div>
   );
 }

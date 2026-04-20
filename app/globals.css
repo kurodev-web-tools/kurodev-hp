@@ -10,6 +10,7 @@
   --panel-muted: rgba(241, 245, 249, 0.86);
   --border: rgba(148, 163, 184, 0.18);
   --border-strong: rgba(59, 130, 246, 0.2);
+  --sidebar-bg: rgba(248, 250, 252, 0.88);
   --text: #0f172a;
   --text-soft: #475569;
   --text-faint: #64748b;
@@ -33,6 +34,7 @@ html[data-theme="dark"] {
   --panel-muted: rgba(22, 22, 31, 0.9);
   --border: rgba(113, 113, 122, 0.24);
   --border-strong: rgba(168, 85, 247, 0.24);
+  --sidebar-bg: rgba(10, 10, 14, 0.92);
   --text: #fafafa;
   --text-soft: #d4d4d8;
   --text-faint: #a1a1aa;
@@ -66,6 +68,12 @@ body {
   color: var(--text);
   font-family: "Inter", "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", sans-serif;
   transition: background-color 180ms ease, color 180ms ease;
+}
+
+@media (min-width: 1024px) {
+  body {
+    overflow-y: scroll;
+  }
 }
 
 a {
