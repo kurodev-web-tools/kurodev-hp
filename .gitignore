@@ -26,6 +26,8 @@ skills-lock.json
 artifacts/
 out/
 output/
+.next/
+.npm-cache/
 remotion-video/out/
 remotion-video/public/templates.json
 .cache/
