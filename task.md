@@ -13,6 +13,7 @@
 - デスクトップ背景にテーマ連動の薄い Hexagon hover glow を試験導入
 - 共通パネルを控えめなガラス風へ調整
 - カード hover の glow を抑え、パネル透過を少し強めに調整
+- Profile のコードカードをエディタ風の syntax highlight 表現へ調整
 
 ### In Progress
 - ローカルで見た目と導線の初回確認
