@@ -14,11 +14,14 @@ export default function HomePage() {
             <SectionHeader
               eyebrow="kurodev portal"
               title="kurodev Portal"
-              body="アイデアを、最短距離で形にする。ポートフォリオ、HP-portal、今後の業務ツールをひとつの窓口として整理するためのサイトです。"
+              body={[
+                "Web制作、運用改善、業務ツールの相談を、",
+                "要件整理から実装後の改善まで一続きで扱う入口です。"
+              ]}
             />
             <div className="mt-7 flex flex-wrap gap-3">
-              <PrimaryButton href="/web">View Projects</PrimaryButton>
-              <GhostButton href="/contact">相談する</GhostButton>
+              <PrimaryButton href="/contact">相談する</PrimaryButton>
+              <GhostButton href="/web">実績を見る</GhostButton>
             </div>
           </div>
           <BentoCard className="relative min-h-[260px] overflow-hidden">
@@ -28,13 +31,14 @@ export default function HomePage() {
               <div>
                 <p className="section-kicker">current stance</p>
                 <p className="mt-4 max-w-xs text-sm leading-7 text-[var(--text-soft)]">
-                  AI を魔法として見せるより、制作と改善を回すための熟練した道具として扱います。
+                  要件を整理し、作って終わりにせず、公開後の更新や改善まで見通して組み立てます。
                 </p>
               </div>
               <div className="max-w-[240px] border-t border-[var(--border)] pt-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-faint)]">focus</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Tag>Portal Design</Tag>
+                  <Tag>Web制作</Tag>
+                  <Tag>運用改善</Tag>
                   <Tag>HP-portal</Tag>
                 </div>
               </div>
@@ -63,12 +67,12 @@ export default function HomePage() {
         <div className="space-y-4 border-t border-[var(--border)] pt-4 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0">
           <p className="section-kicker">next move</p>
           <div className="space-y-3 text-sm leading-7 text-[var(--text-soft)]">
-            <p>制作スタンスや扱う技術を見たい場合は `Profile` へ。</p>
-            <p>進行中の実績や公開中の導線は `Web` を起点に確認できます。</p>
-            <p>今後公開する内部ツールや運用補助ツールは `Tool` にまとめていきます。</p>
+            <p>制作や改善の相談は `Contact` から送れます。</p>
+            <p>公開できる実績や制作基盤は `Web` にまとめています。</p>
+            <p>準備中の業務ツールは `Tool` で順次整理します。</p>
           </div>
           <div className="pt-2">
-            <GhostButton href="/profile">Profile を見る</GhostButton>
+            <GhostButton href="/contact">相談内容を整理する</GhostButton>
           </div>
         </div>
       </section>

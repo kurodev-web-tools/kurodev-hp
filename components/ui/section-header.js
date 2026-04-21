@@ -1,5 +1,6 @@
 export function SectionHeader({ eyebrow, title, body, align = "left" }) {
   const isCentered = align === "center";
+  const bodyLines = Array.isArray(body) ? body : [body];
 
   return (
     <div className={isCentered ? "mx-auto max-w-3xl text-center" : "max-w-2xl"}>
@@ -9,7 +10,11 @@ export function SectionHeader({ eyebrow, title, body, align = "left" }) {
       </h1>
       {body ? (
         <p className="mt-4 text-sm leading-7 text-[var(--text-soft)] md:text-base">
-          {body}
+          {bodyLines.map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
         </p>
       ) : null}
     </div>

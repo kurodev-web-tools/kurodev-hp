@@ -9,6 +9,8 @@ const statusTone = {
 };
 
 export function ProjectCard({ project }) {
+  const summaryLines = Array.isArray(project.summary) ? project.summary : [project.summary];
+
   return (
     <BentoCard
       className={`group relative overflow-hidden ${
@@ -32,7 +34,13 @@ export function ProjectCard({ project }) {
             {project.status}
           </span>
         </div>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--text-soft)]">{project.summary}</p>
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--text-soft)]">
+          {summaryLines.map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </p>
         <div className="mt-5 flex flex-wrap gap-2">
           {project.tags.map((tag) => (
             <Tag key={tag}>{tag}</Tag>
