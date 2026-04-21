@@ -9,6 +9,7 @@
 - Bento ベースの共通カード UI を実装
 - `Contact` の UI と入力バリデーションを実装
 - `npm run build` 成功を確認
+- `Web / Tool` 下段補足セクションを Home 下部と同じ軽量な罫線区切り構造へ変更
 
 ### In Progress
 - ローカルで見た目と導線の初回確認
