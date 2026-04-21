@@ -16,15 +16,10 @@ export default function HomePage() {
               title="kurodev Portal"
               body="アイデアを、最短距離で形にする。ポートフォリオ、HP-portal、今後の業務ツールをひとつの窓口として整理するためのサイトです。"
             />
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <PrimaryButton href="/web">View Projects</PrimaryButton>
               <GhostButton href="/contact">相談する</GhostButton>
             </div>
-            <p className="mt-8 max-w-xl text-sm leading-7 text-[var(--text-soft)]">
-              制作の入口はこのページ、詳細なプロフィールや扱う技術は <span className="font-medium text-[var(--text)]">Profile</span>
-              、進行中の実績は <span className="font-medium text-[var(--text)]">Web</span> と
-              <span className="font-medium text-[var(--text)]"> Tool</span> に分けて整理しています。
-            </p>
           </div>
           <BentoCard className="relative min-h-[260px] overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.3),transparent_38%)] opacity-80" />
