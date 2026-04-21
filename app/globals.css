@@ -75,6 +75,12 @@ body {
   transition: background-color 180ms ease, color 180ms ease;
 }
 
+.hexagon-background {
+  --hex-x: 50vw;
+  --hex-y: 50vh;
+  display: none;
+}
+
 @media (min-width: 1024px) {
   html,
   body {
@@ -185,5 +191,61 @@ textarea {
 
   .hero-surface {
     background-image: var(--hero);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hexagon-background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hexagon-background::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 100% 0%, var(--accent-soft), transparent 24%),
+      linear-gradient(180deg, transparent, var(--bg) 92%);
+    opacity: 0.55;
+  }
+
+  .hexagon-background__grid,
+  .hexagon-background__glow {
+    position: absolute;
+    inset: -64px;
+    width: calc(100% + 128px);
+    height: calc(100% + 128px);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .hexagon-background__grid {
+    stroke: var(--text-faint);
+    stroke-width: 1;
+    opacity: 0.055;
+  }
+
+  .hexagon-background__glow {
+    stroke: var(--accent);
+    stroke-width: 1.15;
+    opacity: 0;
+    filter: drop-shadow(0 0 12px var(--accent));
+    mask-image: radial-gradient(circle at var(--hex-x) var(--hex-y), #000 0 72px, transparent 180px);
+    transition: opacity 220ms ease;
+  }
+
+  .hexagon-background[data-active="true"] .hexagon-background__glow {
+    opacity: 0.38;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hexagon-background__glow {
+    display: none;
   }
 }

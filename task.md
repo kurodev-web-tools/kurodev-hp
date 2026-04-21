@@ -10,6 +10,7 @@
 - `Contact` の UI と入力バリデーションを実装
 - `npm run build` 成功を確認
 - `Web / Tool` 下段補足セクションを Home 下部と同じ軽量な罫線区切り構造へ変更
+- デスクトップ背景にテーマ連動の薄い Hexagon hover glow を試験導入
 
 ### In Progress
 - ローカルで見た目と導線の初回確認

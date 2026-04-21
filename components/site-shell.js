@@ -1,5 +1,6 @@
 import { MobileNav } from "@/components/mobile-nav";
 import { Sidebar } from "@/components/sidebar";
+import { HexagonBackground } from "@/components/hexagon-background";
 
 export function SiteShell({ children }) {
   return (
@@ -10,8 +11,9 @@ export function SiteShell({ children }) {
       <div className="hidden lg:block lg:w-[296px] lg:shrink-0">
         <Sidebar />
       </div>
-      <main className="min-w-0 flex-1 lg:min-h-0 lg:overflow-y-auto">
-        <div className="px-4 pb-6 md:px-6 lg:px-8 lg:pb-8 lg:pt-8">
+      <main className="relative isolate min-w-0 flex-1 overflow-hidden lg:min-h-0">
+        <HexagonBackground />
+        <div className="relative z-10 h-full overflow-y-auto px-4 pb-6 md:px-6 lg:px-8 lg:pb-8 lg:pt-8">
           <div className="mx-auto max-w-[1120px] space-y-6">{children}</div>
         </div>
       </main>
