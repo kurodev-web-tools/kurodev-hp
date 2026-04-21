@@ -3,6 +3,7 @@ import { Tag } from "@/components/ui/tag";
 
 const statusTone = {
   Active: "text-emerald-500",
+  Live: "text-emerald-500",
   "In Build": "text-sky-500",
   "Coming Soon": "text-amber-500",
   Planning: "text-violet-500"
