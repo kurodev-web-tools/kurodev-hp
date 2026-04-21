@@ -1,6 +1,6 @@
 import { ProfileCodeCard } from "@/components/profile-code-card";
-import { SectionHeader } from "@/components/ui/section-header";
 import { BentoCard } from "@/components/ui/bento-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { SkillGroup } from "@/components/ui/skill-group";
 import { StatCard } from "@/components/ui/stat-card";
 import { profileStats, skillGroups } from "@/lib/site-data";
@@ -8,13 +8,11 @@ import { profileStats, skillGroups } from "@/lib/site-data";
 export default function ProfilePage() {
   return (
     <>
-      <section className="hero-surface panel-strong rounded-[34px] px-6 py-8 md:px-10 md:py-10">
-        <SectionHeader
-          eyebrow="profile"
-          title="作るだけで終わらない、運用まで見える設計。"
-          body="小さな見た目調整だけでなく、どこを直すと次回も楽になるかを含めて判断します。制作、改善、運用整理を切り離さずに扱うのが基本方針です。"
-        />
-      </section>
+      <PageHeader
+        icon="user"
+        title="Profile"
+        description="制作、改善、運用整理を切り離さずに扱うためのプロフィールと作業スタンスです。"
+      />
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(340px,0.9fr)]">
         {profileStats.map((stat) => (

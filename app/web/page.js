@@ -1,18 +1,16 @@
-import { SectionHeader } from "@/components/ui/section-header";
 import { ProjectCard } from "@/components/ui/project-card";
 import { BentoCard } from "@/components/ui/bento-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { webProjects } from "@/lib/site-data";
 
 export default function WebPage() {
   return (
     <>
-      <section className="hero-surface panel-strong rounded-[34px] px-6 py-8 md:px-10 md:py-10">
-        <SectionHeader
-          eyebrow="web works"
-          title="受託制作、テンプレート改善、公開導線をまとめて扱う。"
-          body="まずは HP-portal を軸に、実装中のポータルとテンプレート系の取り組みを一覧で見せます。今後、外向け実績が増えたらここを拡張していきます。"
-        />
-      </section>
+      <PageHeader
+        icon="layout"
+        title="Web Works"
+        description="HP-portal を軸に、制作実績とテンプレート系の取り組みをまとめます。"
+      />
 
       <section className="grid gap-6 xl:grid-cols-3">
         {webProjects.map((project) => (

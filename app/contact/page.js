@@ -1,18 +1,16 @@
 import { ContactForm } from "@/components/contact-form";
-import { SectionHeader } from "@/components/ui/section-header";
 import { BentoCard } from "@/components/ui/bento-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { contactChannels, pricingItems } from "@/lib/site-data";
 
 export default function ContactPage() {
   return (
     <>
-      <section className="hero-surface panel-strong rounded-[34px] px-6 py-8 md:px-10 md:py-10">
-        <SectionHeader
-          eyebrow="contact"
-          title="相談の入口を、重すぎない形で。"
-          body="要件が完全に固まっていなくても問題ありません。今の状況、困っている点、急ぎ度が分かる範囲で共有してもらえれば、次の整理ポイントから一緒に詰めます。"
-        />
-      </section>
+      <PageHeader
+        icon="mail"
+        title="Contact & Pricing"
+        description="相談内容と参考価格の目安を確認しながら、次の整理ポイントを決める入口です。"
+      />
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
         <div className="space-y-6">

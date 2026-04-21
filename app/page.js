@@ -13,8 +13,8 @@ export default function HomePage() {
           <div>
             <SectionHeader
               eyebrow="kurodev portal"
-              title="アイデアを、最短距離で形にする。"
-              body="ポートフォリオ、HP-portal、今後の業務ツールをひとつの窓口として整理するためのサイトです。静かな設計と継続しやすい実装で、公開後も更新しやすい面を作ります。"
+              title="kurodev Portal"
+              body="アイデアを、最短距離で形にする。ポートフォリオ、HP-portal、今後の業務ツールをひとつの窓口として整理するためのサイトです。"
             />
             <div className="mt-8 flex flex-wrap gap-3">
               <PrimaryButton href="/web">View Projects</PrimaryButton>
