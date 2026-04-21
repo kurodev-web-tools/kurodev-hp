@@ -17,13 +17,12 @@
 - Home ヒーローの重複導線説明を削除し、初期表示の縦量を圧縮
 - Home を制作相談入口として公開用文言へ調整
 - Profile を制作実行者として公開用文言へ調整
+- Web を公開済み実績と次期テンプレート計画の一覧として公開用文言へ調整
 
 ### In Progress
 - ドメイン接続前に各ページを 1 ページずつ実サイト文言へ調整
 
 ### Next
-- Web: 実績カードの URL / 文言 / 公開可否を整理し、`#` リンクを実 URL または非リンク扱いに変更する
-- Web: React / Next.js / Tailwind CSS の次期テンプレート枠を `Next Template Line` として Planning / In Build 扱いで追加検討する
 - Tool: 未公開ツールの見せ方を「準備中の内製ツール」として自然に整える
 - Contact: 送信方式、公開価格、問い合わせ導線を決めて接続する
 - Cross-page: `metadata`、OG、favicon、ドメイン前提の表記を追加する

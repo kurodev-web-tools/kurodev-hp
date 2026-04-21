@@ -8,7 +8,7 @@ export default function WebPage() {
       <PageHeader
         icon="layout"
         title="Web Works"
-        description="HP-portal を軸に、制作実績とテンプレート系の取り組みをまとめます。"
+        description="公開済みの制作基盤、テンプレート一覧、次期テンプレート計画をまとめています。"
       />
 
       <section className="grid gap-6 xl:grid-cols-3">
@@ -21,13 +21,13 @@ export default function WebPage() {
         <div className="max-w-2xl">
           <p className="section-kicker">what matters</p>
           <p className="mt-5 text-sm leading-7 text-[var(--text-soft)]">
-            ただ見た目を整えるだけではなく、次の更新や比較改善が回しやすい状態まで設計します。構造、文言、再利用できる運用ルールを一緒に整えるのが前提です。
+            見た目だけでなく、公開後の更新、比較改善、導線整理まで回しやすい形を意識して制作します。
           </p>
         </div>
         <div className="border-t border-[var(--border)] pt-4 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0">
           <p className="section-kicker">delivery stance</p>
           <p className="mt-5 text-sm leading-7 text-[var(--text-soft)]">
-            ブラウザ確認を毎回重く回すより、まず静的検証や差分の確認で前へ進める進行を好みます。必要になった場面でだけ視覚確認を増やします。
+            小さく確認しながら前に進め、必要な場面で表示確認や調整を重ねます。公開後の改善もしやすい進行を大切にします。
           </p>
         </div>
       </section>

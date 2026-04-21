@@ -10,10 +10,11 @@ const statusTone = {
 
 export function ProjectCard({ project }) {
   const summaryLines = Array.isArray(project.summary) ? project.summary : [project.summary];
+  const hasProjectLink = project.href && project.href !== "#";
 
   return (
     <BentoCard
-      className={`group relative overflow-hidden ${
+      className={`group relative flex h-full flex-col overflow-hidden ${
         project.featured ? "md:col-span-2" : ""
       }`}
     >
@@ -24,7 +25,7 @@ export function ProjectCard({ project }) {
             : "bg-[linear-gradient(145deg,var(--card-tint),transparent_68%)]"
         }`}
       />
-      <div className="relative">
+      <div className="relative flex h-full flex-col">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-faint)]">{project.category}</p>
@@ -41,10 +42,22 @@ export function ProjectCard({ project }) {
             </span>
           ))}
         </p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
+        <div className="mt-auto pt-5">
+          <div className="flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+          </div>
+          {hasProjectLink ? (
+            <a
+              href={project.href}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-flex rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--accent)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
+            >
+              Open project
+            </a>
+          ) : null}
         </div>
       </div>
     </BentoCard>
