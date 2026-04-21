@@ -9,7 +9,7 @@ export default function ContactPage() {
       <PageHeader
         icon="mail"
         title="Contact & Pricing"
-        description="相談内容と参考価格の目安を確認しながら、次の整理ポイントを決める入口です。"
+        description="Web制作、改善運用、軽量ツール化の相談内容を整理する入口です。"
       />
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
@@ -27,15 +27,30 @@ export default function ContactPage() {
           </BentoCard>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
+          <BentoCard>
+            <p className="section-kicker">budget guide</p>
+            <h2 className="mt-3 text-lg font-semibold text-[var(--text)]">新規サイトは HP-portal のプランを基準に確認できます。</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-soft)]">
+              テンプレート活用の Light plan から、構成調整を含む制作まで、まずはプラン側で目安を確認できます。
+            </p>
+            <a
+              href="https://templates.kuro-lab.com/plans"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-flex rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--accent)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
+            >
+              HP-portalのプランを見る
+            </a>
+          </BentoCard>
           {pricingItems.map((item) => (
             <BentoCard key={item.title}>
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium text-[var(--text)]">{item.title}</p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--text-soft)]">{item.body}</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">{item.body}</p>
                 </div>
-                <span className="rounded-full bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent)]">
+                <span className="shrink-0 rounded-full bg-[var(--accent-soft)] px-3 py-1.5 text-xs font-semibold text-[var(--accent)]">
                   {item.price}
                 </span>
               </div>

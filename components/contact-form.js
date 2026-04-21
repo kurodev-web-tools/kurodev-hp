@@ -56,7 +56,7 @@ export function ContactForm() {
         <select name="category" value={values.category} onChange={handleChange} className="input-shell">
           <option>新規制作</option>
           <option>既存サイト改善</option>
-          <option>ツール開発</option>
+          <option>業務ツール相談</option>
           <option>運用整理</option>
         </select>
       </label>
@@ -76,7 +76,7 @@ export function ContactForm() {
 
       <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <p className="text-sm leading-6 text-[var(--text-soft)]">
-          初回は UI とバリデーションのみです。送信連携は次フェーズで実装します。
+          内容を整理して、相談前に必要な情報を確認できます。
         </p>
         <button type="submit" className="button-primary border-0">
           相談内容を確認する
@@ -85,7 +85,7 @@ export function ContactForm() {
 
       {submitted ? (
         <div className="mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-500">
-          入力内容は問題ありません。次フェーズで送信先を接続します。
+          入力内容は確認できました。正式な送信窓口は公開準備中です。
         </div>
       ) : null}
     </form>
