@@ -16,12 +16,12 @@
 - Profile のコードカードをエディタ風の syntax highlight 表現へ調整
 - Home ヒーローの重複導線説明を削除し、初期表示の縦量を圧縮
 - Home を制作相談入口として公開用文言へ調整
+- Profile を制作実行者として公開用文言へ調整
 
 ### In Progress
 - ドメイン接続前に各ページを 1 ページずつ実サイト文言へ調整
 
 ### Next
-- Profile: stats の公開可否を確認し、`how I work` とコードカードを実プロフィールとして整える
 - Web: 実績カードの URL / 文言 / 公開可否を整理し、`#` リンクを実 URL または非リンク扱いに変更する
 - Web: React / Next.js / Tailwind CSS の次期テンプレート枠を `Next Template Line` として Planning / In Build 扱いで追加検討する
 - Tool: 未公開ツールの見せ方を「準備中の内製ツール」として自然に整える

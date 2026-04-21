@@ -9,7 +9,7 @@ const lines = [
   [
     { text: "  role", tone: "property" },
     { text: ": " },
-    { text: "\"portal owner / web builder\"", tone: "string" },
+    { text: "\"web builder / implementation partner\"", tone: "string" },
     { text: "," }
   ],
   [
@@ -25,13 +25,13 @@ const lines = [
   [
     { text: "  style", tone: "property" },
     { text: ": " },
-    { text: "\"静かな設計と継続しやすい実装\"", tone: "string" },
+    { text: "\"整理して、作って、改善する\"", tone: "string" },
     { text: "," }
   ],
   [
     { text: "  principle", tone: "property" },
     { text: ": " },
-    { text: "\"AIは道具、設計は人間で締める\"", tone: "string" },
+    { text: "\"AIは道具、判断は設計で締める\"", tone: "string" },
     { text: "," }
   ],
   [{ text: "};" }]
