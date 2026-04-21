@@ -107,15 +107,25 @@ textarea {
 
 @layer components {
   .panel {
-    background: var(--panel);
+    background: color-mix(in srgb, var(--panel) 82%, transparent);
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
   }
 
   .panel-strong {
-    background: var(--panel-strong);
+    background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+
+  html[data-theme="dark"] .panel {
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+  }
+
+  html[data-theme="dark"] .panel-strong {
+    background: color-mix(in srgb, var(--panel-strong) 90%, transparent);
   }
 
   .bento-card {
@@ -125,7 +135,7 @@ textarea {
 
   .bento-card:hover {
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow);
   }
 
   .section-kicker {
