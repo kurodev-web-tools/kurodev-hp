@@ -11,15 +11,15 @@ const statusTone = {
 export function ProjectCard({ project }) {
   return (
     <BentoCard
-      className={`group relative overflow-hidden transition duration-200 hover:-translate-y-1 hover:border-[var(--border-strong)] ${
+      className={`group relative overflow-hidden ${
         project.featured ? "md:col-span-2" : ""
       }`}
     >
       <div
-        className={`absolute inset-x-0 top-0 h-28 opacity-90 ${
+        className={`pointer-events-none absolute inset-px rounded-[23px] ${
           project.featured
-            ? "bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.28),transparent_45%),linear-gradient(180deg,rgba(99,102,241,0.16),transparent)]"
-            : "bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_50%),linear-gradient(180deg,rgba(59,130,246,0.08),transparent)]"
+            ? "bg-[radial-gradient(circle_at_18%_16%,var(--card-tint-strong),transparent_42%),linear-gradient(145deg,var(--card-tint),transparent_62%)]"
+            : "bg-[linear-gradient(145deg,var(--card-tint),transparent_68%)]"
         }`}
       />
       <div className="relative">
