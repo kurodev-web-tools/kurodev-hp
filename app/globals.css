@@ -71,8 +71,10 @@ body {
 }
 
 @media (min-width: 1024px) {
+  html,
   body {
-    overflow-y: scroll;
+    height: 100%;
+    overflow: hidden;
   }
 }
 

@@ -10,8 +10,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden h-screen w-[296px] shrink-0 border-r border-[var(--border)] bg-[var(--sidebar-bg)] lg:block">
-      <div className="sticky top-0 flex h-screen flex-col px-7 py-8">
+    <aside className="hidden h-full w-[296px] shrink-0 border-r border-[var(--border)] bg-[var(--sidebar-bg)] lg:block">
+      <div className="flex h-full min-h-0 flex-col px-7 py-8">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
             <Icon name="spark" className="h-5 w-5" />
