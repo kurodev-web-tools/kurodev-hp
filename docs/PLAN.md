@@ -6,16 +6,18 @@
 - デスクトップ左サイドバー、モバイルナビ、ライト/ダーク切替は実装済み
 - `Web / Tool` はローカル定数データから描画する構成に整理済み
 - `Contact` は Resend + Cloudflare Turnstile で送信接続済み
-- `metadata`、OG画像、favicon は `https://kuro-lab.com` 前提で設定済み
+- `metadata`、OG画像、favicon、`robots.txt`、`sitemap.xml` は `https://kuro-lab.com` 前提で設定済み
+- `https://kuro-lab.com` で公開済み
 
 ## Next Focus
-### 1. Release Prep
-- Cloudflare Pages 側に Resend / Turnstile / 宛先の環境変数を設定する
-- 本番または preview で Contact 送信を確認する
-- 公開前にリンク、文言、レスポンシブ表示を再確認する
+### 1. Production Operations
+- 本番 Contact 送信を確認する: Cloudflare Pages 環境変数、Turnstile、Resend、受信先到達
+- Cloudflare 側で `/api/contact` の POST に rate limiting ルールを設定する
+- 本番の security headers、`robots.txt`、`sitemap.xml`、OG画像、favicon を確認する
 
 ### 2. Future Enhancements
-- 必要に応じてページ別 metadata を追加する
+- Search Console 登録と sitemap 送信を行う
+- 構造化データ追加を別バッチで検討する
 - Web / Tool の未公開カードは公開URLができた時点でリンクを追加する
 - アバターやキービジュアルの差し替え方針を決める
 
