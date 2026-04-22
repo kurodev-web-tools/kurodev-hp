@@ -23,3 +23,10 @@
 - `npm run lint`
 - `npm run build`
 - ローカルで `npm run dev` を起動して 5 ページ導線とテーマ切替を確認
+
+## Security Operations
+- アプリ側では Contact API に Turnstile 検証、16KB の本文上限、外部API timeout、匿名最小ログを入れる
+- 本番の連続送信対策は Cloudflare 側の rate limiting で扱う
+- Cloudflare 側の推奨対象は `http.request.uri.path eq "/api/contact" and http.request.method eq "POST"`
+- 初期設定は同一 IP から 1分あたり 3〜5 回程度を目安にし、Managed Challenge または一時 Block から開始する
+- デプロイ後は `Strict-Transport-Security`、`X-Content-Type-Options`、`Referrer-Policy`、`X-Frame-Options`、`Permissions-Policy` が返ることを確認する
