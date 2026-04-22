@@ -28,10 +28,23 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--panel-muted)] text-[var(--text)] transition hover:border-[var(--border-strong)] hover:text-[var(--accent)]"
-      aria-label="Toggle theme"
+      className="theme-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--panel-muted)] text-[var(--text)] hover:border-[var(--border-strong)] hover:text-[var(--accent)]"
+      aria-label={theme === "dark" ? "ライトテーマに切り替え" : "ダークテーマに切り替え"}
     >
-      <Icon name={theme === "dark" ? "sun" : "moon"} className="h-5 w-5" />
+      <Icon
+        name="moon"
+        className="theme-toggle__icon h-5 w-5"
+        data-icon="moon"
+        data-active={theme === "light"}
+        aria-hidden="true"
+      />
+      <Icon
+        name="sun"
+        className="theme-toggle__icon h-5 w-5"
+        data-icon="sun"
+        data-active={theme === "dark"}
+        aria-hidden="true"
+      />
     </button>
   );
 }
