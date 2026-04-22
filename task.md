@@ -28,6 +28,7 @@
 - 全ルートに基本 security headers を追加: HSTS、nosniff、Referrer-Policy、X-Frame-Options、Permissions-Policy
 - Contact API に 16KB 本文上限、Turnstile/Resend timeout、匿名最小エラーログを追加
 - `docs/PLAN.md` に Cloudflare rate limiting と本番 security headers 確認手順を追加
+- Glow Shift テーマ切替計画を実装: 背景・カード・文字色の 300ms transition、Hexagon glow の遅延色変化、Toggle icon の fade/scale/rotate、prefers-reduced-motion 抑制を追加
 
 ### Next
 - 公開前最終確認: 5ページ導線、Contact送信、OG画像、favicon、Cloudflare Pages 環境変数を確認する
