@@ -14,9 +14,9 @@
 - `Profile` と `Home` の文言を公開向けに最終調整する
 
 ### 2. Contact Integration
-- 送信先を決める
-- 最小構成なら `mailto`、本実装なら `Route Handler` + 保存先のどちらかで固定する
-- 送信完了状態、失敗時表示、スパム対策の扱いを決める
+- Resend + Cloudflare Turnstile で送信接続済み
+- 保存は行わず、Gmail への通知メールのみで運用する
+- Cloudflare Pages 側に Resend / Turnstile / 宛先の環境変数を設定する
 
 ### 3. Visual Polish
 - ヒーローと主要カードの装飾を少しだけ強める

@@ -20,12 +20,12 @@
 - Web を公開済み実績と次期テンプレート計画の一覧として公開用文言へ調整
 - Tool を匿名実績PWAと準備中ツールの一覧として公開用文言へ調整
 - Contact を制作相談の受付入口として公開用文言へ調整
+- Contact を Resend + Turnstile で送信接続
 
 ### In Progress
 - ドメイン接続前に各ページを 1 ページずつ実サイト文言へ調整
 
 ### Next
-- Contact: 送信方式を決めて問い合わせ導線を接続する
 - Cross-page: `metadata`、OG、favicon、ドメイン前提の表記を追加する
 - Docs: 必要なら `README` に起動手順や運用メモを追加する
 
