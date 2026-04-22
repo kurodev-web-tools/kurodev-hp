@@ -13,7 +13,7 @@ export default function ContactPage() {
       />
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
-        <div className="space-y-6">
+        <div className="order-2 space-y-6 xl:order-1">
           <ContactForm />
           <BentoCard>
             <p className="section-kicker">相談しやすい内容</p>
@@ -27,7 +27,7 @@ export default function ContactPage() {
           </BentoCard>
         </div>
 
-        <div className="space-y-4">
+        <div className="order-1 space-y-4 xl:order-2">
           <BentoCard>
             <p className="section-kicker">budget guide</p>
             <h2 className="mt-3 text-lg font-semibold text-[var(--text)]">新規サイトは HP-portal のプランを基準に確認できます。</h2>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { navigationItems } from "@/lib/navigation";
 import { Icon } from "@/components/ui/icon";
@@ -13,9 +14,7 @@ export function Sidebar() {
     <aside className="hidden h-full w-[296px] shrink-0 border-r border-[var(--border)] bg-[var(--sidebar-bg)] lg:block">
       <div className="flex h-full min-h-0 flex-col px-7 py-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
-            <Icon name="spark" className="h-5 w-5" />
-          </div>
+          <Image src="/favicon.png" alt="" width={44} height={44} className="h-11 w-11 rounded-2xl object-cover" priority />
           <div>
             <p className="text-lg font-semibold tracking-[-0.04em]">kurodev</p>
             <p className="text-sm text-[var(--text-faint)]">portal & build desk</p>

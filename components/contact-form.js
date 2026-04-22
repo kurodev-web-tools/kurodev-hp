@@ -151,10 +151,11 @@ export function ContactForm() {
 
         <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <p className="text-sm leading-6 text-[var(--text-soft)]">
-            内容を確認して、返信に必要な情報を送信します。
+            <span className="block">内容を確認のうえ送信してください。</span>
+            <span className="block">確認後、メールで返信します。</span>
           </p>
           <button type="submit" className="button-primary border-0 disabled:cursor-not-allowed disabled:opacity-60" disabled={status === "sending"}>
-            {status === "sending" ? "送信中..." : "相談内容を送信する"}
+            {status === "sending" ? "送信中..." : "送信する"}
           </button>
         </div>
 

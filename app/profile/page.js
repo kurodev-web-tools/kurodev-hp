@@ -5,6 +5,25 @@ import { SkillGroup } from "@/components/ui/skill-group";
 import { StatCard } from "@/components/ui/stat-card";
 import { profileStats, skillGroups } from "@/lib/site-data";
 
+function ProfileStatsAccordion() {
+  return (
+    <section className="space-y-3 md:hidden">
+      {profileStats.map((stat, index) => (
+        <details key={stat.label} className="bento-card p-0" open={index === 0}>
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+            <span>
+              <span className="block text-xs uppercase tracking-[0.24em] text-[var(--text-faint)]">{stat.label}</span>
+              <span className="mt-1 block text-2xl font-semibold tracking-[-0.04em] text-[var(--text)]">{stat.value}</span>
+            </span>
+            <span className="text-lg text-[var(--accent)]">+</span>
+          </summary>
+          <p className="border-t border-[var(--border)] px-5 py-4 text-sm leading-7 text-[var(--text-soft)]">{stat.note}</p>
+        </details>
+      ))}
+    </section>
+  );
+}
+
 export default function ProfilePage() {
   return (
     <>
@@ -14,7 +33,9 @@ export default function ProfilePage() {
         description="要件整理、実装、公開後の改善を一続きで扱う制作実行者としてのプロフィールです。"
       />
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(340px,0.9fr)]">
+      <ProfileStatsAccordion />
+
+      <section className="hidden gap-6 md:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(340px,0.9fr)]">
         {profileStats.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}
