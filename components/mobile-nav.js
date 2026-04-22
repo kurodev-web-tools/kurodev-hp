@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { navigationItems } from "@/lib/navigation";
@@ -26,9 +27,7 @@ export function MobileNav() {
     <>
       <header className="panel-strong sticky top-4 z-40 flex items-center justify-between rounded-[28px] px-4 py-3 lg:hidden">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
-            <Icon name="spark" className="h-5 w-5" />
-          </div>
+          <Image src="/favicon.png" alt="" width={40} height={40} className="h-10 w-10 rounded-2xl object-cover" priority />
           <div>
             <p className="text-base font-semibold tracking-[-0.04em]">kurodev</p>
             <p className="text-xs text-[var(--text-faint)]">portal site</p>
