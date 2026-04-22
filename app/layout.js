@@ -15,8 +15,37 @@ const themeInitScript = `
 `;
 
 export const metadata = {
-  title: "kurodev Portal Site",
-  description: "ポートフォリオと HP-portal、今後のツール窓口を一つにまとめる portal site."
+  metadataBase: new URL("https://kuro-lab.com"),
+  title: "kurodev | Web制作・改善運用・業務ツール相談",
+  description: "Web制作、運用改善、業務ツールの相談を、要件整理から実装後の改善まで一続きで扱う入口です。",
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    title: "kurodev | Web制作・改善運用・業務ツール相談",
+    description: "Web制作、運用改善、業務ツールの相談を、要件整理から実装後の改善まで一続きで扱う入口です。",
+    url: "https://kuro-lab.com",
+    siteName: "kurodev",
+    locale: "ja_JP",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "kurodev portal & build desk"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "kurodev | Web制作・改善運用・業務ツール相談",
+    description: "Web制作、運用改善、業務ツールの相談を、要件整理から実装後の改善まで一続きで扱う入口です。",
+    images: ["/opengraph-image"]
+  },
+  icons: {
+    icon: "/icon.png"
+  }
 };
 
 export default function RootLayout({ children }) {

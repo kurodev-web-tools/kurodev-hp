@@ -20,7 +20,7 @@
 
 ### 3. Visual Polish
 - ヒーローと主要カードの装飾を少しだけ強める
-- OG、favicon、metadata を追加する
+- OG、favicon、metadata は `https://kuro-lab.com` 前提で追加済み
 - アバターやキービジュアルの差し替え方針を決める
 
 ### 4. Release Prep

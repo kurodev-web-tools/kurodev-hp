@@ -21,12 +21,12 @@
 - Tool を匿名実績PWAと準備中ツールの一覧として公開用文言へ調整
 - Contact を制作相談の受付入口として公開用文言へ調整
 - Contact を Resend + Turnstile で送信接続
+- Cross-page の metadata、OG、favicon を公開URL前提で追加
 
 ### In Progress
 - ドメイン接続前に各ページを 1 ページずつ実サイト文言へ調整
 
 ### Next
-- Cross-page: `metadata`、OG、favicon、ドメイン前提の表記を追加する
 - Docs: 必要なら `README` に起動手順や運用メモを追加する
 
 ## Run Commands
