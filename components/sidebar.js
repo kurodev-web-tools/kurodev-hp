@@ -14,7 +14,7 @@ export function Sidebar() {
     <aside className="hidden h-full w-[296px] shrink-0 border-r border-[var(--border)] bg-[var(--sidebar-bg)] lg:block">
       <div className="flex h-full min-h-0 flex-col px-7 py-8">
         <div className="flex items-center gap-3">
-          <Image src="/favicon.png" alt="" width={44} height={44} className="h-11 w-11 rounded-2xl object-cover" priority />
+          <Image src="/brand-icon.png" alt="" width={44} height={44} className="h-11 w-11 rounded-2xl object-cover" priority />
           <div>
             <p className="text-lg font-semibold tracking-[-0.04em]">kurodev</p>
             <p className="text-sm text-[var(--text-faint)]">portal & build desk</p>

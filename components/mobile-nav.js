@@ -27,7 +27,7 @@ export function MobileNav() {
     <>
       <header className="panel-strong sticky top-4 z-40 flex items-center justify-between rounded-[28px] px-4 py-3 lg:hidden">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/favicon.png" alt="" width={40} height={40} className="h-10 w-10 rounded-2xl object-cover" priority />
+          <Image src="/brand-icon.png" alt="" width={40} height={40} className="h-10 w-10 rounded-2xl object-cover" priority />
           <div>
             <p className="text-base font-semibold tracking-[-0.04em]">kurodev</p>
             <p className="text-xs text-[var(--text-faint)]">portal site</p>
