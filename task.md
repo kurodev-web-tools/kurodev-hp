@@ -26,10 +26,11 @@
 - セキュリティ観点の静的確認を実施: secret混入、Contact API入力検証、Turnstile/Resend連携、公開ファイル、外部リンク、依存関係、ビルドを確認
 - Next.js 14系依存を `next@^14.2.35` / `eslint-config-next@^14.2.35` に明示更新し、lint/build 成功を確認
 - 全ルートに基本 security headers を追加: HSTS、nosniff、Referrer-Policy、X-Frame-Options、Permissions-Policy
+- Contact API に 16KB 本文上限、Turnstile/Resend timeout、匿名最小エラーログを追加
 
 ### Next
 - 公開前最終確認: 5ページ導線、Contact送信、OG画像、favicon、Cloudflare Pages 環境変数を確認する
-- 公開後運用対応: Contact API のレート制限、本文サイズ上限、送信ログ/監視方針を決める
+- 公開後運用対応: Cloudflare 側で `/api/contact` の rate limiting ルールを設定する
 - 依存関係確認: `npm audit --audit-level=moderate` は 14系維持では高 severity が残るため、Next.js 16系移行を別バッチで検討する
 
 ## Run Commands

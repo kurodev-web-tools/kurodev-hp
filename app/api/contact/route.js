@@ -3,13 +3,46 @@ export const runtime = "edge";
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const RESEND_EMAIL_URL = "https://api.resend.com/emails";
 const CATEGORY_VALUES = new Set(["新規制作", "既存サイト改善", "業務ツール相談", "運用整理"]);
+const MAX_BODY_BYTES = 16 * 1024;
+const TURNSTILE_TIMEOUT_MS = 5000;
+const RESEND_TIMEOUT_MS = 10000;
 
 function jsonResponse(body, status = 200) {
   return Response.json(body, { status });
 }
 
+function logContactError(code, details = {}) {
+  console.error("[contact-api]", code, details);
+}
+
 function cleanText(value, maxLength) {
   return String(value || "").trim().slice(0, maxLength);
+}
+
+function isBodyTooLarge(request) {
+  const contentLength = request.headers.get("content-length");
+  if (!contentLength) return false;
+
+  const parsedLength = Number(contentLength);
+  return Number.isFinite(parsedLength) && parsedLength > MAX_BODY_BYTES;
+}
+
+function isParsedBodyTooLarge(body) {
+  return new TextEncoder().encode(JSON.stringify(body)).length > MAX_BODY_BYTES;
+}
+
+async function fetchWithTimeout(url, options, timeoutMs) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function isEmail(value) {
@@ -83,12 +116,26 @@ async function verifyTurnstile(token, request) {
   const remoteIp = request.headers.get("CF-Connecting-IP") || request.headers.get("x-forwarded-for");
   if (remoteIp) formData.append("remoteip", remoteIp.split(",")[0].trim());
 
-  const response = await fetch(TURNSTILE_VERIFY_URL, {
-    method: "POST",
-    body: formData
-  });
+  let response;
 
-  if (!response.ok) return false;
+  try {
+    response = await fetchWithTimeout(
+      TURNSTILE_VERIFY_URL,
+      {
+        method: "POST",
+        body: formData
+      },
+      TURNSTILE_TIMEOUT_MS
+    );
+  } catch (error) {
+    logContactError("TURNSTILE_VERIFY_ERROR", { reason: error.name || "FETCH_ERROR" });
+    return false;
+  }
+
+  if (!response.ok) {
+    logContactError("TURNSTILE_VERIFY_ERROR", { status: response.status });
+    return false;
+  }
 
   const result = await response.json();
   return Boolean(result.success);
@@ -104,22 +151,37 @@ async function sendContactEmail(payload) {
   }
 
   const { text, html } = formatContactEmail(payload);
-  const response = await fetch(RESEND_EMAIL_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject: `制作相談: ${payload.category}`,
-      reply_to: payload.email,
-      text,
-      html,
-      tags: [{ name: "source", value: "kurodev_hp" }]
-    })
-  });
+  let response;
+
+  try {
+    response = await fetchWithTimeout(
+      RESEND_EMAIL_URL,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          from,
+          to: [to],
+          subject: `制作相談: ${payload.category}`,
+          reply_to: payload.email,
+          text,
+          html,
+          tags: [{ name: "source", value: "kurodev_hp" }]
+        })
+      },
+      RESEND_TIMEOUT_MS
+    );
+  } catch (error) {
+    logContactError("RESEND_SEND_ERROR", { reason: error.name || "FETCH_ERROR" });
+    return { ok: false, status: 502 };
+  }
+
+  if (!response.ok) {
+    logContactError("RESEND_SEND_ERROR", { status: response.status });
+  }
 
   return { ok: response.ok, status: response.status };
 }
@@ -127,10 +189,21 @@ async function sendContactEmail(payload) {
 export async function POST(request) {
   let body;
 
+  if (isBodyTooLarge(request)) {
+    logContactError("PAYLOAD_TOO_LARGE", { phase: "content-length" });
+    return jsonResponse({ ok: false, error: "PAYLOAD_TOO_LARGE" }, 413);
+  }
+
   try {
     body = await request.json();
   } catch {
+    logContactError("INVALID_JSON");
     return jsonResponse({ ok: false, error: "INVALID_JSON" }, 400);
+  }
+
+  if (isParsedBodyTooLarge(body)) {
+    logContactError("PAYLOAD_TOO_LARGE", { phase: "parsed-body" });
+    return jsonResponse({ ok: false, error: "PAYLOAD_TOO_LARGE" }, 413);
   }
 
   const payload = {
