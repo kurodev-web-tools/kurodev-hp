@@ -18,9 +18,6 @@ export const metadata = {
   metadataBase: new URL("https://kuro-lab.com"),
   title: "kurodev | Web制作・改善運用・業務ツール相談",
   description: "Web制作、運用改善、業務ツールの相談を、要件整理から実装後の改善まで一続きで扱う入口です。",
-  alternates: {
-    canonical: "/"
-  },
   openGraph: {
     title: "kurodev | Web制作・改善運用・業務ツール相談",
     description: "Web制作、運用改善、業務ツールの相談を、要件整理から実装後の改善まで一続きで扱う入口です。",

@@ -29,9 +29,11 @@
 - Contact API に 16KB 本文上限、Turnstile/Resend timeout、匿名最小エラーログを追加
 - `docs/PLAN.md` に Cloudflare rate limiting と本番 security headers 確認手順を追加
 - Glow Shift テーマ切替計画を実装: 背景・カード・文字色の 300ms transition、Hexagon glow の遅延色変化、Toggle icon の fade/scale/rotate、prefers-reduced-motion 抑制を追加
+- SEO公開前基礎強化を実装: root canonical 固定解除、ページ別 metadata/canonical、`robots`、`sitemap` を追加
 
 ### Next
 - 公開前最終確認: 5ページ導線、Contact送信、OG画像、favicon、Cloudflare Pages 環境変数を確認する
+- SEO追加候補: Search Console 登録、構造化データ追加を別バッチで検討する
 - 公開後運用対応: Cloudflare 側で `/api/contact` の rate limiting ルールを設定する
 - 依存関係確認: `npm audit --audit-level=moderate` は 14系維持では高 severity が残るため、Next.js 16系移行を別バッチで検討する
 

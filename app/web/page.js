@@ -2,6 +2,26 @@ import { ProjectCard } from "@/components/ui/project-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { webProjects } from "@/lib/site-data";
 
+const title = "Web Works | kurodev";
+const description = "Web制作の公開実績、HP-portalテンプレート、次期テンプレート計画をまとめています。";
+
+export const metadata = {
+  title,
+  description,
+  alternates: {
+    canonical: "/web"
+  },
+  openGraph: {
+    title,
+    description,
+    url: "/web"
+  },
+  twitter: {
+    title,
+    description
+  }
+};
+
 export default function WebPage() {
   return (
     <>
