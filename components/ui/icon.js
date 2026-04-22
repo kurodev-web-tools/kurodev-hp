@@ -14,7 +14,7 @@ const paths = {
 
 export function Icon({ name, className = "h-4 w-4", stroke = 1.8 }) {
   const path = paths[name] ?? paths.spark;
-  const isStrokeIcon = ["sun", "moon", "arrow", "mail", "terminal"].includes(name);
+  const isStrokeIcon = ["sun", "moon", "arrow", "mail", "terminal", "menu", "close"].includes(name);
 
   return (
     <svg
