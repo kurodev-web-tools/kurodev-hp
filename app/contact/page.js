@@ -3,6 +3,26 @@ import { BentoCard } from "@/components/ui/bento-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { contactChannels, pricingItems } from "@/lib/site-data";
 
+const title = "Contact & Pricing | kurodev";
+const description = "Web制作、改善運用、軽量ツール化の相談内容と料金目安を整理する問い合わせ入口です。";
+
+export const metadata = {
+  title,
+  description,
+  alternates: {
+    canonical: "/contact"
+  },
+  openGraph: {
+    title,
+    description,
+    url: "/contact"
+  },
+  twitter: {
+    title,
+    description
+  }
+};
+
 export default function ContactPage() {
   return (
     <>

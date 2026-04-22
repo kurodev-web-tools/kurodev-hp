@@ -5,6 +5,26 @@ import { SkillGroup } from "@/components/ui/skill-group";
 import { StatCard } from "@/components/ui/stat-card";
 import { profileStats, skillGroups } from "@/lib/site-data";
 
+const title = "Profile | kurodev";
+const description = "要件整理、実装、公開後の改善を一続きで扱う制作実行者としてのプロフィールです。";
+
+export const metadata = {
+  title,
+  description,
+  alternates: {
+    canonical: "/profile"
+  },
+  openGraph: {
+    title,
+    description,
+    url: "/profile"
+  },
+  twitter: {
+    title,
+    description
+  }
+};
+
 function ProfileStatsAccordion() {
   return (
     <section className="space-y-3 md:hidden">

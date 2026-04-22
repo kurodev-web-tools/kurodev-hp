@@ -2,6 +2,26 @@ import { ProjectCard } from "@/components/ui/project-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { toolProjects } from "@/lib/site-data";
 
+const title = "Tools | kurodev";
+const description = "実制作の軽量PWAと、準備中の業務支援ツールを整理しています。";
+
+export const metadata = {
+  title,
+  description,
+  alternates: {
+    canonical: "/tool"
+  },
+  openGraph: {
+    title,
+    description,
+    url: "/tool"
+  },
+  twitter: {
+    title,
+    description
+  }
+};
+
 export default function ToolPage() {
   return (
     <>
