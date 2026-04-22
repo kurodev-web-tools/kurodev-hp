@@ -5,28 +5,19 @@
 - `Home / Profile / Web / Tool / Contact` の 5 ページは実装済み
 - デスクトップ左サイドバー、モバイルナビ、ライト/ダーク切替は実装済み
 - `Web / Tool` はローカル定数データから描画する構成に整理済み
-- `Contact` は UI とクライアント側バリデーションまで実装済み
+- `Contact` は Resend + Cloudflare Turnstile で送信接続済み
+- `metadata`、OG画像、favicon は `https://kuro-lab.com` 前提で設定済み
 
 ## Next Focus
-### 1. Content Hardening
-- `lib/site-data.js` の案件名、要約、ステータス、タグを実データへ寄せる
-- `href` が `#` のままのカードを実 URL または仮公開方針に置き換える
-- `Profile` と `Home` の文言を公開向けに最終調整する
-
-### 2. Contact Integration
-- Resend + Cloudflare Turnstile で送信接続済み
-- 保存は行わず、Gmail への通知メールのみで運用する
+### 1. Release Prep
 - Cloudflare Pages 側に Resend / Turnstile / 宛先の環境変数を設定する
-
-### 3. Visual Polish
-- ヒーローと主要カードの装飾を少しだけ強める
-- OG、favicon、metadata は `https://kuro-lab.com` 前提で追加済み
-- アバターやキービジュアルの差し替え方針を決める
-
-### 4. Release Prep
-- 必要なら `README` に起動手順を追加する
-- デプロイ先を決めたうえで環境差分を整理する
+- 本番または preview で Contact 送信を確認する
 - 公開前にリンク、文言、レスポンシブ表示を再確認する
+
+### 2. Future Enhancements
+- 必要に応じてページ別 metadata を追加する
+- Web / Tool の未公開カードは公開URLができた時点でリンクを追加する
+- アバターやキービジュアルの差し替え方針を決める
 
 ## Verification Baseline
 - `npm run lint`

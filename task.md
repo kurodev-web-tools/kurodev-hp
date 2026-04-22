@@ -22,12 +22,10 @@
 - Contact を制作相談の受付入口として公開用文言へ調整
 - Contact を Resend + Turnstile で送信接続
 - Cross-page の metadata、OG、favicon を公開URL前提で追加
-
-### In Progress
-- ドメイン接続前に各ページを 1 ページずつ実サイト文言へ調整
+- README に起動手順、環境変数、公開前チェックを追加
 
 ### Next
-- Docs: 必要なら `README` に起動手順や運用メモを追加する
+- 公開前最終確認: 5ページ導線、Contact送信、OG画像、favicon、Cloudflare Pages 環境変数を確認する
 
 ## Run Commands
 - 開発サーバー: `npm run dev`
