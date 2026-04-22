@@ -26,6 +26,8 @@ skills-lock.json
 artifacts/
 out/
 output/
+.next/
+.npm-cache/
 remotion-video/out/
 remotion-video/public/templates.json
 .cache/
@@ -42,6 +44,7 @@ yarn-error.log*
 # Environment
 .env
 .env.local
+.env.example
 .dev.vars
 
 # Editor
@@ -68,6 +71,7 @@ codex用スクショ/
 D*hp-portalout/
 
 # Local notes / scratch docs
+README.md
 real-estate-development-plan.md
 tmp-az-audit-report.md
 lighthouse_audit_report.md

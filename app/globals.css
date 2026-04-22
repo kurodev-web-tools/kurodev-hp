@@ -1,0 +1,261 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-strong: #ffffff;
+  --panel-muted: #f1f5f9;
+  --input-bg: #ffffff;
+  --border: rgba(148, 163, 184, 0.28);
+  --border-strong: rgba(14, 165, 233, 0.34);
+  --sidebar-bg: rgba(248, 250, 252, 0.96);
+  --text: #0f172a;
+  --text-soft: #475569;
+  --text-faint: #64748b;
+  --accent: #06b6d4;
+  --accent-strong: #0891b2;
+  --accent-soft: rgba(6, 182, 212, 0.12);
+  --card-tint: rgba(6, 182, 212, 0.035);
+  --card-tint-strong: rgba(6, 182, 212, 0.07);
+  --success: #0f766e;
+  --warning: #c2410c;
+  --danger: #dc2626;
+  --shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
+  --shadow-hover: 0 18px 48px rgba(6, 182, 212, 0.12);
+  --hero: radial-gradient(circle at 82% 18%, rgba(6, 182, 212, 0.16), transparent 26%),
+    linear-gradient(145deg, #ffffff, #f8fafc);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #09090b;
+  --panel: #101014;
+  --panel-strong: #0d0d11;
+  --panel-muted: #18181d;
+  --input-bg: #0d0d11;
+  --border: rgba(113, 113, 122, 0.3);
+  --border-strong: rgba(139, 92, 246, 0.42);
+  --sidebar-bg: rgba(9, 9, 11, 0.96);
+  --text: #fafafa;
+  --text-soft: #d4d4d8;
+  --text-faint: #a1a1aa;
+  --accent: #8b5cf6;
+  --accent-strong: #7c3aed;
+  --accent-soft: rgba(139, 92, 246, 0.16);
+  --card-tint: rgba(139, 92, 246, 0.045);
+  --card-tint-strong: rgba(139, 92, 246, 0.08);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+  --shadow-hover: 0 18px 52px rgba(139, 92, 246, 0.14);
+  --hero: radial-gradient(circle at 82% 14%, rgba(139, 92, 246, 0.2), transparent 28%),
+    linear-gradient(145deg, #09090b, #101014);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.06), transparent 22%),
+    var(--bg);
+  color: var(--text);
+  font-family: "Inter", "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.hexagon-background {
+  --hex-x: 50vw;
+  --hex-y: 50vh;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.24);
+}
+
+@layer components {
+  .panel {
+    background: color-mix(in srgb, var(--panel) 82%, transparent);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+
+  .panel-strong {
+    background: color-mix(in srgb, var(--panel-strong) 86%, transparent);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+
+  html[data-theme="dark"] .panel {
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+  }
+
+  html[data-theme="dark"] .panel-strong {
+    background: color-mix(in srgb, var(--panel-strong) 90%, transparent);
+  }
+
+  .bento-card {
+    @apply panel rounded-[24px] p-5 md:p-6;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  }
+
+  .bento-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow);
+  }
+
+  .section-kicker {
+    @apply text-xs font-medium uppercase tracking-[0.24em];
+    color: var(--accent);
+  }
+
+  .button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition;
+    background: var(--accent);
+    color: white;
+    box-shadow: none;
+  }
+
+  html[data-theme="dark"] .button-primary {
+    color: white;
+  }
+
+  .button-primary:hover {
+    background: var(--accent-strong);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .button-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .button-ghost:hover {
+    border-color: var(--border-strong);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-semibold;
+    background: var(--panel-muted);
+    color: var(--text-soft);
+    border: 1px solid var(--border);
+  }
+
+  .input-shell {
+    @apply w-full rounded-lg border px-3.5 py-2.5 text-sm transition outline-none;
+    border-color: var(--border);
+    background: var(--input-bg);
+    color: var(--text);
+  }
+
+  .input-shell::placeholder {
+    color: var(--text-faint);
+  }
+
+  .input-shell:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  html[data-theme="dark"] .input-shell:focus {
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .hero-surface {
+    background-image: var(--hero);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hexagon-background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hexagon-background::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 100% 0%, var(--accent-soft), transparent 24%),
+      linear-gradient(180deg, transparent, var(--bg) 92%);
+    opacity: 0.55;
+  }
+
+  .hexagon-background__grid,
+  .hexagon-background__glow {
+    position: absolute;
+    inset: -64px;
+    width: calc(100% + 128px);
+    height: calc(100% + 128px);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .hexagon-background__grid {
+    stroke: var(--text-faint);
+    stroke-width: 1;
+    opacity: 0.055;
+  }
+
+  .hexagon-background__glow {
+    stroke: var(--accent);
+    stroke-width: 1.15;
+    opacity: 0;
+    filter: drop-shadow(0 0 12px var(--accent));
+    mask-image: radial-gradient(circle at var(--hex-x) var(--hex-y), #000 0 72px, transparent 180px);
+    transition: opacity 220ms ease;
+  }
+
+  .hexagon-background[data-active="true"] .hexagon-background__glow {
+    opacity: 0.38;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hexagon-background__glow {
+    display: none;
+  }
+}
