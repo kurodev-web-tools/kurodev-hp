@@ -12,7 +12,7 @@ const paths = {
   spark: "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"
 };
 
-export function Icon({ name, className = "h-4 w-4", stroke = 1.8 }) {
+export function Icon({ name, className = "h-4 w-4", stroke = 1.8, ...props }) {
   const path = paths[name] ?? paths.spark;
   const isStrokeIcon = ["sun", "moon", "arrow", "mail", "terminal", "menu", "close"].includes(name);
 
@@ -26,6 +26,7 @@ export function Icon({ name, className = "h-4 w-4", stroke = 1.8 }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
+      {...props}
     >
       <path d={path} />
     </svg>
