@@ -20,11 +20,10 @@ export function MobileNav() {
 
   useEffect(() => {
     const scrollRoot = document.querySelector("[data-scroll-root]");
-    const target = scrollRoot || window;
+    const targets = scrollRoot ? [window, scrollRoot] : [window];
 
     const getScrollY = () => {
-      if (scrollRoot) return scrollRoot.scrollTop;
-      return window.scrollY;
+      return Math.max(window.scrollY, scrollRoot?.scrollTop || 0);
     };
 
     const handleScroll = () => {
@@ -43,10 +42,14 @@ export function MobileNav() {
     };
 
     lastScrollY.current = getScrollY();
-    target.addEventListener("scroll", handleScroll, { passive: true });
+    targets.forEach((target) => {
+      target.addEventListener("scroll", handleScroll, { passive: true });
+    });
 
     return () => {
-      target.removeEventListener("scroll", handleScroll);
+      targets.forEach((target) => {
+        target.removeEventListener("scroll", handleScroll);
+      });
     };
   }, []);
 
