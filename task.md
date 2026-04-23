@@ -32,9 +32,12 @@
 - SEO公開前基礎強化を実装: root canonical 固定解除、ページ別 metadata/canonical、`robots`、`sitemap` を追加
 - `https://kuro-lab.com` で公開完了
 - Lighthouse 初回結果を確認し、favicon 軽量化と表示用 `brand-icon.png` 分離を実施
+- Lighthouse 再計測で Mobile Performance 81 -> 96 を確認し、結果要約を `docs/LIGHTHOUSE_REPORT.md` に追記
+- モバイルナビを下部 fixed navigation へ変更し、上部ヘッダーはブランド表示とテーマ切替に簡略化
 
 ### Next
-- Lighthouse 再確認: favicon / brand icon 変更をデプロイ後、Desktop と Mobile を再計測する
+- モバイル操作確認: 下部ナビの5ページ遷移、active表示、スクロール連動表示、Contactフォーム下部の重なりを確認する
+- Lighthouse 改善候補: Accessibility 100 を狙う場合は primary button contrast と heading order を修正する
 - 本番 Contact 確認: Cloudflare Pages 環境変数、Turnstile、Resend 送信、受信先到達を確認する
 - Cloudflare 運用設定: `/api/contact` の POST に rate limiting ルールを設定する
 - 本番公開確認: 5ページ導線、OG画像、favicon、`robots.txt`、`sitemap.xml`、security headers を確認する
