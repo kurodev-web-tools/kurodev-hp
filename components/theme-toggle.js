@@ -35,14 +35,14 @@ export function ThemeToggle() {
         name="moon"
         className="theme-toggle__icon h-5 w-5"
         data-icon="moon"
-        data-active={theme === "light"}
+        data-active={theme === "light" ? "true" : "false"}
         aria-hidden="true"
       />
       <Icon
         name="sun"
         className="theme-toggle__icon h-5 w-5"
         data-icon="sun"
-        data-active={theme === "dark"}
+        data-active={theme === "dark" ? "true" : "false"}
         aria-hidden="true"
       />
     </button>

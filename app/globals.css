@@ -289,6 +289,8 @@ textarea {
 
 .theme-toggle__icon {
   position: absolute;
+  inset: auto;
+  pointer-events: none;
   opacity: 0;
   transform: scale(0.72) rotate(-36deg);
   transition:
