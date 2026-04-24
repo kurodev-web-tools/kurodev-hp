@@ -32,8 +32,8 @@ export default function HomePage() {
               eyebrow="kurodev portal"
               title="kurodev Portal"
               body={[
-                "Web制作、運用改善、業務ツールの相談を、",
-                "要件整理から実装後の改善まで一続きで扱う入口です。"
+                "小規模サイト制作、公開後の改善、問い合わせ整理の相談を、",
+                "要件整理から実装後の調整まで一続きで扱う入口です。"
               ]}
             />
             <div className="mt-7 flex flex-wrap gap-3">
@@ -48,7 +48,7 @@ export default function HomePage() {
               <div>
                 <p className="section-kicker">current stance</p>
                 <p className="mt-4 max-w-xs text-sm leading-7 text-[var(--text-soft)]">
-                  要件を整理し、作って終わりにせず、公開後の更新や改善まで見通して組み立てます。
+                  目的、必要なページ、公開後の更新方法を先に整理し、無理なく運用できる形で組み立てます。
                 </p>
               </div>
               <div className="max-w-[240px] border-t border-[var(--border)] pt-4">
@@ -56,7 +56,7 @@ export default function HomePage() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Tag>Web制作</Tag>
                   <Tag>運用改善</Tag>
-                  <Tag>HP-portal</Tag>
+                  <Tag>業務整理</Tag>
                 </div>
               </div>
             </div>

@@ -9,9 +9,11 @@ const statusTone = {
   Planning: "text-violet-500"
 };
 
-export function ProjectCard({ project }) {
+export function ProjectCard({ project, headingLevel = "h2" }) {
   const summaryLines = Array.isArray(project.summary) ? project.summary : [project.summary];
   const hasProjectLink = project.href && project.href !== "#";
+  const detailItems = project.details || [];
+  const Heading = headingLevel;
 
   return (
     <BentoCard
@@ -30,7 +32,7 @@ export function ProjectCard({ project }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-faint)]">{project.category}</p>
-            <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--text)]">{project.title}</h3>
+            <Heading className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--text)]">{project.title}</Heading>
           </div>
           <span className={`text-xs font-semibold ${statusTone[project.status] ?? "text-[var(--accent)]"}`}>
             {project.status}
@@ -43,6 +45,17 @@ export function ProjectCard({ project }) {
             </span>
           ))}
         </p>
+        {detailItems.length > 0 ? (
+          <dl className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-[var(--text-soft)]">
+            {detailItems.map((item) => (
+              <div key={item} className="inline-flex max-w-full items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--panel-muted)] px-3 py-2">
+                <dt className="sr-only">実績の特徴</dt>
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" aria-hidden="true" />
+                <dd>{item}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
         <div className="mt-auto pt-5">
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
@@ -56,7 +69,7 @@ export function ProjectCard({ project }) {
               rel="noreferrer"
               className="mt-5 inline-flex rounded-md border border-[var(--border)] px-3 py-2 text-sm font-semibold text-[var(--accent)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
             >
-              Open project
+              {project.linkLabel || "詳しく見る"}
             </a>
           ) : null}
         </div>

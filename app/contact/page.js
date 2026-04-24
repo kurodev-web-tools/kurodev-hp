@@ -34,6 +34,21 @@ export default function ContactPage() {
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
         <div className="order-2 space-y-6 xl:order-1">
+          <BentoCard>
+            <p className="section-kicker">before contact</p>
+            <h2 className="mt-3 text-lg font-semibold text-[var(--text)]">決まっていない状態でも相談できます。</h2>
+            <div className="mt-4 grid gap-2.5 text-sm leading-6 text-[var(--text-soft)]">
+              <p className="rounded-lg border border-[var(--border)] bg-[var(--panel-muted)] px-3.5 py-2.5">
+                予算や公開時期は未定でも大丈夫です。
+              </p>
+              <p className="rounded-lg border border-[var(--border)] bg-[var(--panel-muted)] px-3.5 py-2.5">
+                現状、目的、困っていることを書ける範囲で送れます。
+              </p>
+              <p className="rounded-lg border border-[var(--border)] bg-[var(--panel-muted)] px-3.5 py-2.5">
+                内容を確認して、次に必要な整理から返信します。
+              </p>
+            </div>
+          </BentoCard>
           <ContactForm />
           <BentoCard>
             <p className="section-kicker">相談しやすい内容</p>

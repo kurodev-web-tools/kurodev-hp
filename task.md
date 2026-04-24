@@ -34,10 +34,20 @@
 - Lighthouse 初回結果を確認し、favicon 軽量化と表示用 `brand-icon.png` 分離を実施
 - Lighthouse 再計測で Mobile Performance 81 -> 96 を確認し、結果要約を `docs/LIGHTHOUSE_REPORT.md` に追記
 - モバイルナビを下部 fixed navigation へ変更し、上部ヘッダーはブランド表示とテーマ切替に簡略化
+- A11y基礎修正: primary button contrast と Home の heading order を修正
+- Home ヒーローを小規模サイト制作、公開後改善、問い合わせ整理が伝わる文言へ調整
+- `HP-portal` 実績カードに成果・運用価値の短い特徴と日本語リンク文言を追加
+- Contact に予算未定、相談時に書く内容、返信目安の短い案内を追加
+- モバイル下部ナビとフォーム末尾の重なりを避けるため、スクロール領域の下余白を調整
+- 検証: `node node_modules/next/dist/bin/next lint` 成功、`node node_modules/next/dist/bin/next build` 成功
+- 追加コメント対応: `HP-portal` の特徴表示を縦リスト化し、`104 templates` を記載
+- 追加コメント対応: Contact の `before contact` 3項目をデスクトップでも縦積みに調整
 
 ### Next
+#### UI Improvement Batch
 - モバイル操作確認: 下部ナビの5ページ遷移、active表示、スクロール連動表示、Contactフォーム下部の重なりを確認する
-- Lighthouse 改善候補: Accessibility 100 を狙う場合は primary button contrast と heading order を修正する
+
+#### Production Operations
 - 本番 Contact 確認: Cloudflare Pages 環境変数、Turnstile、Resend 送信、受信先到達を確認する
 - Cloudflare 運用設定: `/api/contact` の POST に rate limiting ルールを設定する
 - 本番公開確認: 5ページ導線、OG画像、favicon、`robots.txt`、`sitemap.xml`、security headers を確認する
