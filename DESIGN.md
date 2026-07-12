@@ -86,6 +86,7 @@ Contrast requirements:
 | `label` | 13px | 13px | 1.4 | 650 |
 
 Hero headlines use two or three lines at most. Accent-colored words are semantic emphasis, not gradients.
+Japanese section headings keep semantic line groups through tablet widths. At 1024px and above, those groups may combine into one or two balanced lines when the available layout width permits.
 
 ### Spacing and geometry
 
@@ -103,11 +104,10 @@ Hero headlines use two or three lines at most. Accent-colored words are semantic
 The canvas uses layered light rather than decorative blobs:
 
 1. deep vertical navy gradient;
-2. very low-opacity 48px studio grid;
-3. restrained cyan radial light behind the main product screen;
-4. top and section dividers at subtle-border opacity.
+2. restrained cyan radial light behind the main product screen;
+3. top and section dividers at subtle-border opacity.
 
-Never place the grid above text or screenshots. It must disappear in forced-colors mode.
+Do not use a repeated full-page grid or replace it with another decorative pattern. The background stays quiet so typography and real product screens remain the focal objects. Decorative background light must disappear in forced-colors mode.
 
 ## 3. Layout grammar
 
