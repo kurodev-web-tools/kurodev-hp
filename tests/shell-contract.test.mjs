@@ -60,6 +60,8 @@ test("document language and planned navigation routes resolve without placeholde
   const nextConfig = await readFile(new URL("../next.config.mjs", import.meta.url), "utf8");
   const japaneseTools = new URL("../app/tools/page.js", import.meta.url);
   const englishTools = new URL("../app/en/tools/page.js", import.meta.url);
+  const japaneseCreatorSite = new URL("../app/creator-site/page.js", import.meta.url);
+  const englishCreatorSite = new URL("../app/en/creator-site/page.js", import.meta.url);
 
   // When: English language handling and planned route destinations are inspected.
   // Then: /en receives English document semantics and future hubs do not 404.
@@ -67,7 +69,9 @@ test("document language and planned navigation routes resolve without placeholde
   assert.match(layout, /lang=\{locale\}/);
   assert.equal(existsSync(japaneseTools), true, "Japanese Tools hub must replace its temporary redirect");
   assert.equal(existsSync(englishTools), true, "English Tools hub must replace its temporary redirect");
-  ["/creator-site", "/works", "/guide", "/about"].forEach((route) => {
+  assert.equal(existsSync(japaneseCreatorSite), true, "Japanese Creator Site page must replace its temporary redirect");
+  assert.equal(existsSync(englishCreatorSite), true, "English Creator Site page must replace its temporary redirect");
+  ["/works", "/guide", "/about"].forEach((route) => {
     assert.match(nextConfig, new RegExp(route.replaceAll("/", "\\/")));
   });
 });
