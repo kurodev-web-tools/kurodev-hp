@@ -5,6 +5,7 @@ import test from "node:test";
 
 const headerUrl = new URL("../components/layout/site-header.js", import.meta.url);
 const footerUrl = new URL("../components/layout/site-footer.js", import.meta.url);
+const themeToggleUrl = new URL("../components/theme-toggle.js", import.meta.url);
 
 test("marketing shell replaces the app sidebar and fixed bottom navigation", async () => {
   // Given: the shared shell and localized layout components.
@@ -34,6 +35,22 @@ test("mobile header exposes an accessible menu and explicit language link", asyn
   assert.match(header, /LanguageSwitch/);
 });
 
+test("theme changes preserve product media on a stable compositing layer", async () => {
+  // Given: palette transitions repaint ProductMedia surfaces while their images remain mounted.
+  const componentStyles = await readFile(new URL("../app/styles/components.css", import.meta.url), "utf8");
+
+  // Then: product images keep a stable GPU layer instead of disappearing until a reload.
+  assert.match(componentStyles, /\.product-media img\s*\{[^}]*transform:\s*translateZ\(0\);/);
+});
+
+test("theme changes invalidate the product media layer on the next frame", async () => {
+  const themeToggle = await readFile(themeToggleUrl, "utf8");
+
+  assert.match(themeToggle, /requestAnimationFrame/);
+  assert.match(themeToggle, /querySelectorAll\("\.product-media img"\)/);
+  assert.match(themeToggle, /translateZ/);
+});
+
 test("document language and planned navigation routes resolve without placeholder pages", async () => {
   // Given: locale-aware request handling and temporary section redirects.
   const middlewareUrl = new URL("../middleware.js", import.meta.url);
@@ -41,12 +58,16 @@ test("document language and planned navigation routes resolve without placeholde
   const middleware = await readFile(middlewareUrl, "utf8");
   const layout = await readFile(new URL("../app/layout.js", import.meta.url), "utf8");
   const nextConfig = await readFile(new URL("../next.config.mjs", import.meta.url), "utf8");
+  const japaneseTools = new URL("../app/tools/page.js", import.meta.url);
+  const englishTools = new URL("../app/en/tools/page.js", import.meta.url);
 
   // When: English language handling and planned route destinations are inspected.
   // Then: /en receives English document semantics and future hubs do not 404.
   assert.match(middleware, /x-kurodev-locale/);
   assert.match(layout, /lang=\{locale\}/);
-  ["/tools", "/creator-site", "/works", "/guide", "/about", "/en/tools"].forEach((route) => {
+  assert.equal(existsSync(japaneseTools), true, "Japanese Tools hub must replace its temporary redirect");
+  assert.equal(existsSync(englishTools), true, "English Tools hub must replace its temporary redirect");
+  ["/creator-site", "/works", "/guide", "/about"].forEach((route) => {
     assert.match(nextConfig, new RegExp(route.replaceAll("/", "\\/")));
   });
 });

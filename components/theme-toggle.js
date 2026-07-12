@@ -16,6 +16,15 @@ function getServerThemeSnapshot() {
   return "light";
 }
 
+function refreshProductMediaLayers(theme) {
+  window.requestAnimationFrame(() => {
+    const depth = theme === "dark" ? "0.002px" : "0.001px";
+    document.querySelectorAll(".product-media img").forEach((image) => {
+      image.style.transform = `translateZ(${depth})`;
+    });
+  });
+}
+
 export function ThemeToggle() {
   const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
 
@@ -24,6 +33,7 @@ export function ThemeToggle() {
     document.documentElement.dataset.theme = nextTheme;
     window.localStorage.setItem("kurodev-theme", nextTheme);
     window.dispatchEvent(new Event("kurodev-theme-change"));
+    refreshProductMediaLayers(nextTheme);
   }
 
   return (

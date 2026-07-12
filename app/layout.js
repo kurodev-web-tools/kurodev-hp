@@ -3,6 +3,7 @@ import "./styles/shell.css";
 import "./styles/components.css";
 import "./styles/home-hero.css";
 import "./styles/home-sections.css";
+import "./styles/tools-page.css";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { SiteShell } from "@/components/site-shell";
