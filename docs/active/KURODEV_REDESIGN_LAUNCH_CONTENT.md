@@ -36,9 +36,12 @@ The user previously described four current tools, but the fourth available item 
 
 - Confirm the fourth tool record: public name, Japanese/English copy, status, URL, guide URL, and publication-safe screen.
 - Confirm production destinations for the three verified tool actions.
-- Approve creator-site service scope and the canonical HP-portal pricing link before pricing-related copy ships.
 - Approve public identity details for About and all legal texts before those routes launch.
 - Confirm which client work can be named or must be anonymized.
+
+## Approved owner content
+
+- Approved creator-site service scope on 2026-07-12: `Template` uses HP-portal and links to the canonical plan page at `https://templates.kuro-lab.com/plans`; kurodev does not copy numeric prices. `Custom` remains `個別見積 / Custom quote` with a Contact action.
 
 ## Hard exclusions
 

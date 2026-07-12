@@ -174,6 +174,12 @@ QA viewports are 375, 768, 1024, and 1280px. Also spot-check 390 and 1366px wher
 - Optional short kicker, heading, short body, and optional action.
 - It is open layout by default and must not create a card wrapper by itself.
 
+### `DemonstrationPreview`
+
+- A clearly labeled fictional creator-site composition using sample identity and sample content only.
+- Uses one framed site surface, an identity block, restrained content bars, and a short section index; it never presents client work or measured outcomes.
+- States: dark, light, mobile single-column, desktop paired examples, forced-colors, and reduced motion.
+
 ### `SiteFooter`
 
 - Product, creator-site, guide, contact, and legal groups; locale-aware paths; no placeholder links.
