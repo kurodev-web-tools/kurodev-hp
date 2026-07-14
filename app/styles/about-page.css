@@ -1,0 +1,215 @@
+.about-page {
+  word-break: auto-phrase;
+}
+
+.about-hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-16) var(--space-20);
+}
+
+.about-hero::before {
+  position: absolute;
+  inset: 8% 0 auto 44%;
+  height: 76%;
+  background: radial-gradient(circle, var(--studio-light), transparent 68%);
+  content: "";
+  filter: blur(var(--atmosphere-blur));
+  pointer-events: none;
+}
+
+.about-hero__layout {
+  position: relative;
+  z-index: 1;
+}
+
+.about-hero__layout > p:first-child,
+.about-purpose__layout > div:first-child > p,
+.about-focus__layout > div > p,
+.about-section-intro > p,
+.about-scope__layout > div > p,
+.about-flagship__layout > div > p {
+  margin: 0;
+  color: var(--action);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.about-hero h1 {
+  max-width: 28ch;
+  margin: var(--space-4) 0 0;
+  font-size: clamp(36px, 5.5vw, 56px);
+  line-height: 1.18;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.about-hero h1 span {
+  display: inline;
+}
+
+@media (max-width: 480px) {
+  .about-hero h1 {
+    font-size: 30px;
+  }
+}
+
+.about-hero__layout > p:last-child {
+  max-width: 58ch;
+  margin: var(--space-6) 0 0;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.about-purpose__layout,
+.about-focus__layout,
+.about-scope__layout,
+.about-flagship__layout {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.about-purpose h2,
+.about-focus h2,
+.about-section-intro h2,
+.about-scope h2,
+.about-flagship h2 {
+  max-width: 22ch;
+  margin: var(--space-3) 0 0;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.about-purpose__layout > div:last-child > p,
+.about-focus__layout > p,
+.about-scope__layout > div > span,
+.about-flagship__layout > div > span {
+  display: block;
+  max-width: 58ch;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.about-purpose__note {
+  margin-top: var(--space-6) !important;
+  border-left: 2px solid var(--action);
+  padding-left: var(--space-4);
+}
+
+.about-focus,
+.about-flagship {
+  background: color-mix(in srgb, var(--surface-muted) 48%, transparent);
+}
+
+.about-section-intro {
+  max-width: 68ch;
+}
+
+.about-process ol,
+.about-scope ul {
+  margin: var(--space-12) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-process li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  padding-block: var(--space-6);
+}
+
+.about-process li:last-child {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.about-process li > span {
+  color: var(--action);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.about-process h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.about-process li p {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.about-scope ul {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.about-scope li {
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-4) 0;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.about-scope li::before {
+  margin-right: var(--space-3);
+  color: var(--action);
+  content: "—";
+}
+
+.about-flagship__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .about-hero {
+    padding-block: var(--space-20) var(--space-28);
+  }
+
+  .about-process ol {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-process li:nth-child(2) {
+    border-top: 1px solid var(--border-subtle);
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-purpose__layout,
+  .about-focus__layout,
+  .about-scope__layout,
+  .about-flagship__layout {
+    grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
+    align-items: start;
+    gap: var(--space-12);
+  }
+
+  .about-process ol {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .about-process li {
+    border-bottom: 1px solid var(--border-subtle);
+  }
+}
+
+@media (forced-colors: active) {
+  .about-hero::before {
+    display: none;
+  }
+}

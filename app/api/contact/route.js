@@ -1,9 +1,15 @@
 export const runtime = "edge";
 
+import {
+  contactCategoryLabel,
+  isContactPayloadTooLarge,
+  normalizeContactPayload,
+  validateContactInput
+} from "@/lib/contact-validation.mjs";
+import { readBoundedContactJson } from "@/lib/contact-request.mjs";
+
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const RESEND_EMAIL_URL = "https://api.resend.com/emails";
-const CATEGORY_VALUES = new Set(["新規制作", "既存サイト改善", "業務ツール相談", "運用整理"]);
-const MAX_BODY_BYTES = 16 * 1024;
 const TURNSTILE_TIMEOUT_MS = 5000;
 const RESEND_TIMEOUT_MS = 10000;
 
@@ -13,22 +19,6 @@ function jsonResponse(body, status = 200) {
 
 function logContactError(code, details = {}) {
   console.error("[contact-api]", code, details);
-}
-
-function cleanText(value, maxLength) {
-  return String(value || "").trim().slice(0, maxLength);
-}
-
-function isBodyTooLarge(request) {
-  const contentLength = request.headers.get("content-length");
-  if (!contentLength) return false;
-
-  const parsedLength = Number(contentLength);
-  return Number.isFinite(parsedLength) && parsedLength > MAX_BODY_BYTES;
-}
-
-function isParsedBodyTooLarge(body) {
-  return new TextEncoder().encode(JSON.stringify(body)).length > MAX_BODY_BYTES;
 }
 
 async function fetchWithTimeout(url, options, timeoutMs) {
@@ -45,21 +35,6 @@ async function fetchWithTimeout(url, options, timeoutMs) {
   }
 }
 
-function isEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function isValidUrl(value) {
-  if (!value) return true;
-
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -70,10 +45,11 @@ function escapeHtml(value) {
 }
 
 function formatContactEmail({ name, email, category, referenceUrl, message }) {
+  const categoryLabel = contactCategoryLabel(category, "ja");
   const rows = [
     ["お名前", name],
     ["メール", email],
-    ["相談カテゴリ", category],
+    ["相談カテゴリ", categoryLabel],
     ["参考URL", referenceUrl || "なし"]
   ];
 
@@ -165,7 +141,7 @@ async function sendContactEmail(payload) {
         body: JSON.stringify({
           from,
           to: [to],
-          subject: `制作相談: ${payload.category}`,
+          subject: `制作相談: ${contactCategoryLabel(payload.category, "ja")}`,
           reply_to: payload.email,
           text,
           html,
@@ -189,42 +165,25 @@ async function sendContactEmail(payload) {
 export async function POST(request) {
   let body;
 
-  if (isBodyTooLarge(request)) {
-    logContactError("PAYLOAD_TOO_LARGE", { phase: "content-length" });
-    return jsonResponse({ ok: false, error: "PAYLOAD_TOO_LARGE" }, 413);
-  }
-
   try {
-    body = await request.json();
-  } catch {
-    logContactError("INVALID_JSON");
-    return jsonResponse({ ok: false, error: "INVALID_JSON" }, 400);
+    body = await readBoundedContactJson(request);
+  } catch (error) {
+    const code = error?.code === "PAYLOAD_TOO_LARGE" ? "PAYLOAD_TOO_LARGE" : "INVALID_JSON";
+    logContactError(code, error?.phase ? { phase: error.phase } : {});
+    return jsonResponse({ ok: false, error: code }, code === "PAYLOAD_TOO_LARGE" ? 413 : 400);
   }
 
-  if (isParsedBodyTooLarge(body)) {
+  if (isContactPayloadTooLarge(body)) {
     logContactError("PAYLOAD_TOO_LARGE", { phase: "parsed-body" });
     return jsonResponse({ ok: false, error: "PAYLOAD_TOO_LARGE" }, 413);
   }
 
-  const payload = {
-    name: cleanText(body.name, 80),
-    email: cleanText(body.email, 120),
-    category: cleanText(body.category, 40),
-    referenceUrl: cleanText(body.referenceUrl, 300),
-    message: cleanText(body.message, 3000)
-  };
-
-  if (
-    !payload.name ||
-    !isEmail(payload.email) ||
-    !CATEGORY_VALUES.has(payload.category) ||
-    payload.message.length < 20 ||
-    !isValidUrl(payload.referenceUrl)
-  ) {
+  const payload = normalizeContactPayload(body);
+  if (Object.keys(validateContactInput(payload)).length > 0) {
     return jsonResponse({ ok: false, error: "INVALID_INPUT" }, 400);
   }
 
-  const turnstileToken = cleanText(body.turnstileToken, 2048);
+  const turnstileToken = String(body?.turnstileToken ?? "").trim().slice(0, 2048);
   const turnstileOk = await verifyTurnstile(turnstileToken, request);
   if (!turnstileOk) {
     return jsonResponse({ ok: false, error: "TURNSTILE_FAILED" }, 400);

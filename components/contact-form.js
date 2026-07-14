@@ -1,12 +1,17 @@
 "use client";
 
 import Script from "next/script";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import {
+  CONTACT_CATEGORIES,
+  firstInvalidContactField,
+  validateContactInput
+} from "@/lib/contact-validation.mjs";
 
 const initialState = {
   name: "",
   email: "",
-  category: "新規制作",
+  category: "",
   referenceUrl: "",
   message: ""
 };
@@ -14,65 +19,58 @@ const initialState = {
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 function resetTurnstile() {
-  if (typeof window !== "undefined" && window.turnstile) {
-    window.turnstile.reset();
-  }
+  if (typeof window !== "undefined" && window.turnstile) window.turnstile.reset();
 }
 
-export function ContactForm() {
+function describedBy(field, errors, guidanceId) {
+  return [guidanceId, errors[field] ? `${field}-error` : null].filter(Boolean).join(" ") || undefined;
+}
+
+export function ContactForm({ locale, copy }) {
   const [values, setValues] = useState(initialState);
   const [status, setStatus] = useState("idle");
   const [errors, setErrors] = useState({});
-
-  function validate() {
-    const nextErrors = {};
-
-    if (!values.name.trim()) nextErrors.name = "お名前を入力してください。";
-    if (!values.email.includes("@")) nextErrors.email = "メールアドレスの形式を確認してください。";
-    if (values.referenceUrl.trim()) {
-      try {
-        const url = new URL(values.referenceUrl);
-        if (!["http:", "https:"].includes(url.protocol)) nextErrors.referenceUrl = "URLは http または https で入力してください。";
-      } catch {
-        nextErrors.referenceUrl = "参考URLの形式を確認してください。";
-      }
-    }
-    if (values.message.trim().length < 20) nextErrors.message = "相談内容は20文字以上で入力してください。";
-
-    return nextErrors;
-  }
+  const fieldRefs = useRef({});
+  const turnstileRef = useRef(null);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setValues((current) => ({ ...current, [name]: value }));
+    setErrors((current) => {
+      if (!current[name]) return current;
+      const next = { ...current };
+      delete next[name];
+      return next;
+    });
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const nextErrors = validate();
+    const nextErrors = validateContactInput(values, locale);
     setErrors(nextErrors);
-    setStatus("idle");
 
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      setStatus("invalid");
+      const firstField = firstInvalidContactField(nextErrors);
+      requestAnimationFrame(() => fieldRefs.current[firstField]?.focus());
+      return;
+    }
 
     const formData = new FormData(event.currentTarget);
-    const turnstileToken = String(formData.get("cf-turnstile-response") || "");
-
+    const turnstileToken = String(formData.get("cf-turnstile-response") ?? "");
     if (turnstileSiteKey && !turnstileToken) {
-      setErrors({ turnstile: "認証を完了してから送信してください。" });
+      setErrors({ turnstile: copy.turnstile });
+      setStatus("turnstile");
+      requestAnimationFrame(() => turnstileRef.current?.focus());
       return;
     }
 
     setStatus("sending");
-
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...values,
-          turnstileToken
-        })
+        body: JSON.stringify({ ...values, turnstileToken })
       });
 
       if (!response.ok) {
@@ -82,6 +80,7 @@ export function ContactForm() {
       }
 
       setValues(initialState);
+      setErrors({});
       setStatus("success");
       resetTurnstile();
     } catch {
@@ -93,83 +92,62 @@ export function ContactForm() {
   return (
     <>
       {turnstileSiteKey ? <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" async defer /> : null}
-      <form onSubmit={handleSubmit} className="bento-card">
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="space-y-2">
-            <span className="text-sm font-medium text-[var(--text)]">お名前</span>
-            <input name="name" value={values.name} onChange={handleChange} placeholder="kuroe" className="input-shell" />
-            {errors.name ? <p className="text-sm text-rose-500">{errors.name}</p> : null}
-          </label>
-          <label className="space-y-2">
-            <span className="text-sm font-medium text-[var(--text)]">メールアドレス</span>
-            <input name="email" value={values.email} onChange={handleChange} placeholder="name@example.com" className="input-shell" />
-            {errors.email ? <p className="text-sm text-rose-500">{errors.email}</p> : null}
-          </label>
+      <form className="contact-form" onSubmit={handleSubmit} noValidate aria-busy={status === "sending"}>
+        <div className="contact-form__field-grid">
+          <div className="contact-form__field">
+            <label htmlFor="contact-name">{copy.labels.name}<span>{copy.required}</span></label>
+            <input ref={(node) => { fieldRefs.current.name = node; }} id="contact-name" name="name" value={values.name} onChange={handleChange} placeholder={copy.placeholders.name} autoComplete="name" required maxLength={80} aria-invalid={Boolean(errors.name)} aria-describedby={describedBy("name", errors)} />
+            {errors.name ? <p id="name-error" className="contact-form__error">{errors.name}</p> : null}
+          </div>
+
+          <div className="contact-form__field">
+            <label htmlFor="contact-email">{copy.labels.email}<span>{copy.required}</span></label>
+            <input ref={(node) => { fieldRefs.current.email = node; }} id="contact-email" name="email" type="email" value={values.email} onChange={handleChange} placeholder={copy.placeholders.email} autoComplete="email" required maxLength={120} aria-invalid={Boolean(errors.email)} aria-describedby={describedBy("email", errors)} />
+            {errors.email ? <p id="email-error" className="contact-form__error">{errors.email}</p> : null}
+          </div>
         </div>
 
-        <label className="mt-4 block space-y-2">
-          <span className="text-sm font-medium text-[var(--text)]">相談カテゴリ</span>
-          <select name="category" value={values.category} onChange={handleChange} className="input-shell">
-            <option>新規制作</option>
-            <option>既存サイト改善</option>
-            <option>業務ツール相談</option>
-            <option>運用整理</option>
+        <div className="contact-form__field">
+          <label htmlFor="contact-category">{copy.labels.category}<span>{copy.required}</span></label>
+          <select ref={(node) => { fieldRefs.current.category = node; }} id="contact-category" name="category" value={values.category} onChange={handleChange} required aria-invalid={Boolean(errors.category)} aria-describedby={describedBy("category", errors)}>
+            <option value="" disabled>{copy.placeholders.category}</option>
+            {CONTACT_CATEGORIES.map((category) => <option key={category.id} value={category.id}>{category.label[locale]}</option>)}
           </select>
-        </label>
+          {errors.category ? <p id="category-error" className="contact-form__error">{errors.category}</p> : null}
+        </div>
 
-        <label className="mt-4 block space-y-2">
-          <span className="text-sm font-medium text-[var(--text)]">参考URL</span>
-          <input
-            name="referenceUrl"
-            value={values.referenceUrl}
-            onChange={handleChange}
-            placeholder="https://example.com"
-            className="input-shell"
-          />
-          {errors.referenceUrl ? <p className="text-sm text-rose-500">{errors.referenceUrl}</p> : null}
-        </label>
+        <div className="contact-form__field">
+          <label htmlFor="contact-reference-url">{copy.labels.referenceUrl}<span className="contact-form__optional">{copy.optional}</span></label>
+          <input ref={(node) => { fieldRefs.current.referenceUrl = node; }} id="contact-reference-url" name="referenceUrl" type="url" value={values.referenceUrl} onChange={handleChange} placeholder={copy.placeholders.referenceUrl} maxLength={300} aria-invalid={Boolean(errors.referenceUrl)} aria-describedby={describedBy("referenceUrl", errors)} />
+          {errors.referenceUrl ? <p id="referenceUrl-error" className="contact-form__error">{errors.referenceUrl}</p> : null}
+        </div>
 
-        <label className="mt-4 block space-y-2">
-          <span className="text-sm font-medium text-[var(--text)]">相談内容</span>
-          <textarea
-            name="message"
-            value={values.message}
-            onChange={handleChange}
-            placeholder="現状、相談したいこと、急ぎ度が分かる範囲で大丈夫です。"
-            rows={6}
-            className="input-shell resize-none"
-          />
-          {errors.message ? <p className="text-sm text-rose-500">{errors.message}</p> : null}
-        </label>
+        <div className="contact-form__field">
+          <label htmlFor="contact-message">{copy.labels.message}<span>{copy.required}</span></label>
+          <p id="message-guidance" className="contact-form__guidance">{copy.messageGuidance}</p>
+          <textarea ref={(node) => { fieldRefs.current.message = node; }} id="contact-message" name="message" value={values.message} onChange={handleChange} placeholder={copy.placeholders.message} rows={7} required maxLength={3000} aria-invalid={Boolean(errors.message)} aria-describedby={describedBy("message", errors, "message-guidance")} />
+          {errors.message ? <p id="message-error" className="contact-form__error">{errors.message}</p> : null}
+        </div>
 
         {turnstileSiteKey ? (
-          <div className="mt-5">
+          <div ref={turnstileRef} className="contact-form__turnstile" tabIndex={-1} aria-invalid={Boolean(errors.turnstile)} aria-describedby={errors.turnstile ? "turnstile-error" : undefined}>
             <div className="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto" />
-            {errors.turnstile ? <p className="mt-2 text-sm text-rose-500">{errors.turnstile}</p> : null}
+            {errors.turnstile ? <p id="turnstile-error" className="contact-form__error">{errors.turnstile}</p> : null}
           </div>
         ) : null}
 
-        <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <p className="text-sm leading-6 text-[var(--text-soft)]">
-            <span className="block">細部が未定でも、分かる範囲で送信できます。</span>
-            <span className="block">確認後、整理が必要な点を含めてメールで返信します。</span>
-          </p>
-          <button type="submit" className="button-primary border-0 disabled:cursor-not-allowed disabled:opacity-60" disabled={status === "sending"}>
-            {status === "sending" ? "送信中..." : "送信する"}
-          </button>
+        <div className="contact-form__actions">
+          <div className="contact-form__privacy">
+            <span className="contact-form__privacy-unavailable" role="link" aria-disabled="true">{copy.privacyUnavailable}</span>
+            <small>{copy.privacyPurpose}</small>
+          </div>
+          <button type="submit" disabled={status === "sending"}>{status === "sending" ? copy.sending : copy.submit}</button>
         </div>
 
-        {status === "success" ? (
-          <div className="mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-500">
-            送信しました。内容を確認して返信します。
-          </div>
-        ) : null}
-
-        {status === "error" ? (
-          <div className="mt-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-500">
-            送信に失敗しました。時間を置いて再度お試しください。
-          </div>
-        ) : null}
+        <div className={`contact-form__status contact-form__status--${status}`} role={status === "error" ? "alert" : "status"} aria-live={status === "error" ? "assertive" : "polite"} aria-atomic="true">
+          {copy.status[status]}
+          {status === "error" ? <p className="contact-form__fallback">{copy.fallback} <a href="mailto:contact@kuro-lab.com">contact@kuro-lab.com</a></p> : null}
+        </div>
       </form>
     </>
   );

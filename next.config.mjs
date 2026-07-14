@@ -4,10 +4,7 @@ const nextConfig = {
   async redirects() {
     return [
       { source: "/tool", destination: "/tools", permanent: true },
-      { source: "/web", destination: "/works", permanent: true },
-      { source: "/about", destination: "/#about", permanent: false },
-      { source: "/en/about", destination: "/en#about", permanent: false },
-      { source: "/en/contact", destination: "/contact", permanent: false }
+      { source: "/web", destination: "/works", permanent: true }
     ];
   },
   async headers() {
