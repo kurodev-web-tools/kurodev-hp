@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SectionIntro } from "@/components/ui/section-intro";
 
 export function ToolGettingStarted({ locale, copy, guides }) {
@@ -12,11 +13,13 @@ export function ToolGettingStarted({ locale, copy, guides }) {
         <ol className="tool-getting-started__list">
           {recommendations.map((guide, index) => (
             <li key={guide.id}>
-              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <strong>{guide[locale].title}</strong>
-                <p>{guide[locale].description}</p>
-              </div>
+              <Link href={guide[locale].href}>
+                <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{guide[locale].title}</strong>
+                  <p>{guide[locale].description}</p>
+                </div>
+              </Link>
             </li>
           ))}
         </ol>
