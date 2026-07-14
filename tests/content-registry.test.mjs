@@ -22,6 +22,11 @@ test("Home exposes exactly the three publication-verified tools in stable order"
     ["thumbnail-editor", "https://streamer-tools.kuro-lab.com/tools/thumbnail-editor/"],
     ["sns-split", "https://streamer-tools.kuro-lab.com/tools/sns-split-image-maker/"]
   ]);
+  const expectedGuideDestinations = new Map([
+    ["schedule-calendar", "/guide/schedule-calendar/getting-started"],
+    ["thumbnail-editor", "/guide/thumbnail-editor/getting-started"],
+    ["sns-split", "/guide/sns-split-image-maker/getting-started"]
+  ]);
   available.forEach((tool) => {
     assert.equal(tool.href, expectedDestinations.get(tool.id));
     assert.equal(tool.category, "stream-workflow");
@@ -31,7 +36,7 @@ test("Home exposes exactly the three publication-verified tools in stable order"
     assert.equal(tool.imageHeight, 1080);
     assert.equal(tool.ja.categoryLabel, "配信ワークフロー");
     assert.equal(tool.en.categoryLabel, "Stream Workflow");
-    assert.equal(Object.hasOwn(tool, "guideHref"), false, "Guide actions remain blocked until Task 10");
+    assert.equal(tool.guideHref, expectedGuideDestinations.get(tool.id));
   });
 });
 

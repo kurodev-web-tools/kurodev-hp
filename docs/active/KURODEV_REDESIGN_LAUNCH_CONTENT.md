@@ -83,6 +83,30 @@ These inputs authorized preparation and verification of the changed snapshot. Th
 
 This approval authorizes only the exact v11 governed public snapshot. Commit, push, PR, merge, deployment, and production activation remain separate explicit authorization gates.
 
+## Approved Task 10 Guide publication packet
+
+Approved by the repository owner on 2026-07-14:
+
+- Packet ID: `e96b2390dd636c48e3bc59889ab1c1988c21de67fc272c94479ddc4e9d2eee74`
+- Governed entries: 13 Japanese and English Guide sources plus 6 Guide images reproduced in `content/guides/publication-candidate.json`
+- Image allowlist: exact SHA-256 values reproduced in `content/guides/approved-images.json`
+
+> 私はリポジトリ所有者として、Packet ID e96b2390dd636c48e3bc59889ab1c1988c21de67fc272c94479ddc4e9d2eee74 に固定されたTask 10の13件の日本語・英語Guide本文、front matter、6件のGuide画像、画像alt textを公開利用向けに承認します。Comment Translatorは一般公開前のstatus guideとしてのみ承認し、製品起動操作は承認しません。未確認の第4ツール、自動Webサイト同期、公開Notion複製、未記載の機能・宛先・実績は承認しません。この承認はcommit、push、PR作成、merge、deployの承認を含みません。
+
+This approval authorizes only the manifest-bound Guide copy and media. It does not authorize an enabled Comment Translator action or any commit, push, PR, merge, or deployment operation.
+
+### Approved Task 10 replacement packet
+
+The repository owner approved the following replacement packet on 2026-07-14. It supersedes the previous Task 10 packet only for the exact Thumbnail Editor image bytes and the corresponding Japanese and English front matter dimensions; the 13 Guide sources, 6-image set, and existing image alt text otherwise carry forward unchanged.
+
+- Packet ID: `d6c09046449ac394e702af782465099784449c41fe69c0baa6dc0cb6cde2a8b4`
+- Thumbnail Editor image: sample announcement canvas verified in the in-app Browser, `1774 x 930` PNG
+- The `公開中ツール 6個` display in the separately approved overview image is owner-managed follow-up work and is not a Task 10 blocker.
+
+> 私はリポジトリ所有者として、Packet ID d6c09046449ac394e702af782465099784449c41fe69c0baa6dc0cb6cde2a8b4 に固定されたTask 10 Guide publication packetを公開利用向けに承認します。このpacketは従来の13件のGuide本文と6件のGuide画像を引き継ぎ、Thumbnail Editorの日英front matter画像寸法を1774×930へ更新し、thumbnail-editor.pngをin-app Browserで確認したサンプル告知画像入り画面へ置き換えます。既存の画像alt textは変更しません。「公開中ツール 6個」の表示は私が別途修正するため、今回のTask 10進行を妨げないものとします。この承認はcommit、push、PR作成、merge、deployの承認を含みません。
+
+This replacement approval does not authorize an enabled Comment Translator product action, publication of the unverified fourth tool, automatic website synchronization, a public Notion duplicate, unlisted behavior, or any commit, push, PR, merge, or deployment operation.
+
 ## Hard exclusions
 
 - No automatic Schedule Calendar to creator-website synchronization claim.

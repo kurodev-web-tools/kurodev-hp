@@ -1,0 +1,309 @@
+.guide-index-page,
+.guide-article-page {
+  word-break: auto-phrase;
+}
+
+.guide-index-hero {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-block: var(--space-16);
+}
+
+.guide-index-hero__content {
+  max-width: 880px;
+}
+
+.guide-index-hero__eyebrow {
+  margin: 0 0 var(--space-4);
+  color: var(--action);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.guide-index-hero h1 {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.2;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.guide-index-hero__content > p:not(.guide-index-hero__eyebrow, .guide-availability-notice) {
+  max-width: 58ch;
+  margin: var(--space-6) 0 0;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.guide-availability-notice {
+  margin: var(--space-6) 0 0;
+  border-left: 2px solid var(--action);
+  background: var(--surface-muted);
+  padding: var(--space-4);
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.guide-index-groups {
+  display: grid;
+  gap: var(--space-20);
+  padding-block: var(--space-16);
+}
+
+.guide-index-group h2 {
+  margin: 0 0 var(--space-6);
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+}
+
+.guide-index-list {
+  display: grid;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.guide-index-item {
+  display: grid;
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-block: var(--space-8);
+}
+
+.guide-index-item__meta,
+.guide-article-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.guide-index-item h3 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+.guide-index-item h3 a:hover,
+.guide-index-item__link:hover,
+.guide-prose a:hover {
+  color: var(--action-hover);
+}
+
+.guide-index-item p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.guide-index-item__link {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 44px;
+  align-items: center;
+  color: var(--action);
+  font-weight: 700;
+}
+
+.guide-article-shell {
+  max-width: 960px;
+  padding-block: var(--space-8) var(--space-20);
+}
+
+.guide-article-header {
+  padding-block: var(--space-12) var(--space-16);
+}
+
+.guide-article-header h1 {
+  max-width: 20ch;
+  margin: var(--space-4) 0 0;
+  font-size: clamp(34px, 5vw, 52px);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.guide-article-header > p {
+  max-width: 58ch;
+  margin: var(--space-6) 0 0;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.guide-article-summary {
+  display: grid;
+  margin: var(--space-8) 0 0;
+}
+
+.guide-article-summary div {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.25fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  padding-block: var(--space-4);
+}
+
+.guide-article-summary dt {
+  color: var(--action);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.guide-article-summary dd {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.guide-prose {
+  max-width: 68ch;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-12);
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.guide-prose h2,
+.guide-prose h3 {
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.guide-prose h2 {
+  margin: var(--space-16) 0 var(--space-4);
+  font-size: 30px;
+  line-height: 1.3;
+}
+
+.guide-prose h2:first-child {
+  margin-top: 0;
+}
+
+.guide-prose h3 {
+  margin: var(--space-8) 0 var(--space-3);
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+.guide-prose p,
+.guide-prose ul,
+.guide-prose ol {
+  margin: var(--space-4) 0 0;
+}
+
+.guide-prose li + li {
+  margin-top: var(--space-2);
+}
+
+.guide-prose a {
+  color: var(--action);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.guide-prose code {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-muted);
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-primary);
+  font-size: 0.9em;
+}
+
+.guide-prose pre {
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-media);
+  background: var(--surface-muted);
+  padding: var(--space-4);
+}
+
+.guide-prose pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.guide-prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: var(--space-8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-media);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-product);
+}
+
+.guide-tool-action {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-16);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-block: var(--space-8);
+}
+
+.guide-tool-action strong {
+  font-size: 22px;
+}
+
+.guide-tool-action p {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.guide-tool-action .action-link {
+  align-self: center;
+  justify-self: start;
+}
+
+@media (min-width: 768px) {
+  .guide-index-hero,
+  .guide-index-groups {
+    padding-block: var(--space-20);
+  }
+
+  .guide-index-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-8);
+  }
+
+  .guide-index-item__meta,
+  .guide-index-item p {
+    grid-column: 1;
+  }
+
+  .guide-index-item__link {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    align-self: center;
+  }
+
+  .guide-tool-action {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .guide-index-hero,
+  .guide-index-groups {
+    padding-block: var(--space-28);
+  }
+}
+
+@media (forced-colors: active) {
+  .guide-prose img {
+    box-shadow: none;
+  }
+}

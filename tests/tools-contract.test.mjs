@@ -46,7 +46,7 @@ test("Tools hub exposes exactly the three verified products in registry order", 
   assert.doesNotMatch(page, /Math\.random|sort\(\(\)\s*=>/);
 });
 
-test("verified Use actions launch while Guide actions remain hidden until Task 10", async () => {
+test("verified Use actions and implemented localized Guide actions are available", async () => {
   // Given: three published records with owner-approved production destinations.
   const { tools } = await import(new URL("../lib/content/tool-content.mjs", import.meta.url));
   const expectedDestinations = [
@@ -54,14 +54,19 @@ test("verified Use actions launch while Guide actions remain hidden until Task 1
     "https://streamer-tools.kuro-lab.com/tools/thumbnail-editor/",
     "https://streamer-tools.kuro-lab.com/tools/sns-split-image-maker/"
   ];
+  const expectedGuideDestinations = [
+    "/guide/schedule-calendar/getting-started",
+    "/guide/thumbnail-editor/getting-started",
+    "/guide/sns-split-image-maker/getting-started"
+  ];
   tools.forEach((tool) => {
     assert.equal(tool.href, expectedDestinations[tool.order - 1]);
-    assert.equal(Object.hasOwn(tool, "guideHref"), false);
+    assert.equal(tool.guideHref, expectedGuideDestinations[tool.order - 1]);
   });
 
   const productSection = await readFile(productSectionUrl, "utf8");
 
-  // Then: Use actions are controlled by status and destination while Guide remains destination-gated.
+  // Then: Use actions are status-controlled and Guide actions remain destination-gated.
   assert.match(productSection, /statusRules\[tool\.status\]\.launchable\s*&&\s*tool\.href/);
   assert.match(productSection, /tool\.guideHref/);
   assert.match(productSection, /width=\{tool\.imageWidth\}/);

@@ -1,0 +1,25 @@
+{
+  "algorithm": "sha256",
+  "packetId": "d6c09046449ac394e702af782465099784449c41fe69c0baa6dc0cb6cde2a8b4",
+  "files": {
+    "content/guides/en/comment-translator/getting-started.md": "93d8d5e99799cfb42641e6529ce778fbce7ebfad7071db3270c8959f06b1b3ff",
+    "content/guides/en/getting-started.md": "12ae9bfaa4d4d2068c3827a27e7ae5d200246ddc2d3fb969065ba195fa71f04a",
+    "content/guides/en/schedule-calendar/getting-started.md": "3321e2ee759999728a44c39bb06343629c881a123a4d6d5e64b85dad6c314d87",
+    "content/guides/en/sns-split-image-maker/getting-started.md": "d2d8ffc42cb52887f039abe9a44a4d198ab452a00665e06037a701d8764ce28d",
+    "content/guides/en/thumbnail-editor/getting-started.md": "7460c817a544a80761a0c79c38b237a2cf9b3adfa3641d44a02191650e9b47b4",
+    "content/guides/ja/comment-translator/getting-started.md": "890ef47dc894a0de4c64e78266f4cfe413f7b21a9f8df3bb20a960857c173adf",
+    "content/guides/ja/creator-site/inquiry-route.md": "e90f6aaade4a776043965cb2b630f2ca156bbd0652e7ff25e1aca0119e40ab1a",
+    "content/guides/ja/creator-site/profile-information.md": "c262c63e3aee5e384fb08c9cdaf6d13d8dd0fe5c2664bd94357399f6d709378b",
+    "content/guides/ja/creator-site/what-to-include.md": "7cbc7092eb04f6c88dfa6f27776eb7603987ba70314dc3cd0b1ea9fbba911906",
+    "content/guides/ja/getting-started.md": "c98c4e739d607870ba3dc5335c99f97a396db5c0f90cece33c732c9245c20a36",
+    "content/guides/ja/schedule-calendar/getting-started.md": "01e68bc1f6c148922787ffc54b937e156540d8cb66db65ab56234c9440455a65",
+    "content/guides/ja/sns-split-image-maker/getting-started.md": "ee9ee641e0214723b82320781260561eb06df31b812ac257a03996a26993b956",
+    "content/guides/ja/thumbnail-editor/getting-started.md": "77515f903aaf876152ec429784c32ce99d454b6c9e0aa469a06e863ff1f05ea6",
+    "public/images/guide/comment-translator-availability.png": "73454cee7ea018b75a3f5d4eaf847648206bfe8f53407d9216475eff0ade3c07",
+    "public/images/guide/creator-site-demonstration.png": "04c6f763a4b0219a6259bd261b07d764c55b6c006db100377bae8d179260ba80",
+    "public/images/guide/kuro-stream-kit-overview.png": "bada1b81175936a126817cf3d620fcc524f35ff7c4c7b540731bb9d886ee8a1a",
+    "public/images/guide/schedule-calendar.png": "96e017fedce218ef34103d0798644304566457c42097428dddb2130158310061",
+    "public/images/guide/sns-split-image-maker.png": "70b5c00e26c6674e3d885e19572503b1eeee84475ce1dd6d3e6f5ebf68420596",
+    "public/images/guide/thumbnail-editor.png": "ec531a25187b085cd4bf0d0af8f1f1aa73f0cb9c11ffe9b7b6074f7b49650233"
+  }
+}

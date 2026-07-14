@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SectionIntro } from "@/components/ui/section-intro";
 
 export function GuideEntry({ locale, guides }) {
@@ -9,9 +10,10 @@ export function GuideEntry({ locale, guides }) {
         <SectionIntro eyebrow="Guide" title={title} titleLines={titleLines} />
         <div className="guide-list">
           {guides.map((guide) => (
-            <article key={guide.id} className="guide-list__item">
+            <Link key={guide.id} className="guide-list__item" href={guide[locale].href}>
               <span><strong>{guide[locale].title}</strong><small>{guide[locale].description}</small></span>
-            </article>
+              <span className="guide-list__arrow" aria-hidden="true">→</span>
+            </Link>
           ))}
         </div>
       </div>
