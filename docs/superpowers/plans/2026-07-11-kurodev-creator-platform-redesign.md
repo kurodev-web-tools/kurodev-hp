@@ -374,7 +374,7 @@ Search for `router.push` or redirect logic tied to navigator language. Expected:
 
 Assert unique IDs, complete required locale copy, stable editorial order, valid statuses, status-appropriate destination URLs, guide mappings, no enabled launch action for unavailable/development/concept states, and publication approval for rendered works. Validate every required schema field:
 
-- tool: localized name, summary, outcome, suitable audience, status, media/alt, category, order, optional featured rank, publish/update dates, locale guide mapping, and URL only when status permits launch;
+- tool: localized name, summary, outcome, suitable audience, status, media/alt and intrinsic dimensions, category, order, optional featured rank, publish/update dates, optional locale guide mapping only after its route is implemented and verified, and URL only when status permits launch;
 - work: stable ID, stable unique slug, localized title/summary, category, status, responsibilities, safe outcome evidence, media/alt, route or external URL, publish/update dates, and publication fields;
 - guide: locale, stable slug, title, description, category, applicable tool/status, updated date, related guides, related tool action, and optional creator-service action.
 
@@ -394,7 +394,7 @@ Encode `published`, `beta`, `unavailable`, `in-development`, and `concept` with 
 
 - [ ] **Step 4: Implement tool and guide records**
 
-Add the four current tools with localized name, summary, outcome, suitable audience, sanitized media paths and alt, status, dates, category, order, featured rank, and Japanese/English guide mappings. Add exact production URLs from Task 1 only for `published` or `beta`; blocked destinations use a non-launchable status and omit the URL.
+Add the three publication-verified current tools with localized name, summary, outcome, suitable audience, sanitized media paths and alt, intrinsic dimensions, status, dates, category, order, and featured rank. Add exact production URLs from Task 1 only for `published` or `beta`; blocked destinations use a non-launchable status and omit the URL. Add Guide mappings only after Task 10 implements and verifies the localized destination; the unverified fourth tool remains non-public.
 
 - [ ] **Step 5: Implement work records**
 
@@ -669,7 +669,7 @@ Render Flagship, Published Work, and Research/Development as separate hierarchie
 
 - [ ] **Step 4: Build the Kuro Stream Kit case study**
 
-Implement all nine case-study sections: product hero with real screen, creator-workflow problem, current product map, four major tools and statuses, kurodev responsibilities, UI/operational design principles, safe selected before-and-after improvements, current product status, and product/guide/creator-service actions. Include localized breadcrumbs.
+Implement all nine case-study sections: product hero with real screen, creator-workflow problem, current product map, the three publication-verified major tools and statuses, kurodev responsibilities, UI/operational design principles, safe selected before-and-after improvements, current product status, and product/guide/creator-service actions. Include localized breadcrumbs. Task 9 is complete with these three verified records while the fourth tool remains non-public; a future fourth record still requires its own complete publication intake and approval.
 
 - [ ] **Step 5: Add the old-route redirect**
 

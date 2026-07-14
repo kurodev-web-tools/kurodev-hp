@@ -13,7 +13,7 @@ export function FeaturedTools({ locale, copy, tools }) {
             const item = localizedTool(tool, locale);
             return (
               <article key={tool.id} className="tool-feature" id={tool.id}>
-                <ProductMedia src={tool.image} alt={item.alt} width={1440} height={900} priority />
+                <ProductMedia src={tool.image} alt={item.alt} width={tool.imageWidth} height={tool.imageHeight} priority />
                 <div className="tool-feature__copy">
                   <div className="tool-feature__meta"><span>{item.name}</span><StatusBadge locale={locale} status={tool.status} /></div>
                   <h3>{item.title}</h3>

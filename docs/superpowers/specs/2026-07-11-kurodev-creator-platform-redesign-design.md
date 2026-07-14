@@ -308,7 +308,7 @@ Published and conceptual work do not share the same visual hierarchy.
 1. Product hero with a real screen
 2. Creator-workflow problem
 3. Current product map
-4. Four major tools and their current availability
+4. Publication-verified major tools and their current availability
 5. kurodev's responsibilities
 6. UI and operational design principles
 7. Selected before-and-after improvements
@@ -524,7 +524,7 @@ Each tool record owns:
 - Status
 - Image and alt text
 - Tool URL
-- Guide mapping by locale
+- Guide mapping by locale after its route is implemented and verified
 - Category
 - Editorial order
 - Optional featured rank
@@ -571,7 +571,7 @@ Page components consume these records and do not duplicate status or URL rules i
 | `concept` | no | absent | absent | 検討中 / Concept |
 
 - Status transitions are editorial changes to the shared tool or work record, not page-local conditionals.
-- An item moves to `published` or `beta` only after its destination, status copy, guide mapping, and launch action are verified.
+- An item moves to `published` or `beta` only after its destination, status copy, and launch action are verified. A guide mapping is added only after the localized guide route is implemented and verified.
 - `unavailable` requires a public reason and must not retain an enabled launch action.
 - `in-development` and `concept` are excluded from sitemap output unless they are part of a substantive roadmap page rather than a thin item page.
 
@@ -657,7 +657,7 @@ Every slice includes its own SEO metadata, locale behavior, keyboard behavior, r
 | Surface | Japanese | English | Required launch content | Owner and approval |
 |---|---|---|---|---|
 | Home | required | required | hero, three featured tools, creator-site bridge, flagship work, guide entry, final actions | repository owner approves copy and tool order |
-| Tools | required | required | suite hero, workflow map, four tools, status, tool and guide links | tool records are source of truth |
+| Tools | required | required | suite hero, workflow map, three publication-verified tools, status, and implemented tool links; the unverified fourth tool and Guide links remain non-public | publication-approved tool records are source of truth |
 | Creator website service | required | required | recognition, page outcomes, current capabilities, two examples, process, Template link to canonical HP-portal pricing, Custom quote route, FAQ, contact action | repository owner approves copy and HP-portal remains the price source |
 | Works | required | required | Kuro Stream Kit flagship, HP-portal, only approved public or anonymized work | publication approval required per work |
 | Kuro Stream Kit case study | required | required | real screens, current tools, responsibilities, selected safe improvements, current status | sanitized evidence review required |

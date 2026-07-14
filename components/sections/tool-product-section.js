@@ -1,4 +1,5 @@
 import { ActionLink } from "@/components/ui/action-link";
+import { PhraseAwareText } from "@/components/ui/phrase-aware-text";
 import { ProductMedia } from "@/components/ui/product-media";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { localizedTool } from "@/lib/content/tool-content.mjs";
@@ -15,7 +16,7 @@ export function ToolProductSection({ locale, tool, index }) {
   return (
     <article className="tool-product" id={tool.id}>
       <div className="tool-product__media">
-        <ProductMedia src={tool.image} alt={item.alt} width={1440} height={900} priority={index === 0} />
+        <ProductMedia src={tool.image} alt={item.alt} width={tool.imageWidth} height={tool.imageHeight} priority={index === 0} />
       </div>
       <div className="tool-product__copy">
         <div className="tool-product__meta">
@@ -25,12 +26,20 @@ export function ToolProductSection({ locale, tool, index }) {
         <h3>{item.title}</h3>
         <p className="tool-product__summary">{item.summary}</p>
         <dl className="tool-product__details">
-          <div><dt>{labels.outcome}</dt><dd>{item.outcome}</dd></div>
+          <div><dt>{labels.outcome}</dt><dd><PhraseAwareText locale={locale} text={item.outcome} /></dd></div>
           <div><dt>{labels.suitableFor}</dt><dd>{item.suitableFor}</dd></div>
         </dl>
         {canLaunch || tool.guideHref ? (
           <div className="tool-product__actions">
-            {canLaunch ? <ActionLink href={tool.href} external>{labels.use}</ActionLink> : null}
+            {canLaunch ? (
+              <ActionLink
+                href={tool.href}
+                external
+                externalLabel={locale === "ja" ? "（新しいタブで開きます）" : "(opens in a new tab)"}
+              >
+                {labels.use}
+              </ActionLink>
+            ) : null}
             {tool.guideHref ? <ActionLink href={localePath(locale, tool.guideHref)} variant="secondary">{labels.guide}</ActionLink> : null}
           </div>
         ) : null}
