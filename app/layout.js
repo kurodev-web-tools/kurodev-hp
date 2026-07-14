@@ -5,6 +5,7 @@ import "./styles/home-hero.css";
 import "./styles/home-sections.css";
 import "./styles/tools-page.css";
 import "./styles/creator-site.css";
+import "./styles/works-page.css";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { SiteShell } from "@/components/site-shell";
@@ -70,7 +71,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <a className="skip-link" href="#main-content">本文へ移動</a>
+        <a className="skip-link" href="#main-content">{locale === "ja" ? "本文へ移動" : "Skip to main content"}</a>
         <SiteShell>{children}</SiteShell>
       </body>
     </html>

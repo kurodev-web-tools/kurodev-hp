@@ -17,8 +17,21 @@ test("Home exposes exactly the three publication-verified tools in stable order"
   assert.deepEqual(available.map((tool) => tool.id), ["schedule-calendar", "thumbnail-editor", "sns-split"]);
   assert.deepEqual(featuredHomeTools.map((tool) => tool.id), ["schedule-calendar", "thumbnail-editor", "sns-split"]);
   assert.equal(new Set(tools.map((tool) => tool.id)).size, tools.length);
+  const expectedDestinations = new Map([
+    ["schedule-calendar", "https://streamer-tools.kuro-lab.com/tools/schedule-calendar/"],
+    ["thumbnail-editor", "https://streamer-tools.kuro-lab.com/tools/thumbnail-editor/"],
+    ["sns-split", "https://streamer-tools.kuro-lab.com/tools/sns-split-image-maker/"]
+  ]);
   available.forEach((tool) => {
-    assert.equal(Object.hasOwn(tool, "href"), false, "unapproved production destinations must not expose a Use action");
+    assert.equal(tool.href, expectedDestinations.get(tool.id));
+    assert.equal(tool.category, "stream-workflow");
+    assert.equal(tool.publishedAt, "2026-05-18");
+    assert.equal(tool.updatedAt, "2026-05-18");
+    assert.equal(tool.imageWidth, 1920);
+    assert.equal(tool.imageHeight, 1080);
+    assert.equal(tool.ja.categoryLabel, "配信ワークフロー");
+    assert.equal(tool.en.categoryLabel, "Stream Workflow");
+    assert.equal(Object.hasOwn(tool, "guideHref"), false, "Guide actions remain blocked until Task 10");
   });
 });
 

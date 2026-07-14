@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { equivalentLocalePath, pathnameLocale, unlocalizedPath } from "@/lib/i18n.mjs";
 
-const pairedRoutes = ["/", "/tools", "/creator-site", "/works", "/guide", "/about", "/contact", "/terms", "/privacy"];
+const pairedRoutes = ["/", "/tools", "/creator-site", "/works", "/works/kuro-stream-kit", "/guide", "/about", "/contact", "/terms", "/privacy"];
 
 export function LanguageSwitch({ compact = false }) {
   const pathname = usePathname();

@@ -33,6 +33,7 @@
   --action-text: #ffffff;
   --focus-ring: var(--color-cyan-500);
   --studio-light: rgb(40 200 194 / 12%);
+  --atmosphere-blur: 20px;
   --shadow-product: 0 24px 80px rgb(6 16 25 / 18%);
   --space-1: 4px;
   --space-2: 8px;

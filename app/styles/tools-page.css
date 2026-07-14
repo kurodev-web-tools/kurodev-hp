@@ -72,7 +72,7 @@
   z-index: -1;
   background: radial-gradient(circle, var(--studio-light), transparent 68%);
   content: "";
-  filter: blur(20px);
+  filter: blur(var(--atmosphere-blur));
 }
 
 .tools-hero__stage .product-media {

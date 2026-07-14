@@ -27,6 +27,11 @@ test("Japanese and English Tools routes share one complete Tools hub", async () 
     assert.match(page, new RegExp(section));
   });
   assert.ok(page.lastIndexOf("<ToolProductSection") < page.lastIndexOf("<CreatorServiceBridge"));
+  assert.match(page, /getPublicationApprovedWorkBySlug/);
+  assert.match(page, /src=\{flagship\.image\}/);
+  assert.match(page, /width=\{flagship\.imageWidth\}/);
+  assert.match(page, /height=\{flagship\.imageHeight\}/);
+  assert.doesNotMatch(page, /portal-home\.png|width=\{1440\}|height=\{900\}/);
 });
 
 test("Tools hub exposes exactly the three verified products in registry order", async () => {
@@ -41,19 +46,27 @@ test("Tools hub exposes exactly the three verified products in registry order", 
   assert.doesNotMatch(page, /Math\.random|sort\(\(\)\s*=>/);
 });
 
-test("Use and guide actions remain hidden until their destinations are approved", async () => {
-  // Given: three published records whose production and guide destinations are not yet approved.
+test("verified Use actions launch while Guide actions remain hidden until Task 10", async () => {
+  // Given: three published records with owner-approved production destinations.
   const { tools } = await import(new URL("../lib/content/tool-content.mjs", import.meta.url));
+  const expectedDestinations = [
+    "https://streamer-tools.kuro-lab.com/tools/schedule-calendar/",
+    "https://streamer-tools.kuro-lab.com/tools/thumbnail-editor/",
+    "https://streamer-tools.kuro-lab.com/tools/sns-split-image-maker/"
+  ];
   tools.forEach((tool) => {
-    assert.equal(Object.hasOwn(tool, "href"), false);
+    assert.equal(tool.href, expectedDestinations[tool.order - 1]);
     assert.equal(Object.hasOwn(tool, "guideHref"), false);
   });
 
   const productSection = await readFile(productSectionUrl, "utf8");
 
-  // Then: actions are controlled by both shared status rules and an actual registry destination.
+  // Then: Use actions are controlled by status and destination while Guide remains destination-gated.
   assert.match(productSection, /statusRules\[tool\.status\]\.launchable\s*&&\s*tool\.href/);
   assert.match(productSection, /tool\.guideHref/);
+  assert.match(productSection, /width=\{tool\.imageWidth\}/);
+  assert.match(productSection, /height=\{tool\.imageHeight\}/);
+  assert.match(productSection, /externalLabel=\{locale === "ja" \? "（新しいタブで開きます）" : "\(opens in a new tab\)"\}/);
   assert.doesNotMatch(productSection, /href=["']#["']/);
 });
 

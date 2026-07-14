@@ -22,7 +22,7 @@ html[lang="ja"] .creator-site-page .section-intro .display-line {
   height: 72%;
   background: radial-gradient(circle, var(--studio-light), transparent 68%);
   content: "";
-  filter: blur(20px);
+  filter: blur(var(--atmosphere-blur));
   pointer-events: none;
 }
 

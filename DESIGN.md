@@ -87,6 +87,7 @@ Contrast requirements:
 
 Hero headlines use two or three lines at most. Accent-colored words are semantic emphasis, not gradients.
 Japanese section headings keep semantic line groups through tablet widths. At 1024px and above, those groups may combine into one or two balanced lines when the available layout width permits.
+Japanese page and footer copy uses phrase-aware line breaking where the browser supports it, so particles, auxiliaries, and compound words do not orphan while the exact approved copy remains unchanged.
 
 ### Spacing and geometry
 
@@ -98,6 +99,7 @@ Japanese section headings keep semantic line groups through tablet widths. At 10
 - Radius: 6px controls, 10px media/panels, 14px only for prominent grouped surfaces. No pill containers except status/filter chips.
 - Border: 1px subtle line. Prefer borders and tonal shifts to large shadows.
 - Raised-product shadow: `0 24px 80px rgb(0 0 0 / 28%)`, paired with a one-pixel cyan-tinted rim.
+- Atmospheric radial light uses a shared `20px` blur token so page heroes keep the same depth treatment.
 
 ### Atmosphere
 
@@ -173,6 +175,11 @@ QA viewports are 375, 768, 1024, and 1280px. Also spot-check 390 and 1366px wher
 
 - Optional short kicker, heading, short body, and optional action.
 - It is open layout by default and must not create a card wrapper by itself.
+
+### `Breadcrumbs`
+
+- Localized ordered navigation for case studies and guides; parent items link only to implemented equivalent routes and the current item is plain text with `aria-current="page"`.
+- States: default, hover, focus-visible, current page, mobile wrap, and forced colors.
 
 ### `DemonstrationPreview`
 

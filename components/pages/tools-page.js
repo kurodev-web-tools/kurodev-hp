@@ -7,9 +7,11 @@ import { SectionIntro } from "@/components/ui/section-intro";
 import { homeGuides } from "@/lib/content/guide-registry.mjs";
 import { siteCopy } from "@/lib/content/site-copy.mjs";
 import { tools } from "@/lib/content/tool-content.mjs";
+import { getPublicationApprovedWorkBySlug } from "@/lib/content/work-content.mjs";
 
 export function ToolsPage({ locale }) {
   const copy = siteCopy[locale].toolsPage;
+  const flagship = getPublicationApprovedWorkBySlug("kuro-stream-kit");
 
   return (
     <>
@@ -28,15 +30,17 @@ export function ToolsPage({ locale }) {
               <strong>{copy.hero.inventoryValue}</strong>
             </p>
           </div>
-          <div className="tools-hero__stage">
-            <ProductMedia
-              src="/images/kuro-stream-kit/portal-home.png"
-              alt={locale === "ja" ? "Kuro Stream Kitのツール一覧画面" : "Kuro Stream Kit tools overview screen"}
-              width={1440}
-              height={900}
-              priority
-            />
-          </div>
+          {flagship ? (
+            <div className="tools-hero__stage">
+              <ProductMedia
+                src={flagship.image}
+                alt={flagship[locale].alt}
+                width={flagship.imageWidth}
+                height={flagship.imageHeight}
+                priority
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
