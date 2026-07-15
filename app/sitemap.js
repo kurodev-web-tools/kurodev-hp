@@ -10,12 +10,15 @@ const baseRoutes = [
   "/creator-site",
   "/works",
   "/guide",
+  "/about",
   "/contact",
   "/en",
   "/en/tools",
   "/en/creator-site",
   "/en/works",
-  "/en/guide"
+  "/en/guide",
+  "/en/about",
+  "/en/contact"
 ];
 
 export default async function sitemap() {

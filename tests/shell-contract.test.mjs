@@ -74,6 +74,8 @@ test("document language and navigation routes resolve without placeholder pages"
   const englishCreatorSite = new URL("../app/en/creator-site/page.js", import.meta.url);
   const japaneseGuide = new URL("../app/guide/page.js", import.meta.url);
   const englishGuide = new URL("../app/en/guide/page.js", import.meta.url);
+  const japaneseAbout = new URL("../app/about/page.js", import.meta.url);
+  const englishAbout = new URL("../app/en/about/page.js", import.meta.url);
 
   // When: English language handling and planned route destinations are inspected.
   // Then: /en receives English document semantics and future hubs do not 404.
@@ -85,7 +87,7 @@ test("document language and navigation routes resolve without placeholder pages"
   assert.equal(existsSync(englishCreatorSite), true, "English Creator Site page must replace its temporary redirect");
   assert.equal(existsSync(japaneseGuide), true, "Japanese Guide index must replace its temporary redirect");
   assert.equal(existsSync(englishGuide), true, "English Guide index must replace its temporary redirect");
-  ["/works", "/about"].forEach((route) => {
-    assert.match(nextConfig, new RegExp(route.replaceAll("/", "\\/")));
-  });
+  assert.equal(existsSync(japaneseAbout), true, "Japanese About page must replace its temporary redirect");
+  assert.equal(existsSync(englishAbout), true, "English About page must replace its temporary redirect");
+  assert.match(nextConfig, /\/works/);
 });

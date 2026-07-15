@@ -18,6 +18,8 @@
   --color-cyan-500: #13aaa8;
   --color-cyan-700: #087273;
   --color-magenta-400: #d0509e;
+  --color-success: #3dd6a3;
+  --color-danger: #ef7185;
   --canvas: var(--color-paper-50);
   --surface: #ffffff;
   --surface-raised: #ffffff;

@@ -244,6 +244,39 @@ test("publication packet pins every approved source and image byte", async () =>
   });
 });
 
+test("publication packet accepts canonical Markdown after a CRLF checkout", async () => {
+  // Given: an owner-approved LF source checked out with Windows CRLF endings.
+  const { createHash } = await import("node:crypto");
+  const { readFile } = await import("node:fs/promises");
+  const { validatePublicationCandidate } = await import(loaderUrl);
+
+  await withGuideFixture(async ({ root, publicRoot, imagePath }) => {
+    const contentRoot = join(root, "content", "guides");
+    const sourcePath = join(contentRoot, "en", "schedule-calendar", "getting-started.md");
+    const candidatePath = join(contentRoot, "publication-candidate.json");
+    const canonicalSource = validFrontMatter();
+    await mkdir(join(contentRoot, "en", "schedule-calendar"), { recursive: true });
+    await writeFile(sourcePath, canonicalSource.replaceAll("\n", "\r\n"));
+
+    const files = {
+      "content/guides/en/schedule-calendar/getting-started.md": createHash("sha256").update(canonicalSource).digest("hex"),
+      "public/images/guide/sample.png": createHash("sha256").update(await readFile(imagePath)).digest("hex")
+    };
+    const packetId = createHash("sha256").update(JSON.stringify(files)).digest("hex");
+    await writeFile(candidatePath, JSON.stringify({ algorithm: "sha256", packetId, files }));
+
+    // When: the publication boundary validates the checked-out files.
+    // Then: text line-ending conversion does not invalidate approved content.
+    await validatePublicationCandidate({
+      contentRoot,
+      publicRoot,
+      candidatePath,
+      approvedImages: new Map([["/images/guide/sample.png", files["public/images/guide/sample.png"]]]),
+      expectedPacketId: packetId
+    });
+  });
+});
+
 test("approved Guide images must be regular files inside the public root", async () => {
   const { hashGuideImage, parseGuideSource } = await import(loaderUrl);
   await withGuideFixture(async ({ root, publicRoot, imagePath }) => {
