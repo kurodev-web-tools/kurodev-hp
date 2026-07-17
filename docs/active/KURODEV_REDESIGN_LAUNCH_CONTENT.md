@@ -44,6 +44,33 @@ The user previously described four current tools, but the fourth available item 
 - Approve public identity details for About and all legal texts before those routes launch.
 - Client work and numeric metrics remain absent. Any future addition requires its own evidence and exact public-use approval.
 
+## Task 12 legal candidate intake
+
+The repository owner fixed the following five paths as the only Creator Platform legal publication candidates. Path selection does not approve their content. All entries remain blocked, undated, and unavailable to routes, footer links, Contact Privacy navigation, metadata, or the launch manifest until Task 14 Step 0 supplies coordinated dates, fresh fingerprints, repository-owner approval, and human legal approval.
+
+| Entry | candidateSourcePath | owner | approvalState | effectiveDate | updateDate |
+| --- | --- | --- | --- | --- | --- |
+| Japanese Terms | `content/legal/ja/terms.md` | KuroDev repository owner | `blocked` | `null` | `null` |
+| English Terms | `content/legal/en/terms.md` | KuroDev repository owner | `blocked` | `null` | `null` |
+| Japanese Privacy | `content/legal/ja/privacy.md` | KuroDev repository owner | `blocked` | `null` | `null` |
+| English Privacy | `content/legal/en/privacy.md` | KuroDev repository owner | `blocked` | `null` | `null` |
+| Japanese commercial disclosure | `content/legal/ja/tokushoho.md` | KuroDev repository owner | `blocked` | `null` | `null` |
+
+The Japanese commercial disclosure remains the only authorized commercial-disclosure candidate. No English translation or English `hreflang` is approved.
+
+The Privacy candidates now use the owner-approved zero-cost operating model: Gmail and Drive in a Google Account managed exclusively for business, encrypted local primary storage, and advance information plus any required consent for processing outside Japan. Publication remains blocked until a separately reviewed foreign-processing notice identifies each actual provider and its formal legal name, processing stage, relevant country, country-system information, safeguards, processed information, purpose, subprocessors or lookup method, and review date; the Contact flow exposes the applicable inquiry-stage notice with an unchecked consent control and retains the timestamp, document versions, and covered processing; Google Drive and Stripe are addressed before their respective production and payment use; GitHub is limited to non-identifying source code and receives no User personal data; and the direct-email notice and approved consent-record mechanism are available before the address is used. No additional legal route, footer link, Contact control, consent-log storage, or provider setting is authorized or implemented by this intake entry.
+
+### Task 12 foreign-processing review candidates
+
+The repository owner authorized preparation of the following Japanese and English texts only as unapproved AI drafts for human legal review. On `2026-07-17`, the owner selected independent candidate routes at `/privacy/foreign-processing` and `/en/privacy/foreign-processing` as the placement design. These rows do not expand the approved publication inventory and do not authorize either route, a footer link, Contact control, consent record, provider call, Task 14 inclusion, or publication; implementation still requires separate explicit approval after legal and provider review.
+
+| Entry | candidateSourcePath | owner | approvalState | effectiveDate | updateDate | providerReviewDate |
+| --- | --- | --- | --- | --- | --- | --- |
+| Japanese foreign-processing notice | `content/legal/ja/foreign-processing.md` | KuroDev repository owner | `blocked` | `null` | `null` | `2026-07-17` |
+| English foreign-processing notice | `content/legal/en/foreign-processing.md` | KuroDev repository owner | `blocked` | `null` | `null` | `2026-07-17` |
+
+The Task 12 review and re-review approved all seven undated bodies after the final minor data-flow corrections. The candidates remain `blocked / unapproved / legal-review-required`: body approval does not authorize routes, footer or Contact activation, Task 14 inclusion, publication, or Git/external mutations. The verified provider review date is `2026-07-17`, and the verified Resend sending region is Tokyo (`ap-northeast-1`). Cloudflare agreement and DPA applicability, tracking and routing settings, the enforced GitHub boundary excluding User personal data, the Stripe product and information fields actually used, and all current subprocessors remain operational verification gates. If publication occurs on or after the scheduled `2026-07-30` Google Terms update, the Google contracting entity, applicable terms, and related disclosures must be rechecked before Task 14 approval.
+
 ## Approved owner content
 
 - Approved creator-site service scope on 2026-07-12: `Template` uses HP-portal and links to the canonical plan page at `https://templates.kuro-lab.com/plans`; kurodev does not copy numeric prices. `Custom` remains `個別見積 / Custom quote` with a Contact action.
