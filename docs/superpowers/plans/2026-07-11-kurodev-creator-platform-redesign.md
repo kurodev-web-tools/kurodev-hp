@@ -844,6 +844,12 @@ Confirm no message body, email, token, raw response, or identifier appears in co
 
 Do not generate legal claims. Require repository-owner-approved Japanese Terms, English Terms, Japanese Privacy, English Privacy, and Japanese commercial disclosure copy in the launch manifest, each with source path, owner, approval state, effective date, and update date. If any required entry is `blocked`, stop this task and do not create a placeholder route.
 
+The legal body copy may complete owner and human legal review before the release date is known, but it remains `blocked` and Steps 2–6 remain deferred while any effective or update date is unset. Do not use a placeholder, build-time date, environment-derived date, or dynamic production date.
+
+The Privacy publication gate also requires a separately reviewed foreign-processing notice matching the providers actually used. For each processing stage, it records the provider's formal legal name, the recipient country in which that entity is located, separate storage and processing locations, country-system information, safeguards, processed information, purpose, subprocessors or lookup method, and review date. Contact submission addresses Cloudflare, Resend, and Google; Google Drive and Stripe are addressed before their respective production and payment use. GitHub is not an active personal-data recipient and may hold only non-identifying source code under an internal project code; any change to that boundary returns to provider/entity/country/safeguard review before repository use. Before Contact Privacy activation, the Contact flow must expose the applicable notice with an unchecked consent control, block submission until consent, and retain the consent timestamp, fixed scope ID, document IDs and versions, covered providers and purposes, consent-copy hash, and immutable Privacy and notice hashes without unnecessary fields. The direct-email fallback must present the applicable notice and approved pre-send consent wording before the address is used; consent obtained after receipt must not be applied retroactively. Do not infer provider facts, add a placeholder notice, create consent-log storage, or enable these controls before the exact notice, consent wording, record design, ordinary Cloudflare page-delivery basis, and account-level provider facts receive owner and human legal approval.
+
+The coordinated dates are fixed at Task 14 Step 0 after all remaining nondependent pre-merge work is complete, expressly excluding deferred Task 12 Steps 2–6 and Task 13, and after the final merge/deployment window is known. At that checkpoint, insert the same initial effective and update date into all five exact sources, reproduce their fingerprints, obtain exact owner/legal approval, set all five launch-manifest rows to `ready`, and only then resume this task at Step 2.
+
 - [ ] **Step 2: Write failing legal-route tests**
 
 Assert exact route inventory, bilingual metadata pairs for Terms/Privacy, Japanese-only self-canonical for commercial disclosure, and labeled English-footer link to the Japanese route.
@@ -907,6 +913,18 @@ Confirm no redirect chain, nonexistent alternate, or duplicate canonical.
 - Update: `docs/active/KURODEV_REDESIGN_LAUNCH_CONTENT.md`
 - Update: `task.md`
 - Create: `docs/KURODEV_CREATOR_PLATFORM_QA.md`
+
+- [ ] **Step 0: Freeze the coordinated legal date and complete deferred Tasks 12–13**
+
+Enter this checkpoint only after Tasks 1–11 and every other pre-merge implementation item that does not depend on the deferred legal routes are complete, Task 12 body review is complete, and a same-day final `main` merge plus production-deployment window is scheduled. Task 12 Steps 2–6 and Task 13 are expressly excluded from this entry condition because they are completed inside this checkpoint.
+
+1. Set the exact coordinated effective and initial update date in Japanese Terms, English Terms, Japanese Privacy, English Privacy, and Japanese commercial disclosure. Use the date on which all five routes are scheduled to become publicly accessible in production.
+2. Reproduce the five exact source fingerprints, obtain repository-owner and human legal approval for the dated sources, and set the five launch-manifest rows to `ready`. Date approval does not authorize commit, push, PR, merge, or deployment.
+3. Resume and complete Task 12 Steps 2–6, including focused RED/GREEN tests, full checks, and browser QA for all five legal routes.
+4. Complete Task 13 Steps 1–7 against the implemented legal-route inventory.
+5. Begin Task 14 Step 1 only after Tasks 12 and 13 meet their completion criteria.
+
+If the final `main` merge and production activation cannot occur on the approved calendar date, stop before merge or deployment. Update all five dates to the new coordinated activation date, reproduce fingerprints, repeat exact owner/legal approval, rerun Task 12 and Task 13 affected checks, and then rerun every Task 14 check whose evidence or build output changed. Never publish legal routes with a date that does not match their actual coordinated production activation.
 
 - [ ] **Step 1: Run the complete automated suite**
 
@@ -1007,8 +1025,8 @@ Recommended slice PRs targeting `codex/creator-platform-redesign-preview`:
 5. Works and case study: Task 9
 6. Guide system and launch content: Task 10
 7. About and Contact: Task 11
-8. Legal pages: Task 12
-9. SEO, legacy redirects, and pre-merge release QA: Tasks 13–14
+8. Legal body review and blocked source preparation: Task 12 Step 1
+9. Coordinated legal-date freeze, legal-route completion, SEO inventory, and pre-merge release QA: Task 14 Step 0 -> Task 12 Steps 2–6 -> Task 13 -> Task 14 Steps 1–10
 
 Each boundary must satisfy its own automated checks and browser QA before the next boundary begins. Do not create a PR for a boundary that has not met its completion criteria.
 
