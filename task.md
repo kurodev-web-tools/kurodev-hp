@@ -2,6 +2,28 @@
 
 ## Current Board
 
+### Creator Platform redesign — local pre-merge checkpoint
+
+#### Verified locally
+- Task 14 Step 0の固定済み7法務文書と6 Contact consent文面を、owner-designated AI-assisted internal substituteとして扱う承認境界を記録（人間法務・弁護士レビュー済みとは表現しない）
+- Next.js `15.5.21` / React `18.3.1` / React DOM `18.3.1` / eslint-config-next `15.5.21`へ更新
+- `npm test` 91 / 91、lint、41-page production buildを最終差分で再確認
+- Next 15のstreaming metadataを初期document headへ固定し、Lighthouse SEOを全対象・全runで100へ復旧
+- 言語切替のvisible labelをaccessible nameへ含め、Lighthouse Accessibilityを全対象・全runで100確認
+- 36routeを375 / 768 / 1024 / 1280 pxで実ブラウザ検証し、status、metadata、h1、lang、overflow、console、外部通信を確認
+- Contact consent、synthetic Turnstile、direct-email fallback、forced colors、reduced motion、keyboard/focusを架空fixtureのみで検証
+- Chromium上限を超える375 px法務ページ5枚を分割captureで修復し、Contact見出しの1024 px孤立改行を固定2行へ修正
+- `docs/KURODEV_CREATOR_PLATFORM_QA.md`へTask 14のsanitized pre-merge evidenceを記録
+
+#### Release blockers
+- `DEP-AUDIT-001`: Next.js 15.5.21配下のPostCSS / Sharpにproduction high severityが3件残存。16系・preview・out-of-range overrideは未承認
+- `PERF-MOBILE-001`: Task 14指定5routeのmobile Lighthouse Performance中央値が75〜90で、必須100を未達
+
+#### Explicitly pending
+- Task 14のrelease gate解消と再検証
+- final preview-to-`main` PR、merge、deploy、2026-08-04 production activation
+- Task 15 post-merge production verification（live providerを含む確認は別途承認が必要）
+
 ### Done
 - `Next.js` プロジェクトを新規構築
 - `Home / Profile / Web / Tool / Contact` の 5 ページを初回実装

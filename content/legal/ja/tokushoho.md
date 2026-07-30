@@ -1,13 +1,18 @@
 ---
-documentId: creator-platform-tokushoho-ja-ai-draft-v1
+documentId: creator-platform-tokushoho-ja-v1
+version: 1.0.0
 locale: ja
 documentType: commercial-disclosure
-status: blocked
-approvalState: unapproved
-reviewRequirement: legal-review-required
+status: ready
+approvalState: approved
+reviewRequirement: satisfied
 draftDate: 2026-07-15
-effectiveDate: null
-updateDate: null
+effectiveDate: 2026-08-04
+updateDate: 2026-08-04
+serviceScope: creator-platform
+canonicalRoute: /legal/tokushoho
+equivalentDocumentId: null
+equivalentRoute: null
 equivalentDraft: null
 reviewEvidence: docs/active/KURODEV_TASK12_LEGAL_REVIEW_PACKET.md
 ---

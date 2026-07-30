@@ -6,9 +6,9 @@ This packet records whether the existing Kuro Stream Kit legal documents can be 
 
 - Packet ID: `task12-legal-source-review-2026-07-15-v1`
 - Prepared date: `2026-07-15`
-- Current state: `blocked`
-- Gate reason: none of the five required Creator Platform legal entries has an approved source path, owner, approval state, effective date, and update date
-- Publication effect: none; this packet is not a legal-copy source and does not enable a route or footer destination
+- Current state: `approved-for-ready-promotion-and-local-implementation`
+- Gate reason: none for the exact corrected R2 hashes under approval record `creator-platform-task14-step0-r2-owner-designated-public-use-approval-20260730-v1`; this owner-designated exception is not human or attorney review
+- Publication effect: exact approved working sources and launch-manifest rows may be promoted to `ready`; production publication and activation remain separately gated
 
 The five required entries remain:
 
@@ -310,9 +310,9 @@ The external Task 12 review approved the undated bodies of the Japanese Terms, E
 - Consent evidence now records the full displayed wording, an immutable-snapshot identifier, and the hashes of both the wording and snapshots. Full wording and immutable snapshots are retained in encrypted local storage outside Git; the inquiry email carries only the fixed identifiers and hashes needed to locate them.
 - Contact consent now covers submission-stage Cloudflare and Resend processing, Gmail handling of the inquiry and related follow-up business communications, and Cloudflare Email Routing when those communications use the public address. Google Drive and Stripe remain subject to separate engagement-specific information and explicit consent.
 - Turnstile is initialized only after the foreign-transfer checkbox is selected. Before consent, no token is obtained or verified and no inquiry body is sent to KuroDev's Contact API running on Cloudflare or to Resend.
-- The provider review date is fixed to `2026-07-17` and displayed in both foreign-processing documents. The verified Resend sending region is Tokyo (`ap-northeast-1`).
+- At that review pass, the provider review date was fixed to `2026-07-17` and displayed in both foreign-processing documents. The post-update review recorded below supersedes it with `2026-07-30`. The verified Resend sending region remains Tokyo (`ap-northeast-1`).
 - The Resend processor role, Google Drive and Stripe safeguards, production/payment express-reply requirement, Japanese governing-language clause, and broader GitHub personal-data exclusion boundary are reflected in both languages.
-- If publication occurs on or after `2026-07-30`, the Google contracting entity, applicable Terms, and related disclosures must be rechecked before Task 14 approval.
+- Because publication is scheduled after `2026-07-30`, the Google contracting entity, applicable Terms, and related disclosures were rechecked as recorded below before the dated Task 14 approval request.
 
 The re-review confirmed that the substantive corrections above were reflected and requested only the following final minor alignment with the actual data flow:
 
@@ -345,7 +345,106 @@ This review does not authorize route implementation, footer or Contact activatio
 - For each initial document, the update date equals its effective date.
 - A later substantive approved change updates only the affected document's update date without replacing that document's original effective date.
 - A correction that does not change meaning does not by itself change the update date.
-- Because a final same-day merge/deployment window has not yet been scheduled, every draft keeps `effectiveDate: null` and `updateDate: null`. At Task 14 Step 0, the coordinated scheduled activation date must be fixed, fingerprinted, and approved before the final `main` merge or production deployment. Actual production availability is verified afterward; it is not used as a dynamic or post-publication date source.
+- On `2026-07-30`, the repository owner scheduled the coordinated production activation for `2026-08-04`, with final `main` merge at `10:00–11:00 JST`, production deployment at `11:00–12:00 JST`, and production verification at `12:00–14:00 JST`. All seven included candidates therefore use `effectiveDate: 2026-08-04` and `updateDate: 2026-08-04`. If that activation date moves, every affected date and fingerprint is invalidated and must be fixed and approved again before merge or deployment.
+
+### 2026-07-30 Google update and provider-review checkpoint
+
+The public Japan Terms URL returned the effective `2026-07-30` version after a no-cache check on `2026-07-30 JST`. The Japan archive also exposes that dated version. The contracting entity remains Google LLC. The applicable general-account Terms continue to address business and organizational use, Gmail and Drive remain covered by the applicable Google service terms, the Google Privacy Policy remains the version effective `2026-05-26`, and the Japan additional disclosure continues to identify Google LLC and cross-border processing. The official 2024-to-2026 comparison adds or clarifies network-connection costs, unsuitable content, professional-advice limitations, and liability wording; it does not introduce a material change to the Creator Platform statements about Google LLC, Gmail/Drive use, content ownership, or processing outside Japan.
+
+Official public sources checked:
+
+- `https://policies.google.com/terms?gl=JP&hl=ja`
+- `https://policies.google.com/terms/archive/20260730?gl=JP&hl=ja`
+- `https://policies.google.com/terms/archive/20240522-20260730?gl=JP&hl=ja`
+- `https://policies.google.com/privacy/embedded?gl=JP&hl=ja`
+- `https://policies.google.com/privacy/additional?gl=JP&hl=ja`
+- `https://policies.google.com/terms/service-specific?gl=JP&hl=ja`
+- `https://support.google.com/drive/answer/2450387?hl=ja`
+
+The non-Google operational evidence previously collected on `2026-07-17` remains in encrypted local archives outside Git. It was reused rather than recollected. The combined notice review date is now `2026-07-30`; this date records the review checkpoint and is not route, publication, or provider-setting authorization.
+
+### 2026-07-30 attached AI legal-review disposition and Stripe correction
+
+The attached `CREATOR_PLATFORM_TASK12_LEGAL_REVIEW_RESULT.md` withheld hash-bound public-use approval for the seven-document set. It accepted the Terms, Privacy, and Japanese commercial-disclosure bodies without further mandatory body changes, but required the Japanese and English foreign-processing notices to add Stripe Technology Company Limited and required the Stripe engagement-specific explanation and consent template, fingerprints, and encrypted snapshots to be regenerated. The result expressly states that it is an AI document and operational-consistency review and does not replace approval by a human legal reviewer or lawyer.
+
+The correction was checked against current official Stripe materials. Stripe's English Privacy Center identifies Stripe Technology Company, Limited as the entity with primary responsibility for processing Personal Data outside the Americas, lists Stripe Japan, Inc. and that Irish entity for Japan, and identifies Stripe Payments Europe, Limited as the DPA contracting entity outside the Americas. Stripe's DPA separately states that an account outside the Americas enters the DPA with Stripe Payments Europe, Limited and that Personal Data is transferred to Stripe, LLC in the United States as necessary to provide the services.
+
+Official public sources checked:
+
+- `https://stripe.com/legal/privacy-center`
+- `https://stripe.com/en-jp/legal/dpa`
+
+The two earlier foreign-processing publication-snapshot hashes and snapshot candidate IDs are superseded and are not approval candidates. The five unchanged publication-snapshot hashes remain byte-for-byte valid. The corrected foreign-processing candidates retain publication version `1.0.0` because the initial version has not been published, and use new `-r2` snapshot candidate IDs so the previously archived immutable candidates are not overwritten or reused.
+
+| Superseded candidate | Superseded snapshot ID | Superseded publication-snapshot SHA-256 | Disposition |
+| --- | --- | --- | --- |
+| Japanese foreign-processing notice | `legal-snapshot-creator-platform-foreign-processing-ja-v1-1.0.0-20260804` | `beb74a091547ba851df7e0a6e1e51779cbbdc72cd153e73e8a89de1763e60586` | retained only as rejected review evidence |
+| English foreign-processing notice | `legal-snapshot-creator-platform-foreign-processing-en-v1-1.0.0-20260804` | `3f9c7cee3d83d90bb0215171900e6e8d38f47690de237d094d34fb8894cfdbab` | retained only as rejected review evidence |
+
+#### Blocked Stripe engagement-specific explanation and consent template
+
+This template remains `blocked / unapproved / legal-review-required`. Before Stripe is used, KuroDev must confirm the actual Stripe product and processing purpose and select only the entities that participate in that engagement; the four listed entities must not be inserted automatically as a blanket consent scope.
+
+Allowed entity list:
+
+- Stripe Japan, Inc. — Japan
+- Stripe Technology Company Limited — Ireland
+- Stripe Payments Europe, Limited — Ireland
+- Stripe, LLC — United States
+
+```text
+対象サービス: Stripe
+実際に使用する製品: [確認済みのStripe製品]
+関与する法人および国: [上記allowlistから当該案件で実際に関与する法人だけを列挙]
+対象情報: [当該製品で実際に処理する情報]
+利用目的: [決済、不正利用防止、本人確認、法令遵守、返金、取引管理から該当項目]
+保存・処理地域: [当該製品について確認した地域または公式lookup方法]
+保護措置: [当該製品について確認した措置]
+国外取扱い説明: creator-platform-foreign-processing-ja-v1 / v1.0.0 / [approved snapshot ID and SHA-256]
+同意対象ID: [engagement-specific fixed ID]
+
+私は、上記のStripe製品、関与する法人、国、対象情報、目的、保存・処理地域、保護措置および対象文書を確認し、この案件について記載された国外での個人データの取扱いに同意します。
+```
+
+```text
+Service: Stripe
+Product actually used: [verified Stripe product]
+Entities and countries involved: [list only entities actually involved in this engagement from the allowlist above]
+Information processed: [information actually processed by that product]
+Purposes: [applicable items among payment, fraud prevention, identity verification, legal compliance, refunds, and transaction administration]
+Storage and processing locations: [verified locations or official lookup method for that product]
+Safeguards: [verified measures for that product]
+Foreign-processing notice: creator-platform-foreign-processing-en-v1 / v1.0.0 / [approved snapshot ID and SHA-256]
+Consent-scope ID: [engagement-specific fixed ID]
+
+I reviewed the Stripe product, entities, countries, information, purposes, storage and processing locations, safeguards, and document identified above, and I consent to the described processing of personal data outside Japan for this engagement.
+```
+
+### 2026-07-30 dated publication-candidate fingerprints
+
+The repository owner authorized the two independent foreign-processing routes for implementation and authorized both routes for inclusion in the Task 14 publication-candidate inventory. The seven sources below contain the coordinated date, publication ID, version `1.0.0`, `creator-platform` service scope, canonical route, and reciprocal-language metadata. They remain `blocked / unapproved / legal-review-required` until the exact dated/hash-bound repository-owner and human legal public-use approvals are recorded.
+
+Canonicalization is UTF-8, LF line endings, and exactly one trailing newline.
+
+| Candidate path | Document ID | Canonical route | Snapshot candidate ID | Blocked working-source SHA-256 | Proposed publication-snapshot SHA-256 |
+| --- | --- | --- | --- | --- | --- |
+| `content/legal/ja/terms.md` | `creator-platform-terms-ja-v1` | `/terms` | `legal-snapshot-creator-platform-terms-ja-v1-1.0.0-20260804` | `34e4781a7ef48374899232a2b5f7071012a35ae0e654275c87eb08ca3af9b429` | `5118cce0e62313b624f4206fbcce5bb2aa78f124ad8696ebbc2e0b78edf5edd8` |
+| `content/legal/en/terms.md` | `creator-platform-terms-en-v1` | `/en/terms` | `legal-snapshot-creator-platform-terms-en-v1-1.0.0-20260804` | `0fe20573909df5c1dd7ca96b772b57cc42e73ae3f608ec8d97d034cb99f195a5` | `031921848942e0dc56d365398d822f1abfe91b971806d4a5309cc4d87c62a1b2` |
+| `content/legal/ja/privacy.md` | `creator-platform-privacy-ja-v1` | `/privacy` | `legal-snapshot-creator-platform-privacy-ja-v1-1.0.0-20260804` | `cf16d0f320ded54339e96917552d0d90bdac650e4c09a11c9047daa05ee9dbf7` | `ab100451e2eb7d746edba2a784eca94df553d4a69b0695b44fd123669e49f64a` |
+| `content/legal/en/privacy.md` | `creator-platform-privacy-en-v1` | `/en/privacy` | `legal-snapshot-creator-platform-privacy-en-v1-1.0.0-20260804` | `816092881ec64d8dd7c3c26efaba0ef9604e7188081f91d035fcca59c2be3068` | `4fef73465af57fab69defb6c680ad6f8f0a0c8594c94c0fced43dab36bd9f140` |
+| `content/legal/ja/tokushoho.md` | `creator-platform-tokushoho-ja-v1` | `/legal/tokushoho` | `legal-snapshot-creator-platform-tokushoho-ja-v1-1.0.0-20260804` | `6e5964a7024e0108f2c1b50574c1c5fe06d7383e5e62ab8287cc9de574f6cd5d` | `cb550d998b435b0502ac7ecea0e290e7f3d4afb482ff21e830cbc8f35217adc8` |
+| `content/legal/ja/foreign-processing.md` | `creator-platform-foreign-processing-ja-v1` | `/privacy/foreign-processing` | `legal-snapshot-creator-platform-foreign-processing-ja-v1-1.0.0-20260804-r2` | `2e3bdb5e07bd7b2a5c76179db1a7c941dbb616fae2614bd59d39f370fd55b618` | `7056b68e78b70139a39486e80d7fc695dc523baed035f100caff744f9f57c193` |
+| `content/legal/en/foreign-processing.md` | `creator-platform-foreign-processing-en-v1` | `/en/privacy/foreign-processing` | `legal-snapshot-creator-platform-foreign-processing-en-v1-1.0.0-20260804-r2` | `b348f0b4a12045e0067d2403ae60e5055af86d97e959414d72e633a06144c357` | `2d67da9979ab69f39b00910d80124d96b68843ae48c4c4361c17dab8469761d2` |
+
+The blocked working-source hashes identify the repository files while approval is pending. The proposed publication-snapshot hashes identify the exact final bytes produced by changing only `status: blocked` to `status: ready`, `approvalState: unapproved` to `approvalState: approved`, and `reviewRequirement: legal-review-required` to `reviewRequirement: satisfied`. Human legal and repository-owner public-use approval must bind to the proposed publication-snapshot hashes. The snapshot candidate IDs are reserved for those proposed publication bytes in the existing encrypted legal-evidence archive outside Git. Archive insertion and successful decrypt/read-back verification must be recorded before the approved bytes replace the blocked working sources.
+
+### 2026-07-30 encrypted snapshot read-back attestation
+
+The repository owner confirmed that the original seven publication snapshot candidates were saved in encrypted storage outside Git, successfully decrypted and read back, and verified against the seven entries in `SHA256SUMS.txt` with every checksum matching. The later Stripe correction superseded the two foreign-processing snapshots and their hashes. The attestation remains valid for the five unchanged snapshots only; the corrected `-r2` Japanese and English foreign-processing snapshots must be inserted, decrypted, read back, and checksum-verified before the seven-document snapshot gate passes again. This is a sanitized pass/fail attestation only: the archive location, encryption password, and other private storage details are intentionally excluded from the repository.
+
+### 2026-07-30 corrected R2 encrypted snapshot read-back attestation
+
+The repository owner confirmed that the complete corrected R2 seven-document snapshot set was saved in encrypted storage outside Git, successfully decrypted and read back, and verified against the seven entries in the R2 `SHA256SUMS.txt` with every checksum matching. The five unchanged snapshots and the two corrected `-r2` foreign-processing snapshots therefore satisfy the encrypted snapshot/read-back gate as one complete set. This is a sanitized pass/fail attestation only: the archive location, encryption password, and other private storage details are intentionally excluded from the repository. This attestation does not constitute repository-owner or human legal public-use approval.
 
 ## Verified Kuro Stream Kit source snapshot
 
@@ -411,63 +510,79 @@ These items are release gates, not invitations to infer or add further legal cla
 
 - A human legal reviewer must approve or replace all five exact candidates, including Japanese/English equivalence and the Japanese-only commercial-disclosure exception.
 - KuroDev must verify that the encrypted password-manager Secure Note contains the exact legal name, current business address, and reachable telephone number, and must test the five-Business-Day operator-information response procedure. Only a sanitized attestation belongs in the release packet.
-- Cloudflare, Resend, Google, and Stripe dashboards or account settings, active plans, contractual roles, processing regions, subprocessors, applicable terms, retention behavior, and security measures must be checked against the candidates. For Cloudflare, privately retain evidence of Pages on the Free plan, Web Analytics disabled, no Logpush or owner-controlled visitor log, the applicable Self-Serve agreement, DPA v6.4 status, Global CBPR/PRP scope, processor/controller split, Turnstile pre-clearance disabled, Access protection and temporary-project deletion. Otherwise obtain human legal approval for a different basis or block the relevant processing. For the business-dedicated general Google Account, retain the applicable Google Terms of Service and Google Privacy Policy rather than representing that a Workspace DPA applies, and recheck them after the scheduled `2026-07-30` update. Verify at project start and before delivery that GitHub contains only internal codes, non-identifying source and dummy data, and that the real-data copy has no remote. The adopted information-and-consent basis and safeguards for processing outside Japan must receive human legal confirmation. Resend open/click tracking must be confirmed disabled. No additional provider-setting change is authorized by this document.
+- Cloudflare, Resend, Google, GitHub, and Stripe evidence was collected on `2026-07-17` and retained in encrypted local archives outside Git. The Google Terms/Privacy/additional-disclosure delta was rechecked on `2026-07-30` against the public official sources recorded above. No provider setting was changed. Before publication, the human legal reviewer must still approve the adopted information-and-consent basis and safeguards, and the archive insertion/read-back gate below must pass.
 - Before production publication or activation of the redesigned Contact flow, the separate foreign-processing notice must identify, for each processing stage, every provider actually used, its formal legal name, the relevant foreign country, country-system information, provider safeguards, processed information, purpose, subprocessors or lookup method, and review date. If a country cannot be identified in advance, the notice must state that fact, the reason, and available alternative information. Contact submission addresses Cloudflare, Resend, and Google; Cloudflare Pages/Access real-data preview, Google Drive and Stripe use separate stage-specific consent; GitHub remains outside the User-personal-data recipient set. Both Contact controls must be unchecked by default. The flow must block before Turnstile, Contact API and Resend as designed, and evidence must retain fixed IDs, versions, canonical hashes, server time and covered processing without unnecessary fields. Before production activation of the redesigned direct-email fallback, the applicable notice and consent wording must be visible and the consent-record mechanism must receive human legal approval. The currently implemented Task 11 Contact form and fallback are not evidence that this gate has been satisfied. Exact wording, provider facts and implementation require human legal review and browser verification.
 - The Resend account's applicable DPA version and standard 30-day email retention must be retained as evidence. The candidates no longer promise a separate maximum-30-day deletion period for data remaining in backups.
 - For each quotation type, retain an internal checkpoint-allocation record identifying the work, typical effort, external cost, avoidable remaining cost, presented evidence, and reason for each settlement percentage. A 100% checkpoint may be used only where the production fee has fully accrued at Acceptance Review and remaining handoff work and avoidable cost are immaterial; otherwise the quotation must use an adjusted allocation. This record is internal evidence and is not another legal publication candidate.
 - The stated access control, MFA where available, secret handling, HTTPS, protected/updated work-device, review, subcontractor, and incident-response safeguards must be verified as operating controls.
 - Verify the business Google Account is not used for personal mail or shared, has a passkey or multi-factor authentication, has current recovery information stored separately from the work device, and has no unnecessary automatic forwarding. Verify periodic export of important communications to encrypted local storage, using approximately monthly export as the current operational baseline, together with encrypted backup, non-identifying backup filenames, and deletion routines for Gmail/Drive trash and version history.
-- At Task 14 Step 0, insert the coordinated effective/update dates, assign approved publication document IDs and version numbers, record the applicable service scope and reciprocal-language identifiers, preserve immutable PDF or equivalent snapshots, regenerate all five fingerprints, and obtain exact repository-owner and human legal approval for the dated files.
-- The two foreign-processing notices are not part of Task 14 Step 0 yet. Only after separate implementation authorization and Task 14 publication-candidate inclusion authorization may Task 14 add the conditional rows below. Task 14 must then insert coordinated dates and approved IDs/versions/URLs, preserve immutable snapshots, regenerate both fingerprints, and obtain exact repository-owner and human legal public-use approval for those dated, hash-bound files. The earlier inclusion authorization is not publication approval. Without every required authorization and final approval, both rows stay blocked and Task 12 route/Contact work must not start.
+- Task 14 Step 0 has fixed the coordinated date, publication document IDs, version numbers, service scope, reciprocal-language identifiers, routes, and candidate fingerprints for all seven included sources. The corrected R2 immutable copies have passed encrypted storage, decrypt/read-back, and checksum verification. The exact repository-owner and human legal public-use approvals must still be recorded before any row becomes `ready`.
+- On `2026-07-30`, the repository owner separately authorized implementation of the two foreign-processing routes and their inclusion in the Task 14 publication-candidate inventory. This inclusion is not publication approval. Both rows remain blocked until the exact dated/hash-bound public-use approvals pass.
 
 ## Required launch-manifest intake
 
-The owner has fixed the five candidate paths below. `candidateSourcePath` identifies the only file eligible for later approval; it is not an approved launch-manifest `sourcePath` while the row remains `blocked`. At Task 14 Step 0, insert the coordinated dates, regenerate fingerprints, obtain repository-owner and human legal approval, then promote the exact candidate path to the approved `sourcePath` and set the row to `ready`.
+The owner has fixed the five original candidate paths below. Each dated path remains a `candidateSourcePath`, rather than an approved launch-manifest `sourcePath`, while the row is blocked. Exact repository-owner and human legal public-use approval plus the encrypted-snapshot gate are required before promotion to `ready`.
 
-| Entry | candidateSourcePath | owner | approvalState | effectiveDate | updateDate |
-| --- | --- | --- | --- | --- | --- |
-| Japanese Terms | `content/legal/ja/terms.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| English Terms | `content/legal/en/terms.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| Japanese Privacy | `content/legal/ja/privacy.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| English Privacy | `content/legal/en/privacy.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| Japanese commercial disclosure | `content/legal/ja/tokushoho.md` | KuroDev repository owner | `blocked` | `null` | `null` |
+| Entry | candidateSourcePath | documentId | version | owner | approvalState | effectiveDate | updateDate |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Japanese Terms | `content/legal/ja/terms.md` | `creator-platform-terms-ja-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| English Terms | `content/legal/en/terms.md` | `creator-platform-terms-en-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| Japanese Privacy | `content/legal/ja/privacy.md` | `creator-platform-privacy-ja-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| English Privacy | `content/legal/en/privacy.md` | `creator-platform-privacy-en-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| Japanese commercial disclosure | `content/legal/ja/tokushoho.md` | `creator-platform-tokushoho-ja-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
 
 Only `ready` unlocks implementation. A candidate path, public Kuro Stream Kit URL, old approval, unreviewed machine translation, or statement that the documents are similar does not satisfy this gate.
 
-The following conditional rows are recorded only to define the later intake path. They must not be added to the Task 14 publication-candidate inventory until the owner separately grants route implementation authorization and Task 14 publication-candidate inclusion authorization. Publication/public-use approval is obtained later in Task 14 for the exact dated, hash-bound sources.
+The owner authorized route implementation and Task 14 publication-candidate inclusion for the two rows below on `2026-07-30`. They are now included dated candidates, but implementation must not begin and neither route may be published until the exact dated/hash-bound public-use approvals and encrypted-snapshot gate pass.
 
-| Conditional entry | candidateSourcePath | candidateRoute | owner | approvalState | effectiveDate | updateDate | providerReviewDate |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Japanese foreign-processing notice | `content/legal/ja/foreign-processing.md` | `/privacy/foreign-processing` | KuroDev repository owner | `blocked` | `null` | `null` | `null` |
-| English foreign-processing notice | `content/legal/en/foreign-processing.md` | `/en/privacy/foreign-processing` | KuroDev repository owner | `blocked` | `null` | `null` | `null` |
+| Included entry | candidateSourcePath | documentId | version | candidateRoute | owner | approvalState | effectiveDate | updateDate | providerReviewDate |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Japanese foreign-processing notice | `content/legal/ja/foreign-processing.md` | `creator-platform-foreign-processing-ja-v1` | `1.0.0` | `/privacy/foreign-processing` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` | `2026-07-30` |
+| English foreign-processing notice | `content/legal/en/foreign-processing.md` | `creator-platform-foreign-processing-en-v1` | `1.0.0` | `/en/privacy/foreign-processing` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` | `2026-07-30` |
 
-## Paste-ready owner response template
+## Paste-ready final public-use approval templates
 
-Complete the bracketed fields only after the five exact source files exist and have been reviewed.
+Use these templates only after all seven snapshot candidate files have been inserted into the encrypted legal-evidence archive, successfully decrypted/read back, and reviewed. Approval of the dated legal bodies does not authorize Git or production actions.
+
+### 2026-07-30 adopted corrected R2 public-use approval
+
+The repository owner adopted approval record `creator-platform-task14-step0-r2-owner-designated-public-use-approval-20260730-v1` for the exact seven publication-snapshot hashes in the current fingerprint table. The record states `humanLegalReviewCompleted: false`, `attorneyReviewCompleted: false`, and `ownerRiskAcceptance: true`. It adopts the owner-designated AI-assisted review as this project's internal substitute for the human-legal gate only for this corrected R2 set and must never be represented as independent human review, attorney review, or a formal legal opinion.
+
+The record authorizes promotion of the exact approved bytes to `ready / approved / satisfied` and local implementation and verification of the seven routes, footer destinations, language behavior, Contact Privacy destination, Task 13, and Task 14. It does not authorize commit, push, PR, merge, deploy, production activation, live provider calls, provider-setting changes, dependency installation, or any legal content outside the recorded hashes.
 
 ```text
-Creator Platform redesign Task 12 legal-source intake
+Creator Platform Task 14 Step 0 human legal public-use approval
 
-- Japanese Terms: sourcePath=[path], owner=[owner], approvalState=ready, effectiveDate=[YYYY-MM-DD], updateDate=[YYYY-MM-DD]
-- English Terms: sourcePath=[path], owner=[owner], approvalState=ready, effectiveDate=[YYYY-MM-DD], updateDate=[YYYY-MM-DD]
-- Japanese Privacy: sourcePath=[path], owner=[owner], approvalState=ready, effectiveDate=[YYYY-MM-DD], updateDate=[YYYY-MM-DD]
-- English Privacy: sourcePath=[path], owner=[owner], approvalState=ready, effectiveDate=[YYYY-MM-DD], updateDate=[YYYY-MM-DD]
-- Japanese commercial disclosure: sourcePath=[path], owner=[owner], approvalState=ready, effectiveDate=[YYYY-MM-DD], updateDate=[YYYY-MM-DD]
+I reviewed the seven dated Creator Platform legal publication candidates identified in the 2026-07-30 dated publication-candidate fingerprint table, including their Japanese/English equivalence, the Japanese-only commercial disclosure exception, the two independent foreign-processing notices, the Contact Privacy acknowledgment and foreign-transfer consent separation, the provider information reviewed through 2026-07-30, the coordinated 2026-08-04 effective/update date, document IDs, version 1.0.0, routes, snapshot candidate IDs, and canonical SHA-256 values.
 
-私はリポジトリ所有者として、上記5件のsourcePathに固定された正確な法務本文、見出し、発効日、更新日をCreator Platformでの公開利用向けに承認します。日本語・英語のTermsおよびPrivacyは相互の言語版として承認します。Commercial disclosureは日本語authoritative routeのみを承認し、英訳または英語hreflangは承認しません。Kuro Stream Kitから参照した箇所についてもCreator Platformへの適用を確認済みです。この承認はcommit、push、PR、merge、deploy、production activationの承認を含みません。
+I approve those exact dated, hash-bound legal bodies for public use. This approval does not authorize commit, push, PR, merge, deployment, production activation, live provider calls, or provider-setting changes.
+```
+
+```text
+Creator Platform Task 14 Step 0 repository-owner public-use approval
+
+私はリポジトリ所有者として、2026-07-30 dated publication-candidate fingerprint tableに固定された7件の正確な本文、metadata、document ID、version 1.0.0、route、2026-08-04のeffectiveDate/updateDate、snapshot candidate IDおよびcanonical SHA-256を確認しました。7件のsnapshotを既存のGit外暗号化法務証跡書庫へ保存し、復号・読取り確認が完了したことを確認します。
+
+日本語・英語のTerms、Privacyおよび国外取扱い説明を相互の言語版として承認します。Commercial disclosureは日本語authoritative routeのみを承認し、英訳または英語hreflangは承認しません。国外取扱い説明の日英2routeをTask 14公開候補として公開利用向けに承認します。
+
+人による法務public-use approvalも同じdated/hash-bound 7文書について取得済みです。これら7件をready/approvedへ昇格し、承認済みroute実装のfocused RED/GREEN testsへ進むことを承認します。
+
+この承認はcommit、push、PR、merge、deploy、production activation、live provider callまたはprovider設定変更を含みません。
 ```
 
 ## Next implementation boundary
 
-The five legal bodies may complete owner and human legal review while their dates remain `null`, but this does not change their `blocked` publication state and does not unlock a route. The coordinated release date is intentionally deferred to Task 14 Step 0, when the final merge/deployment window is known.
+All seven included legal bodies now have the coordinated `2026-08-04` date, publication IDs, version `1.0.0`, routes, reciprocal-language metadata, candidate fingerprints, a completed corrected R2 snapshot/read-back record, and the adopted owner-designated R2 public-use approval. The exact approved bytes may now be promoted to `ready`.
 
 At Task 14 Step 0:
 
-1. Insert the same exact effective and initial update date into all five sources, using the scheduled coordinated production-activation date; replace AI-draft IDs with approved publication IDs and add approved version numbers and service-scope metadata.
-2. Preserve immutable PDF or equivalent snapshots, reproduce the five fingerprints, and obtain exact repository-owner and human legal approval for the dated sources.
-3. Set all five launch-manifest rows to `ready`; date or body approval alone is insufficient.
+1. Completed locally: insert the same exact effective and initial update date into all seven included sources; replace AI-draft IDs with publication IDs; add version, service scope, canonical route, and reciprocal-language metadata; update the provider review date; and reproduce candidate fingerprints.
+2. Completed after the Stripe correction: insert the complete R2 set, including the two corrected `-r2` foreign-processing snapshots, into encrypted storage outside Git, decrypt/read back the files, and verify all seven entries in the R2 checksum manifest.
+3. Authorized: promote the exact approved bytes and launch-manifest rows to `ready`, recording that the owner-designated exception is not human or attorney review.
 
-If, and only if, separate implementation authorization and Task 14 publication-candidate inclusion authorization have first been granted for the two foreign-processing routes, Task 14 Step 0 must also promote the two conditional rows, pin their dates, IDs, versions, routes and canonical hashes, preserve immutable snapshots, and obtain exact repository-owner and human legal public-use approval. Otherwise Task 14 leaves both conditional rows blocked and does not activate Task 12 legal routes or Contact. Inclusion authorization alone never permits publication.
+No Task 14 Step 0 approval gate remains for the exact recorded R2 hashes. Any byte, date, route, provider fact, data-flow, or activation-date change invalidates the affected approval and returns it to review.
+
+The two foreign-processing routes received separate implementation and Task 14 publication-candidate inclusion authorization on `2026-07-30`. Their dates, IDs, versions, routes and candidate canonical hashes are pinned above, their corrected encrypted snapshots passed read-back verification, and the owner-designated R2 approval authorizes exact-byte ready promotion and local implementation.
 
 After all five original rows and, for this plan, both promoted foreign-processing rows are `ready` and all seven exact dated source files are present:
 

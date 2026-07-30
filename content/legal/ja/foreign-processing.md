@@ -1,14 +1,19 @@
 ---
-documentId: creator-platform-foreign-processing-ja-ai-draft-v1
+documentId: creator-platform-foreign-processing-ja-v1
+version: 1.0.0
 locale: ja
 documentType: foreign-processing
-status: blocked
-approvalState: unapproved
-reviewRequirement: legal-review-required
+status: ready
+approvalState: approved
+reviewRequirement: satisfied
 draftDate: 2026-07-17
-effectiveDate: null
-updateDate: null
-providerReviewDate: 2026-07-17
+effectiveDate: 2026-08-04
+updateDate: 2026-08-04
+providerReviewDate: 2026-07-30
+serviceScope: creator-platform
+canonicalRoute: /privacy/foreign-processing
+equivalentDocumentId: creator-platform-foreign-processing-en-v1
+equivalentRoute: /en/privacy/foreign-processing
 equivalentDraft: content/legal/en/foreign-processing.md
 reviewEvidence: docs/active/KURODEV_TASK12_LEGAL_REVIEW_PACKET.md
 ---
@@ -23,7 +28,7 @@ Creator Platformでは、サイトの配信・保護、問い合わせの送受�
 
 この説明では、処理段階ごとに、提供先事業者、提供先となる外国、取り扱う情報、利用目的、保存・処理地域、事業者が公表する保護措置、再委託先の確認方法および確認日を示します。利用が未確定のサービスについて、あらかじめ一括した同意を求めることはしません。
 
-事業者情報確認日：2026年7月17日
+事業者情報確認日：2026年7月30日
 
 ## 2. 提供先となる外国の制度に関する情報
 
@@ -61,6 +66,8 @@ Cloudflareは、通常のページ表示に伴う配信およびセキュリテ�
 ## 4. Contactフォームの送信
 
 Contactフォームの同意対象は、フォーム送信時のCloudflareおよびResendによる取扱い、ならびにGoogle Gmailを通じた問い合わせおよび当該問い合わせに続く見積り、契約、制作、検収、支払、返金その他の関連業務連絡の受信、保管、送信および返信です。関連業務連絡を公開メールアドレスで受信する場合のCloudflare Email Routingも同意対象に含みます。Google DriveおよびStripeは、この同意対象に含みません。GitHubは、利用者の個人データを保存または処理する提供先として使用しません。
+
+Contactフォームでは、プライバシーポリシーを確認したことを記録する確認欄と、国外提供に同意する欄を別々に設け、いずれもあらかじめ選択しない状態で表示します。Privacy確認欄は、プライバシーポリシーを確認したことの記録であり、国外提供への同意を兼ねません。
 
 Contactフォームでは、国外提供への同意欄が選択された後にTurnstileを初期化し、トークンを取得・検証します。同意前には、Turnstileのための処理および問い合わせ本文の当方のContact APIまたはResendへの送信を開始しません。
 
@@ -121,11 +128,12 @@ GitHubは、利用者の個人データの保存または処理には使用し�
 - 利用しない情報: 認証情報、完全な決済情報、本人確認書類および本番用の秘密情報
 - 保護措置: Googleが公表する通信時・保存時の保護、アクセス制御、セキュリティ監視および国際移転の枠組みに加え、当方は共有先を必要な相手に限定し、リスクに応じてアップロード前暗号化を行います。一般Googleアカウントを利用し、Google Workspace向けデータ処理補遺の適用は前提としません。
 
-### Stripe Japan, Inc.、Stripe Payments Europe, LimitedおよびStripe, LLC
+### Stripe Japan, Inc.、Stripe Technology Company Limited、Stripe Payments Europe, LimitedおよびStripe, LLC
 
-- Stripe Japan, Inc.（日本）: 日本登録アカウントの契約主体
-- Stripe Payments Europe, Limited（アイルランド）: 個人データ処理に関する追加当事者
-- Stripe, LLC（アメリカ合衆国）: サービス提供のため個人データが移転される法人
+- Stripe Japan, Inc.（日本）: 日本登録アカウントの契約主体であり、利用する製品に応じてサービス提供に関与する法人
+- Stripe Technology Company Limited（アイルランド）: 米州外における個人データ処理の主要な管理者であり、日本の利用者について、利用製品および処理目的に応じて、単独または他のStripe法人と共同で管理者となる場合がある法人
+- Stripe Payments Europe, Limited（アイルランド）: Stripeのデータ処理補遺上の契約当事者であり、個人データ処理のための追加当事者
+- Stripe, LLC（アメリカ合衆国）: サービス提供のため、データ処理補遺に基づいて個人データが移転される法人
 - 保存・処理地域: アメリカ合衆国その他Stripe、その関連会社または再委託先が業務を行う地域
 - 取り扱う情報: 実際に利用するStripe製品に応じて、氏名、メールアドレス、注文内容、支払情報、IPアドレスその他決済、不正利用防止、本人確認および法令遵守に必要な情報を、決済前の説明に表示します。完全なカード情報はStripeが直接取り扱います。
 - 目的: 決済処理、不正利用防止、本人確認、法令遵守、返金および取引管理
@@ -133,6 +141,8 @@ GitHubは、利用者の個人データの保存または処理には使用し�
 - 公式情報: <https://stripe.com/legal/ssa>、<https://stripe.com/legal/dpa>、<https://stripe.com/en-jp/legal/privacy-center>、<https://stripe.com/legal/service-providers>
 
 Stripeは、当方の指示に基づく処理者として取り扱う場合と、不正利用防止、法令遵守、本人確認、サービス改善その他Stripeが定める目的について、Stripe自身の責任で管理者として取り扱う場合があります。
+
+案件別説明および同意では、上記4社を一律に同意対象とせず、実際に使用するStripe製品および処理目的を確認したうえで、その案件に関与する法人だけを特定します。
 
 ## 7. 同意記録
 

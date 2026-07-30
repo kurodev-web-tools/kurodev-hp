@@ -12,6 +12,8 @@
 
 **Approval boundary:** This plan is not implementation authorization. Do not edit application/legal sources, dates, routes, footer, Contact, or provider settings until Task 1 passes. Do not run `npm ci` or `npm install`. Do not stage, commit, push, open a PR, merge, deploy, or call live providers without separate explicit approval.
 
+**2026-07-30 R2 legal-gate exception and implementation authorization:** Approval record `creator-platform-task14-step0-r2-owner-designated-public-use-approval-20260730-v1` applies only to the corrected R2 seven-document set and its recorded canonical SHA-256 values. It explicitly records `humanLegalReviewCompleted: false` and `attorneyReviewCompleted: false`; the repository owner accepts the residual risk and adopts the owner-designated AI-assisted review as this project's internal substitute for the human-legal gate. Never represent the set as human- or attorney-reviewed. The exact recorded bytes may be promoted to `ready / approved / satisfied`, and local route, footer, Contact destination, Task 13, and Task 14 implementation and verification may proceed. Commit, push, PR, merge, deploy, production activation, live provider calls, provider-setting changes, dependency installation, and content outside the recorded hashes remain unauthorized.
+
 ---
 
 ## File map

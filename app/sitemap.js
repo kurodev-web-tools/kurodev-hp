@@ -1,32 +1,44 @@
-import { getPublicationApprovedWorkBySlug } from "@/lib/content/work-content.mjs";
-import { statusRules } from "@/lib/content/status.mjs";
-import { getGuideAlternates, getGuideInventory } from "@/lib/guides/guide-loader.mjs";
+import { statusRules } from "../lib/content/status.mjs";
+import { getPublicationApprovedWorkBySlug } from "../lib/content/work-content.mjs";
+import { getGuideAlternates, getGuideInventory } from "../lib/guides/guide-loader.mjs";
 
 const SITE_URL = "https://kuro-lab.com";
+const CONTENT_UPDATED = new Date("2026-07-30T00:00:00.000Z");
+const LEGAL_UPDATED = new Date("2026-08-04T00:00:00.000Z");
 
-const baseRoutes = [
-  "/",
-  "/tools",
-  "/creator-site",
-  "/works",
-  "/guide",
-  "/about",
-  "/contact",
-  "/en",
-  "/en/tools",
-  "/en/creator-site",
-  "/en/works",
-  "/en/guide",
-  "/en/about",
-  "/en/contact"
+const basePairs = [
+  ["/", "/en"],
+  ["/tools", "/en/tools"],
+  ["/creator-site", "/en/creator-site"],
+  ["/works", "/en/works"],
+  ["/guide", "/en/guide"],
+  ["/about", "/en/about"],
+  ["/contact", "/en/contact"]
+];
+const legalPairs = [
+  ["/terms", "/en/terms"],
+  ["/privacy", "/en/privacy"],
+  ["/privacy/foreign-processing", "/en/privacy/foreign-processing"]
 ];
 
+function pairedEntries([japaneseRoute, englishRoute], lastModified) {
+  const languages = {
+    ja: `${SITE_URL}${japaneseRoute}`,
+    en: `${SITE_URL}${englishRoute}`,
+    "x-default": `${SITE_URL}${japaneseRoute}`
+  };
+  return [japaneseRoute, englishRoute].map((route) => ({
+    url: `${SITE_URL}${route}`,
+    lastModified,
+    alternates: { languages }
+  }));
+}
+
 export default async function sitemap() {
-  const lastModified = new Date();
   const flagship = getPublicationApprovedWorkBySlug("kuro-stream-kit");
-  const routes = flagship
-    ? [...baseRoutes, "/works/kuro-stream-kit", "/en/works/kuro-stream-kit"]
-    : baseRoutes;
+  const pagePairs = flagship
+    ? [...basePairs, ["/works/kuro-stream-kit", "/en/works/kuro-stream-kit"]]
+    : basePairs;
   const guides = await getGuideInventory();
   const guideRoutes = guides.filter((guide) => statusRules[guide.status].indexable).map((guide) => {
     const locales = getGuideAlternates(guide, guides);
@@ -50,7 +62,12 @@ export default async function sitemap() {
   });
 
   return [
-    ...routes.map((route) => ({ url: `${SITE_URL}${route}`, lastModified })),
+    ...pagePairs.flatMap((pair) => pairedEntries(pair, CONTENT_UPDATED)),
+    ...legalPairs.flatMap((pair) => pairedEntries(pair, LEGAL_UPDATED)),
+    {
+      url: `${SITE_URL}/legal/tokushoho`,
+      lastModified: LEGAL_UPDATED
+    },
     ...guideRoutes
   ];
 }

@@ -46,15 +46,15 @@ The user previously described four current tools, but the fourth available item 
 
 ## Task 12 legal candidate intake
 
-The repository owner fixed the following five paths as the only Creator Platform legal publication candidates. Path selection does not approve their content. All entries remain blocked, undated, and unavailable to routes, footer links, Contact Privacy navigation, metadata, or the launch manifest until Task 14 Step 0 supplies coordinated dates, fresh fingerprints, repository-owner approval, and human legal approval.
+The repository owner fixed the following five paths as the original Creator Platform legal publication candidates. On `2026-07-30`, Task 14 Step 0 fixed their publication IDs, version `1.0.0`, coordinated `2026-08-04` effective/update date, routes and fresh candidate fingerprints. Approval record `creator-platform-task14-step0-r2-owner-designated-public-use-approval-20260730-v1` authorizes the exact R2 bytes for `ready` promotion and local implementation while explicitly recording that no human or attorney review occurred.
 
-| Entry | candidateSourcePath | owner | approvalState | effectiveDate | updateDate |
-| --- | --- | --- | --- | --- | --- |
-| Japanese Terms | `content/legal/ja/terms.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| English Terms | `content/legal/en/terms.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| Japanese Privacy | `content/legal/ja/privacy.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| English Privacy | `content/legal/en/privacy.md` | KuroDev repository owner | `blocked` | `null` | `null` |
-| Japanese commercial disclosure | `content/legal/ja/tokushoho.md` | KuroDev repository owner | `blocked` | `null` | `null` |
+| Entry | candidateSourcePath | documentId | version | owner | approvalState | effectiveDate | updateDate |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Japanese Terms | `content/legal/ja/terms.md` | `creator-platform-terms-ja-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| English Terms | `content/legal/en/terms.md` | `creator-platform-terms-en-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| Japanese Privacy | `content/legal/ja/privacy.md` | `creator-platform-privacy-ja-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| English Privacy | `content/legal/en/privacy.md` | `creator-platform-privacy-en-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
+| Japanese commercial disclosure | `content/legal/ja/tokushoho.md` | `creator-platform-tokushoho-ja-v1` | `1.0.0` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` |
 
 The Japanese commercial disclosure remains the only authorized commercial-disclosure candidate. No English translation or English `hreflang` is approved.
 
@@ -62,14 +62,18 @@ The Privacy candidates now use the owner-approved zero-cost operating model: Gma
 
 ### Task 12 foreign-processing review candidates
 
-The repository owner authorized preparation of the following Japanese and English texts only as unapproved AI drafts for human legal review. On `2026-07-17`, the owner selected independent candidate routes at `/privacy/foreign-processing` and `/en/privacy/foreign-processing` as the placement design. These rows do not expand the approved publication inventory and do not authorize either route, a footer link, Contact control, consent record, provider call, Task 14 inclusion, or publication; implementation still requires separate explicit approval after legal and provider review.
+The repository owner authorized preparation of the following Japanese and English texts as unapproved drafts for human legal review and selected independent candidate routes at `/privacy/foreign-processing` and `/en/privacy/foreign-processing` on `2026-07-17`. On `2026-07-30`, the owner separately authorized route implementation and Task 14 publication-candidate inclusion, then adopted the exact corrected R2 hashes for `ready` promotion under the owner-designated exception described above.
 
-| Entry | candidateSourcePath | owner | approvalState | effectiveDate | updateDate | providerReviewDate |
-| --- | --- | --- | --- | --- | --- | --- |
-| Japanese foreign-processing notice | `content/legal/ja/foreign-processing.md` | KuroDev repository owner | `blocked` | `null` | `null` | `2026-07-17` |
-| English foreign-processing notice | `content/legal/en/foreign-processing.md` | KuroDev repository owner | `blocked` | `null` | `null` | `2026-07-17` |
+| Entry | candidateSourcePath | documentId | version | candidateRoute | owner | approvalState | effectiveDate | updateDate | providerReviewDate |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Japanese foreign-processing notice | `content/legal/ja/foreign-processing.md` | `creator-platform-foreign-processing-ja-v1` | `1.0.0` | `/privacy/foreign-processing` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` | `2026-07-30` |
+| English foreign-processing notice | `content/legal/en/foreign-processing.md` | `creator-platform-foreign-processing-en-v1` | `1.0.0` | `/en/privacy/foreign-processing` | KuroDev repository owner | `ready` | `2026-08-04` | `2026-08-04` | `2026-07-30` |
 
-The Task 12 review and re-review approved all seven undated bodies after the final minor data-flow corrections. The candidates remain `blocked / unapproved / legal-review-required`: body approval does not authorize routes, footer or Contact activation, Task 14 inclusion, publication, or Git/external mutations. The verified provider review date is `2026-07-17`, and the verified Resend sending region is Tokyo (`ap-northeast-1`). Cloudflare agreement and DPA applicability, tracking and routing settings, the enforced GitHub boundary excluding User personal data, the Stripe product and information fields actually used, and all current subprocessors remain operational verification gates. If publication occurs on or after the scheduled `2026-07-30` Google Terms update, the Google contracting entity, applicable terms, and related disclosures must be rechecked before Task 14 approval.
+The corrected R2 seven-document snapshot set has been encrypted, decrypted/read back, checksum-verified, and promoted to `ready / approved / satisfied` under the owner-designated approval record. The record explicitly states that human and attorney review were not completed and must not be represented otherwise. Commit, push, PR, merge, deploy, production activation, live provider calls, provider-setting changes, and dependency installation remain unauthorized.
+
+On `2026-07-31`, the repository owner separately accepted the residual risk of using the fixed six-copy Contact consent set without a human lawyer or independent human legal reviewer and adopted its exact ID/version/SHA-256-bound owner-designated AI-assisted review as the project's internal substitute for that Contact-copy human-legal gate. The six-copy packet is therefore `ready` for the scheduled publication candidate while remaining explicitly not human- or attorney-reviewed. Git, provider and production actions remain separately gated.
+
+The canonical SHA-256 values and reserved snapshot candidate IDs for all seven dated sources are recorded in `docs/active/KURODEV_TASK12_LEGAL_REVIEW_PACKET.md` under `2026-07-30 dated publication-candidate fingerprints`. Canonicalization is UTF-8, LF line endings, and exactly one trailing newline.
 
 ## Approved owner content
 

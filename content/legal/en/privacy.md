@@ -1,13 +1,18 @@
 ---
-documentId: creator-platform-privacy-en-ai-draft-v1
+documentId: creator-platform-privacy-en-v1
+version: 1.0.0
 locale: en
 documentType: privacy
-status: blocked
-approvalState: unapproved
-reviewRequirement: legal-review-required
+status: ready
+approvalState: approved
+reviewRequirement: satisfied
 draftDate: 2026-07-15
-effectiveDate: null
-updateDate: null
+effectiveDate: 2026-08-04
+updateDate: 2026-08-04
+serviceScope: creator-platform
+canonicalRoute: /en/privacy
+equivalentDocumentId: creator-platform-privacy-ja-v1
+equivalentRoute: /privacy
 equivalentDraft: content/legal/ja/privacy.md
 reviewEvidence: docs/active/KURODEV_TASK12_LEGAL_REVIEW_PACKET.md
 ---
@@ -97,7 +102,7 @@ We do not provide personal data to a third party except where required by law, w
 
 Cloudflare processing associated with an ordinary page view is not based on Contact-form consent. If the relevant technical information constitutes personal data for KuroDev and its disclosure to a third party outside Japan is subject to Article 28 of Japan's Act on the Protection of Personal Information, KuroDev verifies its contract with Cloudflare, the Data Processing Addendum applicable to KuroDev, Cloudflare's certifications, and other measures, and uses a structure permitted by applicable law. KuroDev periodically verifies the implementation of those measures and provides information required by law when requested by an individual.
 
-For foreign transfers of inquiry information associated with Contact-form submission, KuroDev provides the required advance information and obtains consent based on the separately displayed notice. Contact-form consent covers submission-stage processing by Cloudflare and Resend, and the receipt, retention, sending, and response through Google Gmail of the inquiry and related follow-up communications concerning quotations, contracts, production, acceptance review, payment, refunds, and other agreed business matters. Where related follow-up communications are sent to the public contact address, the consent scope also covers routing of those communications through Cloudflare Email Routing to Gmail. The form will provide access to this Policy and the separate “Notice Regarding Processing of Personal Data Outside Japan” and will display the foreign-transfer consent checkbox unchecked by default. For Google Drive, Stripe, and any other service used during production or payment, we provide the necessary information and obtain explicit consent required by law before that service is used for the engagement. GitHub is not used as a recipient that stores or processes a User's personal data.
+For foreign transfers of inquiry information associated with Contact-form submission, KuroDev provides the required advance information and obtains consent based on the separately displayed notice. Contact-form consent covers submission-stage processing by Cloudflare and Resend, and the receipt, retention, sending, and response through Google Gmail of the inquiry and related follow-up communications concerning quotations, contracts, production, acceptance review, payment, refunds, and other agreed business matters. Where related follow-up communications are sent to the public contact address, the consent scope also covers routing of those communications through Cloudflare Email Routing to Gmail. The form will provide access to this Policy and the separate “Notice Regarding Processing of Personal Data Outside Japan.” The Contact form displays a separate Privacy Policy acknowledgment checkbox and foreign-transfer consent checkbox, each unchecked by default. Acknowledgment of the Privacy Policy records that the User reviewed the Policy and does not itself constitute consent to a foreign transfer. For Google Drive, Stripe, and any other service used during production or payment, we provide the necessary information and obtain explicit consent required by law before that service is used for the engagement. GitHub is not used as a recipient that stores or processes a User's personal data.
 
 Initial ordinary inquiries are accepted through the Contact form as a general rule. Direct email is also used when the Contact form is unavailable, for requests concerning retained personal data, requests for operator information, security communications, and communications relating to an existing inquiry or contract. Before sending an ordinary inquiry, the sender will be able to review this Policy, the Notice Regarding Processing of Personal Data Outside Japan, and the consent wording applicable to that transmission. If an initial ordinary-inquiry email does not contain the required consent wording, we will perform only the minimum processing needed to direct the sender to resubmit through the current Contact form. Consent obtained after receipt will not be applied retroactively to processing that occurred when the email was received, and the email will be deleted to the extent legally and technically possible. A request concerning retained personal data, a request for operator information, a security communication, or another communication that must be accepted by law will not be rejected solely because the consent wording is absent and will be processed to the extent legally required.
 

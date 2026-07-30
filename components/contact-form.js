@@ -1,26 +1,32 @@
 "use client";
 
+import Link from "next/link";
 import Script from "next/script";
 import { useRef, useState } from "react";
+import {
+  CONTACT_CONSENT_REGISTRY,
+  buildDirectEmailHref,
+  contactConsentErrors,
+  currentContactConsentSubmission
+} from "@/lib/contact-consent.mjs";
 import {
   CONTACT_CATEGORIES,
   firstInvalidContactField,
   validateContactInput
 } from "@/lib/contact-validation.mjs";
+import { localePath } from "@/lib/i18n.mjs";
 
 const initialState = {
   name: "",
   email: "",
   category: "",
   referenceUrl: "",
-  message: ""
+  message: "",
+  privacyAcknowledged: false,
+  foreignTransferConsent: false
 };
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-
-function resetTurnstile() {
-  if (typeof window !== "undefined" && window.turnstile) window.turnstile.reset();
-}
 
 function describedBy(field, errors, guidanceId) {
   return [guidanceId, errors[field] ? `${field}-error` : null].filter(Boolean).join(" ") || undefined;
@@ -32,10 +38,69 @@ export function ContactForm({ locale, copy }) {
   const [errors, setErrors] = useState({});
   const fieldRefs = useRef({});
   const turnstileRef = useRef(null);
+  const widgetIdRef = useRef(null);
+  const tokenResolveRef = useRef(null);
+  const tokenRejectRef = useRef(null);
+  const consent = CONTACT_CONSENT_REGISTRY[locale];
+  const isSubmitting = status === "turnstile" || status === "sending";
+
+  function clearPendingTurnstile(error) {
+    if (error) tokenRejectRef.current?.(error);
+    tokenResolveRef.current = null;
+    tokenRejectRef.current = null;
+  }
+
+  function removeTurnstile() {
+    clearPendingTurnstile(new Error("Turnstile consent was withdrawn."));
+    if (typeof window !== "undefined" && window.turnstile && widgetIdRef.current !== null) {
+      window.turnstile.remove(widgetIdRef.current);
+    }
+    widgetIdRef.current = null;
+  }
+
+  function resetTurnstile() {
+    clearPendingTurnstile();
+    if (typeof window !== "undefined" && window.turnstile && widgetIdRef.current !== null) {
+      window.turnstile.reset(widgetIdRef.current);
+    }
+  }
+
+  function renderTurnstile() {
+    if (!window.turnstile || !turnstileRef.current || widgetIdRef.current !== null) return;
+    widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+      sitekey: turnstileSiteKey,
+      execution: "execute",
+      appearance: "execute",
+      callback(token) {
+        tokenResolveRef.current?.(token);
+        clearPendingTurnstile();
+      },
+      "error-callback"() {
+        clearPendingTurnstile(new Error("Turnstile verification failed."));
+      },
+      "expired-callback"() {
+        resetTurnstile();
+      }
+    });
+  }
+
+  function executeTurnstile() {
+    if (!turnstileSiteKey) return Promise.resolve("");
+    if (!window.turnstile || widgetIdRef.current === null) {
+      return Promise.reject(new Error("Turnstile is not ready."));
+    }
+    return new Promise((resolve, reject) => {
+      tokenResolveRef.current = resolve;
+      tokenRejectRef.current = reject;
+      window.turnstile.execute(widgetIdRef.current);
+    });
+  }
 
   function handleChange(event) {
-    const { name, value } = event.target;
-    setValues((current) => ({ ...current, [name]: value }));
+    const { checked, name, type, value } = event.target;
+    const nextValue = type === "checkbox" ? checked : value;
+    if (name === "foreignTransferConsent" && nextValue === false) removeTurnstile();
+    setValues((current) => ({ ...current, [name]: nextValue }));
     setErrors((current) => {
       if (!current[name]) return current;
       const next = { ...current };
@@ -46,7 +111,10 @@ export function ContactForm({ locale, copy }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const nextErrors = validateContactInput(values, locale);
+    const nextErrors = {
+      ...validateContactInput(values, locale),
+      ...contactConsentErrors(values, locale)
+    };
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -56,21 +124,21 @@ export function ContactForm({ locale, copy }) {
       return;
     }
 
-    const formData = new FormData(event.currentTarget);
-    const turnstileToken = String(formData.get("cf-turnstile-response") ?? "");
-    if (turnstileSiteKey && !turnstileToken) {
-      setErrors({ turnstile: copy.turnstile });
-      setStatus("turnstile");
-      requestAnimationFrame(() => turnstileRef.current?.focus());
-      return;
-    }
-
-    setStatus("sending");
+    let turnstileToken = "";
     try {
+      if (turnstileSiteKey) {
+        setStatus("turnstile");
+        turnstileToken = await executeTurnstile();
+      }
+      setStatus("sending");
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, turnstileToken })
+        body: JSON.stringify({
+          ...values,
+          ...currentContactConsentSubmission(locale),
+          turnstileToken
+        })
       });
 
       if (!response.ok) {
@@ -79,11 +147,12 @@ export function ContactForm({ locale, copy }) {
         return;
       }
 
+      removeTurnstile();
       setValues(initialState);
       setErrors({});
       setStatus("success");
-      resetTurnstile();
     } catch {
+      setErrors((current) => ({ ...current, turnstile: copy.turnstile }));
       setStatus("error");
       resetTurnstile();
     }
@@ -91,8 +160,14 @@ export function ContactForm({ locale, copy }) {
 
   return (
     <>
-      {turnstileSiteKey ? <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" async defer /> : null}
-      <form className="contact-form" onSubmit={handleSubmit} noValidate aria-busy={status === "sending"}>
+      {turnstileSiteKey && values.foreignTransferConsent ? (
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+          strategy="afterInteractive"
+          onReady={renderTurnstile}
+        />
+      ) : null}
+      <form className="contact-form" onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
         <div className="contact-form__field-grid">
           <div className="contact-form__field">
             <label htmlFor="contact-name">{copy.labels.name}<span>{copy.required}</span></label>
@@ -129,24 +204,66 @@ export function ContactForm({ locale, copy }) {
           {errors.message ? <p id="message-error" className="contact-form__error">{errors.message}</p> : null}
         </div>
 
-        {turnstileSiteKey ? (
+        <fieldset className="contact-form__consents">
+          <legend>{copy.consentLegend}</legend>
+          <div className="contact-form__consent">
+            <label htmlFor="contact-privacy-acknowledged">
+              <input
+                ref={(node) => { fieldRefs.current.privacyAcknowledged = node; }}
+                id="contact-privacy-acknowledged"
+                name="privacyAcknowledged"
+                type="checkbox"
+                checked={values.privacyAcknowledged}
+                onChange={handleChange}
+                required
+                aria-invalid={Boolean(errors.privacyAcknowledged)}
+                aria-describedby={describedBy("privacyAcknowledged", errors)}
+              />
+              <span>{consent.privacy.copy}</span>
+            </label>
+            <div className="contact-form__consent-links">
+              <Link href={localePath(locale, "/privacy")} prefetch={false}>{copy.privacyLink}</Link>
+            </div>
+            {errors.privacyAcknowledged ? <p id="privacyAcknowledged-error" className="contact-form__error">{errors.privacyAcknowledged}</p> : null}
+          </div>
+
+          <div className="contact-form__consent">
+            <label htmlFor="contact-foreign-transfer-consent">
+              <input
+                ref={(node) => { fieldRefs.current.foreignTransferConsent = node; }}
+                id="contact-foreign-transfer-consent"
+                name="foreignTransferConsent"
+                type="checkbox"
+                checked={values.foreignTransferConsent}
+                onChange={handleChange}
+                required
+                aria-invalid={Boolean(errors.foreignTransferConsent)}
+                aria-describedby={describedBy("foreignTransferConsent", errors)}
+              />
+              <span>{consent.foreign.copy}</span>
+            </label>
+            <div className="contact-form__consent-links">
+              <Link href={localePath(locale, "/privacy")} prefetch={false}>{copy.privacyLink}</Link>
+              <Link href={localePath(locale, "/privacy/foreign-processing")} prefetch={false}>{copy.foreignProcessingLink}</Link>
+            </div>
+            {errors.foreignTransferConsent ? <p id="foreignTransferConsent-error" className="contact-form__error">{errors.foreignTransferConsent}</p> : null}
+          </div>
+        </fieldset>
+
+        {turnstileSiteKey && values.foreignTransferConsent ? (
           <div ref={turnstileRef} className="contact-form__turnstile" tabIndex={-1} aria-invalid={Boolean(errors.turnstile)} aria-describedby={errors.turnstile ? "turnstile-error" : undefined}>
-            <div className="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto" />
             {errors.turnstile ? <p id="turnstile-error" className="contact-form__error">{errors.turnstile}</p> : null}
           </div>
         ) : null}
 
         <div className="contact-form__actions">
-          <div className="contact-form__privacy">
-            <span className="contact-form__privacy-unavailable" role="link" aria-disabled="true">{copy.privacyUnavailable}</span>
-            <small>{copy.privacyPurpose}</small>
-          </div>
-          <button type="submit" disabled={status === "sending"}>{status === "sending" ? copy.sending : copy.submit}</button>
+          <small>{copy.privacyPurpose}</small>
+          <button type="submit" disabled={isSubmitting}>{status === "sending" ? copy.sending : copy.submit}</button>
         </div>
 
         <div className={`contact-form__status contact-form__status--${status}`} role={status === "error" ? "alert" : "status"} aria-live={status === "error" ? "assertive" : "polite"} aria-atomic="true">
           {copy.status[status]}
-          {status === "error" ? <p className="contact-form__fallback">{copy.fallback} <a href="mailto:contact@kuro-lab.com">contact@kuro-lab.com</a></p> : null}
+          {status === "error" ? <p className="contact-form__fallback">{copy.fallback} <a href={buildDirectEmailHref(locale)}>{copy.fallbackAction}</a></p> : null}
         </div>
       </form>
     </>
