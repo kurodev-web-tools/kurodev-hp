@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { guideLanguageTarget } from "@/lib/content/guide-routes.mjs";
 import { equivalentLocalePath, pathnameLocale, unlocalizedPath } from "@/lib/i18n.mjs";
 
-const pairedRoutes = ["/", "/tools", "/creator-site", "/works", "/works/kuro-stream-kit", "/guide", "/about", "/contact", "/terms", "/privacy"];
+const pairedRoutes = ["/", "/tools", "/creator-site", "/works", "/works/kuro-stream-kit", "/guide", "/about", "/contact", "/terms", "/privacy", "/privacy/foreign-processing"];
 
 export function LanguageSwitch({ compact = false }) {
   const pathname = usePathname();
@@ -22,7 +22,7 @@ export function LanguageSwitch({ compact = false }) {
       hrefLang={targetLocale}
       lang={targetLocale}
       onClick={() => window.localStorage.setItem("kurodev-locale", targetLocale)}
-      aria-label={targetLocale === "en" ? "View this site in English" : "日本語で表示"}
+      aria-label={targetLocale === "en" ? "日本語 / EN: View this site in English" : "日本語 / EN: 日本語で表示"}
     >
       <span aria-hidden="true">{compact ? label : `日本語 / EN`}</span>
     </a>

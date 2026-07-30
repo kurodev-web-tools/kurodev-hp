@@ -9,6 +9,7 @@ import "./styles/works-page.css";
 import "./styles/guide-page.css";
 import "./styles/about-page.css";
 import "./styles/contact-page.css";
+import "./styles/legal-page.css";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { SiteShell } from "@/components/site-shell";

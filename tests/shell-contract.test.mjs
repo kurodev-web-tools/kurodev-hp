@@ -45,6 +45,13 @@ test("language switching reloads the document so root locale semantics update", 
   assert.match(languageSwitch, /<a[\s\S]*href=\{href\}/);
 });
 
+test("language switching keeps its visible label inside the accessible name", async () => {
+  const languageSwitch = await readFile(languageSwitchUrl, "utf8");
+
+  assert.match(languageSwitch, /日本語 \/ EN: View this site in English/);
+  assert.match(languageSwitch, /日本語 \/ EN: 日本語で表示/);
+});
+
 test("theme changes preserve product media on a stable compositing layer", async () => {
   // Given: palette transitions repaint ProductMedia surfaces while their images remain mounted.
   const componentStyles = await readFile(new URL("../app/styles/components.css", import.meta.url), "utf8");

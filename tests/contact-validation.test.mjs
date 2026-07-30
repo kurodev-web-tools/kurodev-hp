@@ -208,21 +208,32 @@ test("Contact keeps semantic and visual order with accessible form states", asyn
   assert.match(formSource, /aria-describedby/);
   assert.match(formSource, /firstInvalidContactField/);
   assert.match(formSource, /turnstile-error/);
-  assert.match(formSource, /turnstileRef\.current\?\.focus/);
+  assert.match(formSource, /window\.turnstile\.execute/);
   assert.match(formSource, /role=\{status === "error" \? "alert" : "status"\}/);
-  assert.match(formSource, /disabled=\{status === "sending"\}/);
-  assert.match(formSource, /mailto:contact@kuro-lab\.com/);
+  assert.match(formSource, /disabled=\{isSubmitting\}/);
+  assert.match(formSource, /buildDirectEmailHref\(locale\)/);
 });
 
-test("Contact does not enable the unpublished Privacy route", async () => {
-  // Given: Task 12 legal routes do not exist yet.
+test("Japanese Contact hero preserves its reviewed title lines at the 1024px grid breakpoint", async () => {
+  const stylesheet = await readFile(`${repositoryRoot}/app/styles/contact-page.css`, "utf8");
+
+  assert.match(
+    stylesheet,
+    /\.contact-page--ja \.contact-hero h1 span\s*\{[^}]*display:\s*block;/s
+  );
+  assert.match(
+    stylesheet,
+    /@media \(min-width:\s*1024px\) and \(max-width:\s*1150px\)\s*\{[\s\S]*?\.contact-page--ja \.contact-hero h1\s*\{[^}]*font-size:\s*48px;/s
+  );
+});
+
+test("Contact links the approved localized Privacy route", async () => {
+  // Given: the Task 12 Privacy route pair is approved and implemented.
   const formSource = await readFile(`${repositoryRoot}/components/contact-form.js`, "utf8");
 
-  // When: the submit-adjacent privacy notice is inspected.
-  // Then: it is visibly unavailable rather than linking to a nonexistent destination.
-  assert.match(formSource, /contact-form__privacy-unavailable/);
-  assert.doesNotMatch(formSource, /href=["'{`]\/privacy/);
-  assert.match(formSource, /role="link" aria-disabled="true"/);
+  // When/Then: the submit-adjacent notice resolves through the current locale.
+  assert.match(formSource, /href=\{localePath\(locale, "\/privacy"\)\}/);
+  assert.doesNotMatch(formSource, /contact-form__privacy-unavailable/);
 });
 
 test("About and Contact are included in the localized sitemap inventory", async () => {

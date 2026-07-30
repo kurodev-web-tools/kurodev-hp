@@ -1,14 +1,19 @@
 ---
-documentId: creator-platform-foreign-processing-en-ai-draft-v1
+documentId: creator-platform-foreign-processing-en-v1
+version: 1.0.0
 locale: en
 documentType: foreign-processing
-status: blocked
-approvalState: unapproved
-reviewRequirement: legal-review-required
+status: ready
+approvalState: approved
+reviewRequirement: satisfied
 draftDate: 2026-07-17
-effectiveDate: null
-updateDate: null
-providerReviewDate: 2026-07-17
+effectiveDate: 2026-08-04
+updateDate: 2026-08-04
+providerReviewDate: 2026-07-30
+serviceScope: creator-platform
+canonicalRoute: /en/privacy/foreign-processing
+equivalentDocumentId: creator-platform-foreign-processing-ja-v1
+equivalentRoute: /privacy/foreign-processing
 equivalentDraft: content/legal/ja/foreign-processing.md
 reviewEvidence: docs/active/KURODEV_TASK12_LEGAL_REVIEW_PACKET.md
 ---
@@ -23,7 +28,7 @@ In this notice, the “recipient country” is, in principle, the country in whi
 
 For each processing stage, this notice identifies the recipient entity and country, information processed, purpose, storage and processing locations, safeguards published by the provider, how to check subprocessors, and review date. We do not request advance blanket consent for a service whose use has not yet been determined.
 
-Provider information last reviewed: July 17, 2026.
+Provider information last reviewed: July 30, 2026.
 
 ## 2. Information about recipient countries
 
@@ -61,6 +66,8 @@ Cloudflare processes information as KuroDev's processor for ordinary page delive
 ## 4. Contact-form submission
 
 Contact-form consent covers submission-stage processing by Cloudflare and Resend, and the receipt, retention, sending, and response through Google Gmail of the inquiry and related follow-up communications concerning quotations, contracts, production, acceptance review, payment, refunds, and other agreed business matters. Where related communications are sent to the public contact address, the scope also covers routing through Cloudflare Email Routing. It does not cover Google Drive or Stripe. GitHub is not used as a recipient that stores or processes a User's personal data.
+
+The Contact form displays a separate Privacy Policy acknowledgment checkbox and foreign-transfer consent checkbox, each unchecked by default. Acknowledgment of the Privacy Policy records that the User reviewed the Policy and does not itself constitute consent to a foreign transfer.
 
 Turnstile is initialized only after the foreign-transfer consent checkbox has been selected. Before consent, no Turnstile token is obtained or verified, and the inquiry content is not transmitted to KuroDev's Contact API running on Cloudflare or to Resend.
 
@@ -121,11 +128,12 @@ KuroDev does not use GitHub to store or process a User's personal data. If a pri
 - Information not stored: credentials, full payment details, identity-verification documents, and production-environment secrets
 - Safeguards: In addition to Google's published protections in transit and at rest, access controls, security monitoring, and international-transfer frameworks, KuroDev limits sharing to necessary recipients and encrypts files before upload where appropriate to the risk. KuroDev uses a general Google Account and does not assume that the Google Workspace Data Processing Addendum applies.
 
-### Stripe Japan, Inc., Stripe Payments Europe, Limited, and Stripe, LLC
+### Stripe Japan, Inc., Stripe Technology Company Limited, Stripe Payments Europe, Limited, and Stripe, LLC
 
-- Stripe Japan, Inc. (Japan): contracting entity for an account registered in Japan
-- Stripe Payments Europe, Limited (Ireland): additional party for personal data processing
-- Stripe, LLC (United States): entity to which personal data is transferred to provide the services
+- Stripe Japan, Inc. (Japan): the contracting entity for an account registered in Japan and a local entity involved in providing the applicable Stripe services
+- Stripe Technology Company Limited (Ireland): Stripe's primary data controller for processing Personal Data outside the Americas and, depending on the product and processing context, a controller acting alone or jointly with other Stripe entities for Users in Japan
+- Stripe Payments Europe, Limited (Ireland): the contracting entity under Stripe's Data Processing Agreement and an additional party for personal-data processing
+- Stripe, LLC (United States): the entity to which Personal Data is transferred under the Data Processing Agreement as necessary to provide the services
 - Storage and processing locations: the United States and other locations in which Stripe, its affiliates, or subprocessors operate
 - Information: before payment, the explanation identifies the information processed by the Stripe product actually used, which may include name, email address, order details, payment information, IP address, and other information required for payment, fraud prevention, identity verification, and legal compliance. Stripe directly handles full card details.
 - Purpose: payment processing, fraud prevention, identity verification, legal compliance, refunds, and transaction administration
@@ -133,6 +141,8 @@ KuroDev does not use GitHub to store or process a User's personal data. If a pri
 - Official information: <https://stripe.com/legal/ssa>, <https://stripe.com/legal/dpa>, <https://stripe.com/en-jp/legal/privacy-center>, <https://stripe.com/legal/service-providers>
 
 Stripe may act as a processor on KuroDev's instructions and may also act as a controller under its own responsibility for fraud prevention, legal compliance, identity verification, service improvement, and other purposes identified by Stripe.
+
+The engagement-specific explanation and consent do not list all four entities automatically. KuroDev first confirms the Stripe product and processing purpose actually used, then identifies only the entities involved in that engagement.
 
 ## 7. Consent records
 

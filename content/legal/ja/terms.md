@@ -1,13 +1,18 @@
 ---
-documentId: creator-platform-terms-ja-ai-draft-v1
+documentId: creator-platform-terms-ja-v1
+version: 1.0.0
 locale: ja
 documentType: terms
-status: blocked
-approvalState: unapproved
-reviewRequirement: legal-review-required
+status: ready
+approvalState: approved
+reviewRequirement: satisfied
 draftDate: 2026-07-15
-effectiveDate: null
-updateDate: null
+effectiveDate: 2026-08-04
+updateDate: 2026-08-04
+serviceScope: creator-platform
+canonicalRoute: /terms
+equivalentDocumentId: creator-platform-terms-en-v1
+equivalentRoute: /en/terms
 equivalentDraft: content/legal/en/terms.md
 reviewEvidence: docs/active/KURODEV_TASK12_LEGAL_REVIEW_PACKET.md
 ---

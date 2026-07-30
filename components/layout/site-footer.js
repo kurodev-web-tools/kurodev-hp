@@ -9,8 +9,8 @@ export function SiteFooter() {
   const locale = pathnameLocale(usePathname());
   const navigation = siteCopy[locale].navigation;
   const legalLinks = locale === "ja"
-    ? [["利用規約", "/terms"], ["プライバシー", "/privacy"], ["特定商取引法に基づく表記", "/legal/tokushoho"]]
-    : [["Terms", "/terms"], ["Privacy", "/privacy"], ["Commercial disclosure (Japanese)", "/legal/tokushoho"]];
+    ? [["利用規約", "/terms"], ["プライバシー", "/privacy"], ["国外での個人データの取扱い", "/privacy/foreign-processing"], ["特定商取引法に基づく表記", "/legal/tokushoho"]]
+    : [["Terms", "/terms"], ["Privacy", "/privacy"], ["Processing outside Japan", "/privacy/foreign-processing"], ["Commercial disclosure (Japanese)", "/legal/tokushoho"]];
 
   return (
     <footer className="site-footer">
@@ -29,7 +29,7 @@ export function SiteFooter() {
         </div>
         <div className="site-footer__legal">
           <span>© 2026 kurodev</span>
-          {legalLinks.map(([label, href]) => <span key={href}>{label}</span>)}
+          {legalLinks.map(([label, href]) => <Link key={href} href={locale === "en" && href === "/legal/tokushoho" ? href : localePath(locale, href)} prefetch={false}>{label}</Link>)}
         </div>
       </div>
     </footer>

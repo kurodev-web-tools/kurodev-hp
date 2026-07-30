@@ -1,13 +1,18 @@
 ---
-documentId: creator-platform-privacy-ja-ai-draft-v1
+documentId: creator-platform-privacy-ja-v1
+version: 1.0.0
 locale: ja
 documentType: privacy
-status: blocked
-approvalState: unapproved
-reviewRequirement: legal-review-required
+status: ready
+approvalState: approved
+reviewRequirement: satisfied
 draftDate: 2026-07-15
-effectiveDate: null
-updateDate: null
+effectiveDate: 2026-08-04
+updateDate: 2026-08-04
+serviceScope: creator-platform
+canonicalRoute: /privacy
+equivalentDocumentId: creator-platform-privacy-en-v1
+equivalentRoute: /en/privacy
 equivalentDraft: content/legal/en/privacy.md
 reviewEvidence: docs/active/KURODEV_TASK12_LEGAL_REVIEW_PACKET.md
 ---
@@ -97,7 +102,7 @@ Resend、GoogleおよびStripeは、前記の各目的に応じて情報を処�
 
 通常のページ表示に伴うCloudflareの処理については、Contactフォームの同意を根拠としません。当方は、当該技術情報が当方にとって個人データに該当し、外国にある第三者への提供として個人情報保護法第28条の適用対象となる場合、Cloudflareとの契約、当方に適用されるデータ処理補遺、同社の認証その他の措置を確認し、法令上認められる構成に基づいて取り扱います。当方は、当該措置の実施状況を定期的に確認し、本人から求められた場合は法令に従って必要な情報を提供します。
 
-Contactフォームの送信に伴う問い合わせ情報の国外提供については、別途表示する説明に基づき、必要な事前情報提供および本人同意を行います。Contactフォームの同意対象は、フォーム送信時のCloudflareおよびResendによる取扱い、ならびにGoogle Gmailを通じた問い合わせおよび当該問い合わせに続く見積り、契約、制作、検収、支払、返金その他の関連業務連絡の受信、保管、送信および返信です。関連業務連絡を公開メールアドレスで受信する場合は、Cloudflare Email Routingを通じたGmailへの転送も同意対象に含みます。プライバシーポリシーならびに別途表示する「国外での個人データの取扱い」を確認できるようにし、国外提供への同意欄をあらかじめ選択しない状態で表示します。Google Drive、Stripeその他の制作・決済段階で利用するサービスについては、当該サービスを実際に利用する案件について、利用開始前に別途必要な情報を提供し、法令上必要な明示的同意を取得します。GitHubは利用者の個人データを保存または処理する提供先として使用しません。
+Contactフォームの送信に伴う問い合わせ情報の国外提供については、別途表示する説明に基づき、必要な事前情報提供および本人同意を行います。Contactフォームの同意対象は、フォーム送信時のCloudflareおよびResendによる取扱い、ならびにGoogle Gmailを通じた問い合わせおよび当該問い合わせに続く見積り、契約、制作、検収、支払、返金その他の関連業務連絡の受信、保管、送信および返信です。関連業務連絡を公開メールアドレスで受信する場合は、Cloudflare Email Routingを通じたGmailへの転送も同意対象に含みます。プライバシーポリシーならびに別途表示する「国外での個人データの取扱い」を確認できるようにします。Contactフォームでは、本ポリシーを確認したことを記録する確認欄と、国外提供に同意する欄を別々に設け、いずれもあらかじめ選択しない状態で表示します。Privacy確認欄は、本ポリシーを確認したことの記録であり、国外提供への同意を兼ねません。Google Drive、Stripeその他の制作・決済段階で利用するサービスについては、当該サービスを実際に利用する案件について、利用開始前に別途必要な情報を提供し、法令上必要な明示的同意を取得します。GitHubは利用者の個人データを保存または処理する提供先として使用しません。
 
 初回の通常相談は、原則としてContactフォームで受け付けます。直接メールは、Contactフォームの障害時のほか、保有個人データ等に関する請求、事業者情報の請求、セキュリティに関する連絡、および既存の問い合わせまたは契約に関する連絡に使用します。送信前に、プライバシーポリシー、「国外での個人データの取扱い」および通常相談メールに使用する同意文を確認できるようにします。必要な同意文を含まない初回の通常相談メールを受信した場合、当方は送信者への案内に必要な最小限の処理を行い、現行のContactフォームからの再送を案内します。受信後に取得した同意を、受信時に行われた国外での取扱いに遡って適用せず、当該メールを法令上または技術上可能な範囲で削除します。ただし、保有個人データ等に関する請求、事業者情報の請求、セキュリティに関する連絡その他法令上受け付ける必要がある連絡については、同意文が含まれていないことのみを理由として受付を拒否せず、法令上必要な範囲で取り扱います。
 

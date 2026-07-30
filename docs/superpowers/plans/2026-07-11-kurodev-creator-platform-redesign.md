@@ -12,6 +12,8 @@
 
 **Git policy:** Execute in isolated `codex/` worktrees behind the preview integration branch defined below. Each task ends with a review checkpoint. Commit, push, and PR creation occur only when the user explicitly requests them.
 
+**2026-07-30 R2 legal-gate exception:** For only the corrected R2 seven-document set identified by approval record `creator-platform-task14-step0-r2-owner-designated-public-use-approval-20260730-v1`, the repository owner explicitly records that no human lawyer or independent human legal reviewer participated, accepts the residual risk, and adopts the exact hash-bound owner-designated AI-assisted review as the project's internal substitute for the human-legal gate. This exception must never be described as human or attorney review. It authorizes exact `ready / approved / satisfied` promotion and local route, footer, Contact destination, Task 13, and Task 14 implementation and verification. It does not authorize commit, push, PR, merge, deploy, production activation, live provider calls, provider-setting changes, dependency installation, or any legal bytes outside the recorded hashes.
+
 **Chunk/slice mapping:** Plan chunks are document-review groups, not PR boundaries. Spec implementation Slice 1 spans Tasks 2–5 because the shared shell consumes the locale/content foundation. Recommended PR boundaries are defined at the end of this plan.
 
 ---
