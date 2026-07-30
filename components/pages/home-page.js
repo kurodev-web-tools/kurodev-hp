@@ -1,3 +1,5 @@
+import "@/app/styles/home-hero.css";
+import "@/app/styles/home-sections.css";
 import { EnglishSuggestion } from "@/components/layout/english-suggestion";
 import { CreatorHero } from "@/components/sections/creator-hero";
 import { CreatorServiceBridge } from "@/components/sections/creator-service-bridge";

@@ -1,3 +1,4 @@
+import "@/app/styles/works-page.css";
 import { ActionLink } from "@/components/ui/action-link";
 import { ProductMedia } from "@/components/ui/product-media";
 import { localePath } from "@/lib/i18n.mjs";

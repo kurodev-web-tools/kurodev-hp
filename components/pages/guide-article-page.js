@@ -1,3 +1,4 @@
+import "@/app/styles/guide-page.css";
 import Image from "next/image";
 import Link from "next/link";
 import { ActionLink } from "@/components/ui/action-link";

@@ -1,3 +1,4 @@
+import "@/app/styles/guide-page.css";
 import Link from "next/link";
 import { StatusBadge } from "@/components/ui/status-badge";
 

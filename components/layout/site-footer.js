@@ -1,12 +1,8 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { localePath, pathnameLocale } from "@/lib/i18n.mjs";
+import { localePath } from "@/lib/i18n.mjs";
 import { siteCopy } from "@/lib/content/site-copy.mjs";
 
-export function SiteFooter() {
-  const locale = pathnameLocale(usePathname());
+export function SiteFooter({ locale }) {
   const navigation = siteCopy[locale].navigation;
   const legalLinks = locale === "ja"
     ? [["利用規約", "/terms"], ["プライバシー", "/privacy"], ["国外での個人データの取扱い", "/privacy/foreign-processing"], ["特定商取引法に基づく表記", "/legal/tokushoho"]]

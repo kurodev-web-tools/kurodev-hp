@@ -1,3 +1,4 @@
+import "@/app/styles/creator-site.css";
 import { CreatorRecognition } from "@/components/sections/creator-recognition";
 import { ServiceFaq } from "@/components/sections/service-faq";
 import { ServiceProcess } from "@/components/sections/service-process";

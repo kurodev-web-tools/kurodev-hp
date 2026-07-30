@@ -15,11 +15,11 @@ The seven legal documents and six Contact consent copies use the exact fixed IDs
 
 | Step | Result | Evidence |
 | --- | --- | --- |
-| 1. Automated suite | PASS | `npm test` passes 91 / 91, and `npm run lint` and `npm run build` exit 0. The final production build generated 41 pages. The separately requested dependency-security audit remains red as `DEP-AUDIT-001`. |
+| 1. Automated suite | PASS | `npm test` passes 96 / 96, and `npm run lint` and `npm run build` exit 0. The final production build generated 41 pages. The separately requested dependency-security audit remains red as `DEP-AUDIT-001`. |
 | 2. Production server | PASS | Next.js 15.5.21 production server reached Ready on local port 3100. |
 | 3. Four-width route QA | PASS | 36 public and launch-candidate routes, including the non-indexable Comment Translator pair, were captured at 375 / 768 / 1024 / 1280 px: 144 final-build captures, all HTTP 200, with no horizontal overflow, missing `h1`, wrong document language, missing description, console error, or external request. |
 | 4. Interactions and states | PASS | Keyboard focus, menu Escape close/focus return, theme change, locale links, missing-translation fallback, unavailable-guide noindex state, reduced motion, forced colors, Contact validation/live status, direct-email fallback, and synthetic Turnstile sequencing passed. |
-| 5. Lighthouse | FAIL | Desktop met the 100/100/100/100 threshold. All mobile Accessibility, Best Practices, and SEO medians were 100, but mobile Performance medians were 75–90 instead of the required 100. |
+| 5. Lighthouse | FAIL | Desktop met the 100/100/100/100 threshold. The `/guide/getting-started` static/islands follow-up now meets 100/100/100/100 on mobile, but the other four required mobile Performance medians have not yet been brought to and reverified at 100. |
 | 6. Publication/privacy review | PASS for local pre-merge scope | Tracked secret-pattern scan found no matching files. No credential, token, cookie, browser storage value, raw response, private identifier, or fixture body is included in this report. Provider calls were intercepted or absent. |
 | 7. Sanitized evidence | PASS | Per-route and per-width rows, interaction results, Lighthouse reports, stitched-capture provenance, and command summaries are stored in the workstation-local evidence directory below. |
 | 8. `task.md` | PASS | Locally verified slices and the two remaining release blockers are recorded; final PR, production activation, and Task 15 remain explicitly pending. |
@@ -33,7 +33,8 @@ The seven legal documents and six Contact consent copies use the exact fixed IDs
 | Home, Contact, forced-color focus | 375 / 1280, forced colors | PASS | none |
 | Contact consent and synthetic provider sequencing | 375 / 1280, reduced motion | PASS | none |
 | Five Lighthouse routes | desktop preset, three runs | PASS | none |
-| Five Lighthouse routes | mobile preset, three runs | FAIL | `PERF-MOBILE-001` |
+| `/guide/getting-started` | mobile preset, three-run follow-up | PASS | none |
+| Remaining four Lighthouse routes | mobile preset, three runs required | FAIL | `PERF-MOBILE-001` |
 | Production dependency graph | local audit | FAIL | `DEP-AUDIT-001` |
 
 Per-route Step 7 record:
@@ -108,6 +109,10 @@ Workstation-local sanitized evidence:
 
 `C:/Users/taka/.codex/visualizations/2026/07/17/019f716b-b4c9-7282-8370-07c25abef372/task14-release-qa-20260731`
 
+Static/islands follow-up evidence:
+
+`C:/Users/taka/.codex/visualizations/2026/07/30/019fb417-77a4-71b3-b193-a0a074d9969c/perf-mobile-001-20260731`
+
 Key machine-readable files:
 
 - `route-width-summary.json`
@@ -148,6 +153,19 @@ The mobile app-owned deficits are simulated FCP/LCP, Speed Index, and especially
 
 Two mobile Lighthouse runs produced a Windows `EBUSY` warning while deleting a temporary Chrome profile after the JSON report had already been written. All 30 expected reports exist and parse successfully; this is an evidence-cleanup warning, not a missing measurement.
 
+### `/guide/getting-started` static/islands follow-up
+
+The exact Japanese `/guide/getting-started` route was converted into a static/islands spike that preserves the existing SSG document, metadata, inline CSS, theme initialization, content, image, navigation, and accessibility behavior while removing the App Router client bootstrap and Flight payload from the delivered document. Other routes retain their existing App Router behavior.
+
+| Run | Performance | Accessibility | Best Practices | SEO | LCP ms | CLS | TBT ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 100 | 100 | 100 | 100 | 930 | 0 | 0 |
+| 2 | 99 | 100 | 100 | 100 | 882 | 0 | 0 |
+| 3 | 100 | 100 | 100 | 100 | 1013 | 0 | 0 |
+| Median | 100 | 100 | 100 | 100 | 930 | 0 | 0 |
+
+Real-Chrome follow-up QA passed at 375 / 768 / 1024 / 1280 px with no horizontal overflow, App Router chunk request, Flight payload, external request, or page error. Skip-link focus, mobile-menu initial focus and Tab trap, Escape close/focus return, scroll lock, theme and locale persistence, reduced motion, forced colors, and the approved guide image remained operable.
+
 ## Diagnostics
 
 - React Doctor: 13 warnings.
@@ -161,6 +179,6 @@ Two mobile Lighthouse runs produced a Windows `EBUSY` warning while deleting a t
 ## Release blockers and next approvals
 
 1. `DEP-AUDIT-001` (additional security release gate requested by the repository owner, not the Task 14 Step 5 score criterion): Next.js 15.5.21 carries vulnerable PostCSS 8.4.31 and Sharp 0.34.5. The stable 15.5.22 and 16.2.12 metadata inspected on `2026-07-31` still use the affected dependency ranges. Moving to a 16.3 preview or applying out-of-range overrides is not authorized.
-2. `PERF-MOBILE-001`: all five required mobile Lighthouse Performance medians are below the plan's required 100.
+2. `PERF-MOBILE-001`: `/guide/getting-started` now meets the required mobile median 100. The remaining `/`, `/tools`, `/creator-site`, and `/contact` routes still require bounded implementation and three-run mobile remeasurement.
 
 Because these gates are red, Task 14 is not complete and the final preview-to-`main` PR is not ready. Any intermediate Draft PR remains non-mergeable. Merge, deployment, production activation, live-provider verification, and Task 15 remain pending separate approval.

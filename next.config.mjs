@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   htmlLimitedBots: /.*/,
+  experimental: {
+    inlineCss: true
+  },
   async redirects() {
     return [
       { source: "/tool", destination: "/tools", permanent: true },
