@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const headerUrl = new URL("../components/layout/site-header.js", import.meta.url);
+const headerControlsUrl = new URL("../components/layout/site-header-controls.js", import.meta.url);
 const footerUrl = new URL("../components/layout/site-footer.js", import.meta.url);
 const themeToggleUrl = new URL("../components/theme-toggle.js", import.meta.url);
 const languageSwitchUrl = new URL("../components/layout/language-switch.js", import.meta.url);
@@ -27,7 +28,8 @@ test("marketing shell replaces the app sidebar and fixed bottom navigation", asy
 test("mobile header exposes an accessible menu and explicit language link", async () => {
   // Given: the client-side header behavior.
   assert.equal(existsSync(headerUrl), true, "SiteHeader must exist");
-  const header = await readFile(headerUrl, "utf8");
+  const header = await Promise.all([headerUrl, headerControlsUrl].map((url) => readFile(url, "utf8")))
+    .then((sources) => sources.join("\n"));
 
   // When: required controls are inspected.
   // Then: menu state, Escape behavior, and language navigation are explicit.

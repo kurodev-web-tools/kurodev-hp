@@ -1,3 +1,4 @@
+import "@/app/styles/contact-page.css";
 import { ContactForm } from "@/components/contact-form";
 import { ActionLink } from "@/components/ui/action-link";
 import { siteCopy } from "@/lib/content/site-copy.mjs";

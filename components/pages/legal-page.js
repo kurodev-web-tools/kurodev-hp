@@ -1,3 +1,4 @@
+import "@/app/styles/legal-page.css";
 import Link from "next/link";
 
 export function LegalPage({ document }) {

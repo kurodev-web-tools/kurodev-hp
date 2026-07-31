@@ -1,3 +1,4 @@
+import "@/app/styles/about-page.css";
 import { ActionLink } from "@/components/ui/action-link";
 import { siteCopy } from "@/lib/content/site-copy.mjs";
 import { localePath } from "@/lib/i18n.mjs";

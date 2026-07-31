@@ -1,15 +1,6 @@
 import "./globals.css";
 import "./styles/shell.css";
 import "./styles/components.css";
-import "./styles/home-hero.css";
-import "./styles/home-sections.css";
-import "./styles/tools-page.css";
-import "./styles/creator-site.css";
-import "./styles/works-page.css";
-import "./styles/guide-page.css";
-import "./styles/about-page.css";
-import "./styles/contact-page.css";
-import "./styles/legal-page.css";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { SiteShell } from "@/components/site-shell";
@@ -76,7 +67,7 @@ export default function RootLayout({ children }) {
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <a className="skip-link" href="#main-content">{locale === "ja" ? "本文へ移動" : "Skip to main content"}</a>
-        <SiteShell>{children}</SiteShell>
+        <SiteShell locale={locale}>{children}</SiteShell>
       </body>
     </html>
   );

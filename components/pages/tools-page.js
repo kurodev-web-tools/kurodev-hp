@@ -1,3 +1,4 @@
+import "@/app/styles/tools-page.css";
 import { CreatorServiceBridge } from "@/components/sections/creator-service-bridge";
 import { ToolGettingStarted } from "@/components/sections/tool-getting-started";
 import { ToolProductSection } from "@/components/sections/tool-product-section";

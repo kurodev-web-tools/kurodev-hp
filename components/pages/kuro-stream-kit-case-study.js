@@ -1,3 +1,4 @@
+import "@/app/styles/works-page.css";
 import { ProductMap } from "@/components/sections/product-map";
 import { WorkEvidence } from "@/components/sections/work-evidence";
 import { ActionLink } from "@/components/ui/action-link";
