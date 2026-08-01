@@ -14,7 +14,7 @@
 - React Doctorはexit 0。既知のsource warning 13件に加え、生成済み`.open-next` bundleを対象にしたheuristic warning 6件を報告
 - 生成済み`.open-next`にGuide loader名、`content/guides/publication-candidate.json`、build元Guide絶対pathが存在しないことを確認
 - 同じproduction buildの通常Next serverでは日英`/guide/getting-started`と`/sitemap.xml`がHTTP 200。日本語routeの`x-kurodev-rendering: static-guide-islands`、日英h1 / title、sitemapの日英URLを確認（Worker runtime PASSの代替とは扱わない）
-- 実装commit `c0b7043`を`codex/cloudflare-opennext-workers`へpushし、`codex/creator-platform-redesign-preview`向けDraft PR #21を作成
+- 実装commit `c0b7043`を含むPR #21を`codex/creator-platform-redesign-preview`へmergeし、preview tip `57335b1`へOpenNext / Workers repository設定を反映
 - local Worker上で日本語Home / Tools / Creator Site / Contactが375 / 1280 pxともHTTP 200。期待する`x-kurodev-rendering`、security headers、document構造、言語、overflowなしを確認
 - Home / Toolsの日英visible画像は両幅でdecode後に1920 x 1080、全sampleがopaqueかつ非単色であることを確認
 - 3 legacy redirect、404、OG、favicon、robotsを確認。Contactは日英ともsynthetic payload / locale / consentを確認し、provider secretなしで`TURNSTILE_FAILED`へfail closed。外部provider requestは0件
@@ -22,11 +22,12 @@
 #### Release blockers
 - 修正後buildのlocal Worker previewは、Wrangler binding接続後にWindows `workerd` binaryが`std::terminate()`で起動失敗。TTY有無の2起動形態で同じstackを再現したため、現行承認境界では日英Guide / sitemapを含むcurrent buildのruntime smokeを完了できない
 - current buildの実Chrome 375 / 1280 px、全画像非blank、既存Lighthouse 5-route条件は未検証。repository / OpenNext buildは成功しているが、Worker runtimeは未検証として区別する
+- Cloudflare Workers Buildsの初回実行は`main`をcloneし、dependency install後に`Missing script: "build:cloudflare"`で停止。OpenNext設定を含むpreview branchのsource buildには到達しておらず、branch選択の修正後に再実行が必要
 
 #### Explicitly pending
 - Windows `workerd`が起動可能な状態で、修正済み同一buildのlocal Worker全route / sitemap / image / Lighthouse再検証
-- PR #21のreviewと、Windows `workerd` blockerを解消できる承認済み環境でのruntime再検証
-- merge、Cloudflare upload / deploy / Worker作成、secret / domain / DNS / route / activation変更
+- Cloudflare production branchを`codex/creator-platform-redesign-preview`として、`57335b1`を含むpreview tipを`npm run build:cloudflare` / Node.js `22.16.0`で再build
+- Cloudflare upload / deploy / Worker作成、secret / domain / DNS / route / activation変更
 
 ### Creator Platform redesign — local pre-merge checkpoint
 
