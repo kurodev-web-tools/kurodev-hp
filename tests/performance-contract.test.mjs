@@ -192,8 +192,27 @@ test("the Home static route is exact and internal source fetches carry no visito
   assert.equal(isStaticHomeRequest(publicHome, "POST"), false);
   assert.equal(sourceHeaders.get("accept"), "text/html");
   assert.equal(sourceHeaders.get("x-kurodev-locale"), "ja");
+  assert.equal(sourceHeaders.get("user-agent"), "kurodev-static-document/1.0");
   assert.equal(sourceHeaders.has("cookie"), false);
   assert.equal(sourceHeaders.has("authorization"), false);
+});
+
+test("static document transforms keep description metadata inside the document head", () => {
+  // Given: a source document whose description metadata is already in the head.
+  const source = `<!doctype html><html><head><meta name="description" content="qa-description" /></head><body><main>Content</main></body></html>`;
+
+  // When: each affected static route removes the Next.js runtime from that document.
+  const documents = [
+    buildStaticGuideDocument(source),
+    buildStaticCreatorSiteDocument(source),
+    buildStaticContactDocument(source, "ja")
+  ];
+
+  // Then: every transform preserves the description metadata inside the head.
+  documents.forEach((document) => {
+    const head = document.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? "";
+    assert.match(head, /<meta name="description" content="qa-description" \/>/);
+  });
 });
 
 test("the Japanese tools document preserves products and external-link semantics", () => {
