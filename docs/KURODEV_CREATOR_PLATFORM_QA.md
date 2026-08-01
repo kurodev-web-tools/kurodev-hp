@@ -3,10 +3,11 @@
 ## Checkpoint
 
 - QA date: `2026-07-31` JST
+- Dependency re-audit date: `2026-08-01` JST
 - Scheduled coordinated production activation date: `2026-08-04`
 - Surface: local integration production build at `http://localhost:3100`
 - Runtime: Next.js `15.5.21`, React / React DOM `18.3.1`
-- Overall verdict: **FAIL — release blocked only by the separate `DEP-AUDIT-001`; Task 14 browser and Lighthouse gates pass locally**
+- Overall verdict: **PASS for the local pre-merge gate — `DEP-AUDIT-001`, Task 14 browser, and Lighthouse gates pass locally**
 - Live-provider boundary: no live Turnstile, Siteverify, Resend, Contact delivery, secrets, provider settings, or real-person PII were used.
 
 The seven legal documents and six Contact consent copies use the exact fixed IDs, versions, dates, and SHA-256 values recorded by the active launch manifests and tests. Their public-use gate relies on the repository owner's owner-designated AI-assisted internal substitute and accepted residual risk. No human lawyer or independent human legal reviewer participated, and this evidence must not be described as human or attorney review.
@@ -15,15 +16,15 @@ The seven legal documents and six Contact consent copies use the exact fixed IDs
 
 | Step | Result | Evidence |
 | --- | --- | --- |
-| 1. Automated suite | PASS | `npm test` passes 105 / 105, and `npm run lint`, `npm run diagnose:react`, and `npm run build` exit 0. The final production build generated 41 pages. React Doctor retains 13 documented warnings. The separately requested dependency-security audit remains red as `DEP-AUDIT-001`. |
+| 1. Automated suite | PASS | `npm test` passes 105 / 105, and `npm run lint`, `npm run diagnose:react`, and `npm run build` exit 0. The final production build generated 41 pages. React Doctor retains 13 documented warnings. The separately requested dependency-security audit passes with 0 vulnerabilities after the bounded `DEP-AUDIT-001` override. |
 | 2. Production server | PASS | Next.js 15.5.21 production server reached Ready on local port 3100. |
 | 3. Four-width route QA | PASS | The earlier 36-route inventory remains recorded. A fresh final-build sweep of the five Task 14 Lighthouse routes added 20 current captures at 375 / 768 / 1024 / 1280 px: all HTTP 200, with the correct static marker, no horizontal overflow, broken loaded image, App Router chunk, Flight payload, or incomplete initial-theme state. |
 | 4. Interactions and states | PASS | On the current build, all five routes passed visible keyboard focus, mobile-menu forward/backward focus trap, Escape close/focus return, theme and locale persistence, reduced motion, and forced colors. Contact passed six-error validation order, focus-on-first-error, polite/assertive live regions, direct-email fallback, consent-gated fictional Turnstile sequencing, and intercepted API delivery. |
 | 5. Lighthouse | PASS | Three real-Chrome runs per route and preset produced 100/100/100/100 medians for all five routes on mobile and desktop. |
 | 6. Publication/privacy review | PASS for local pre-merge scope | Tracked secret-pattern scan found no matching files. No credential, token, cookie, browser storage value, raw response, private identifier, or fixture body is included in this report. Provider calls were intercepted or absent. |
 | 7. Sanitized evidence | PASS | Per-route and per-width rows, interaction results, Lighthouse reports, stitched-capture provenance, and command summaries are stored in the workstation-local evidence directory below. |
-| 8. `task.md` | PASS | The locally completed Task 14 performance gate and the separate remaining `DEP-AUDIT-001` release blocker are recorded; final PR, production activation, and Task 15 remain explicitly pending. |
-| 9. Final pre-merge checkpoint | FAIL because the separate dependency gate remains | Work started from exact fetched preview commit `72c6c303345f2aca1496fd77f029a521b0267ce8` on isolated branch `codex/creator-platform-task14-performance-remaining`; PR #17 head `c6dcc1fd5d313de5c8357a9cd2c6d38a2d6d1386` is contained. Package manifests remain unchanged and `git diff --check` passes. No commit, push, PR, merge, deploy, activation, or worktree cleanup was performed. |
+| 8. `task.md` | PASS | The locally completed Task 14 performance gate and resolved `DEP-AUDIT-001` are recorded; final PR, production activation, and Task 15 remain explicitly pending. |
+| 9. Final pre-merge checkpoint | PASS for the local gate | The dependency re-audit started from exact fetched preview commit `6de9dd67f46f29f8843422ff7559a431b26b46eb` on isolated branch `codex/dep-audit-001`. Only `package.json`, `package-lock.json`, this QA record, and `task.md` changed. `git diff --check` passes. No commit, push, PR, merge, deploy, activation, live-provider call, or worktree cleanup was performed. |
 
 ### Coverage matrix and issue labels
 
@@ -34,7 +35,7 @@ The seven legal documents and six Contact consent copies use the exact fixed IDs
 | Contact consent and synthetic provider sequencing | 375 / 1280, reduced motion | PASS | none |
 | Five Lighthouse routes | desktop preset, three runs per route | PASS | none |
 | Five Lighthouse routes | mobile preset, three runs per route | PASS | none |
-| Production dependency graph | local audit | FAIL | `DEP-AUDIT-001` |
+| Production dependency graph | local audit | PASS | none |
 
 Per-route Step 7 record:
 
@@ -167,6 +168,20 @@ The exact Japanese `/guide/getting-started` route remains the known-good static/
 
 Real-Chrome follow-up QA passed at 375 / 768 / 1024 / 1280 px with no horizontal overflow, App Router chunk request, Flight payload, external request, or page error. Skip-link focus, mobile-menu initial focus and Tab trap, Escape close/focus return, scroll lock, theme and locale persistence, reduced motion, and forced colors remained operable. The static Guide document removes only Next's unselected responsive `srcset` while retaining its native lazy `src`; the approved 1920 px guide image decoded and painted at all four widths without a client runtime.
 
+## DEP-AUDIT-001 resolution
+
+- Re-audit date: `2026-08-01` JST.
+- RED: `npm audit --omit=dev --json` reported three high package findings through `next@15.5.21`: nested `postcss@8.4.31`, optional `sharp@0.34.5`, and the direct Next aggregation.
+- Approved bounded change: retain Next.js `15.5.21` and override only its PostCSS to `8.5.23` and Sharp to `0.35.3`.
+- Resolved graph: `next@15.5.21 overridden -> postcss@8.5.23 overridden` and `sharp@0.35.3 overridden`; top-level development PostCSS resolves independently to `8.5.25`.
+- Lockfile scope: 30 changed package entries consist only of the nested PostCSS entry, Sharp, Sharp platform/libvips packages, and Sharp's resulting SemVer dependency.
+- GREEN: `npm audit --omit=dev` and the install-time full audit report 0 vulnerabilities.
+- Targeted compatibility: Next's nested PostCSS processed authored CSS successfully. Sharp `0.35.3` with libvips `8.18.3` read the approved 1920 x 1080 PNG correctly.
+- Broad verification: `npm test` 105 / 105, lint, React Doctor, and the 41-page production build exit 0. React Doctor retains the same 13 documented warnings.
+- Production smoke: `/`, `/tools`, `/creator-site`, `/guide/getting-started`, and `/contact` passed in real Chrome at 375 and 1280 px with one `h1`, one `main`, correct Japanese document metadata, no horizontal overflow, broken image, console error, or external request. The production image optimizer separately returned HTTP 200 and a decoded WebP response for the approved PNG.
+- Boundary: no application, legal, consent, content, provider, deployment, or production setting changed. No live provider or real-person data was used.
+- Runtime prerequisite: local verification used Node.js `22.22.2`. Sharp `0.35.3` requires Node.js `>=20.9.0`. A read-only Cloudflare Pages check on `2026-08-01` confirmed build system v3 for both production and preview, with no `NODE_VERSION` override; Cloudflare's documented v3 default Node.js `22.16.0` satisfies the requirement. No Cloudflare setting was changed.
+
 ## Diagnostics
 
 - React Doctor: 13 warnings.
@@ -179,7 +194,6 @@ Real-Chrome follow-up QA passed at 375 / 768 / 1024 / 1280 px with no horizontal
 
 ## Release blockers and next approvals
 
-1. `DEP-AUDIT-001` (additional security release gate requested by the repository owner, not the Task 14 Step 5 score criterion): Next.js 15.5.21 carries vulnerable PostCSS 8.4.31 and Sharp 0.34.5. The stable 15.5.22 and 16.2.12 metadata inspected on `2026-07-31` still use the affected dependency ranges. Moving to a 16.3 preview or applying out-of-range overrides is not authorized.
-`PERF-MOBILE-001` is resolved locally: all five Task 14 routes meet the required mobile and desktop three-run medians.
+`DEP-AUDIT-001` is resolved locally by the exact repository-owner-approved Next-scoped override recorded above. `PERF-MOBILE-001` remains resolved locally: all five Task 14 routes meet the required mobile and desktop three-run medians.
 
-Task 14's local browser, accessibility, and performance verification is complete, but the separately requested `DEP-AUDIT-001` still blocks release readiness. Merge, deployment, production activation, live-provider verification, and Task 15 remain pending separate approval.
+Task 14's local browser, accessibility, performance, and dependency-security verification is complete. Final PR creation, merge, deployment, production activation, live-provider verification, and Task 15 remain pending separate approval.

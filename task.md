@@ -17,9 +17,13 @@
 - Contact consent、synthetic Turnstile、direct-email fallback、forced colors、reduced motion、keyboard/focusを架空fixtureのみで検証
 - Chromium上限を超える375 px法務ページ5枚を分割captureで修復し、Contact見出しの1024 px孤立改行を固定2行へ修正
 - `docs/KURODEV_CREATOR_PLATFORM_QA.md`へTask 14のsanitized pre-merge evidenceを記録
+- `DEP-AUDIT-001`をNext.js `15.5.21`配下限定のPostCSS `8.5.23` / Sharp `0.35.3` overrideで解消し、production audit 0件を確認
+- override後にPostCSS実処理、Sharp/libvipsによる承認済みPNG読取、105 / 105 tests、lint、React diagnostics、41-page buildを再確認
+- `/`、`/tools`、`/creator-site`、`/guide/getting-started`、`/contact`を375 / 1280 pxの実Chromeで再確認し、overflow、broken image、console error、外部通信が0であることを確認
+- Cloudflare Pages production / previewがbuild system v3、`NODE_VERSION` overrideなしであることをread-only確認し、既定Node.js `22.16.0`がSharp `0.35.3`の`>=20.9.0`要件を満たすことを確認
 
 #### Release blockers
-- `DEP-AUDIT-001`: Next.js 15.5.21配下のPostCSS / Sharpにproduction high severityが3件残存。16系・preview・out-of-range overrideは未承認
+- 現在のlocal pre-merge scopeに残存blockerなし。`DEP-AUDIT-001`はrepository owner承認済みの限定overrideと全ローカル検証で解消
 
 #### Explicitly pending
 - final preview-to-`main` PR、merge、deploy、2026-08-04 production activation
