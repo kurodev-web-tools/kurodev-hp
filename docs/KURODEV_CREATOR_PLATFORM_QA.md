@@ -218,3 +218,49 @@ Task 14's local browser, accessibility, performance, and dependency-security ver
 - Incomplete gates: the prior-build Guide / sitemap 500 root cause is removed from the repository and bundle, but the rebuilt Worker could not start. Therefore current-build Guide / sitemap behavior, 375 / 1280 px Chrome smoke, visible-image evidence, and five-route Lighthouse remain unverified rather than passed.
 - Repository publication: implementation commit `c0b7043` was pushed to `codex/cloudflare-opennext-workers`, and Draft PR #21 was opened against `codex/creator-platform-redesign-preview` after the local gates above.
 - Boundary: no WSL / remote build, Cloudflare upload or deploy, Worker/account mutation, provider call, real-person data, secret registration, domain / DNS / route change, production activation, or merge was performed.
+
+## Remote OpenNext Worker runtime QA
+
+- Verification date: `2026-08-01` JST.
+- Target: `https://kurodev-hp-opennext.kurodev-web-tools.workers.dev/`.
+- Repository checkpoint: clean detached worktree at `2c2d61244125a1eafa7b3824002f95502c1414ce`, after `git fetch origin --prune`; the specified preview tip is contained and no existing worktree was changed.
+- Build identity: PR #22 reports `Workers Builds: kurodev-hp-opennext` SUCCESS for `80ec84fbfc423ba73b42fc4eee4e0387002ff576`. That head and merge commit `2c2d612` share exact tree `b69f2ea96652287b8a9f72898ff70492c8dbde2c`. Runtime checks below are separate from this repository / OpenNext build evidence.
+- Browser: installed Google Chrome `151.0.7922.71`; 10 routes × 375 / 1280 px = 20 fresh full-page captures.
+- Sanitized evidence: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbce4-9bfa-7c53-8292-8ab71050307f/remote-worker-qa-20260801`.
+
+### Runtime route and browser result
+
+- Japanese `/`, `/tools`, `/creator-site`, `/contact`, and `/guide/getting-started` return 200 with the expected `x-kurodev-rendering` value, matching static marker, no App Router chunk, and no Flight payload.
+- `/en`, `/en/tools`, `/en/creator-site`, `/en/contact`, and `/en/guide/getting-started` return 200 with the correct English `lang`, localized title, and one `h1` / `main`. They retain App Router / Flight delivery because the approved predicates and tests intentionally limit static islands to the exact Japanese routes; this is not recorded as a regression.
+- All 20 route / width combinations have no horizontal overflow, console error, page error, or unexpected external browser request. Every visible `<img>` decoded with a non-zero natural size and produced opaque, non-single-color canvas samples.
+- The 375 px Japanese Home mobile menu opens, transfers focus into the dialog, closes on Escape, and returns focus to the menu button.
+- `/en/` redirects once to `/en`; `/tool`, `/web`, and `/profile` redirect once to `/tools`, `/works`, and `/about`; the synthetic missing route returns 404.
+- HSTS, nosniff, Referrer-Policy, X-Frame-Options, and Permissions-Policy match `next.config.mjs` on the audited documents.
+
+### Contact, metadata, and assets
+
+- Japanese and English empty Contact submission produces six ordered visible errors and focuses `name`.
+- Browser interception captured only synthetic `example.test` form submissions. The sanitized payloads contain the matching locale, both approved consent booleans, current consent version fields, an approved category, and no real-person data. The intercepted API response exercises the error and direct-email fallback UI without contacting a provider.
+- A direct remote API request with the complete current consent contract and an empty Turnstile token returns HTTP 400 `TURNSTILE_FAILED`. The route rejects the missing token before provider fetch; no Turnstile Siteverify or Resend call was made.
+- Metadata points to `/favicon.png`. `/opengraph-image` is a decoded, nonblank 1200 x 630 PNG; `/favicon.png` is a decoded, nonblank 64 x 64 PNG. `robots.txt` allows the public site, disallows `/api/`, and names the production sitemap. `sitemap.xml` includes both Japanese and English getting-started URLs.
+
+### Transfer and performance evidence
+
+- Cold-browser transfer observations are recorded without inventing a new threshold: Japanese routes span 8.3–1871.1 KiB and English routes span 120.6–1989.5 KiB. The English App Router routes use 7–13 resources while the Japanese static-island routes use 1–5.
+- Chrome DevTools traces at 375 / 1280 px, 1× CPU, and no network throttle report LCP 218–402 ms, TTFB 50–66 ms, and CLS 0 across the five Task 14 routes. These traces are runtime performance evidence, not substitutes for a Lighthouse Performance score.
+- Thirty Lighthouse navigation runs were attempted under the existing five-route, mobile / desktop, three-run matrix. Accessibility and Best Practices medians are 100 for all routes. SEO is 100 for Home and Tools, 91 for Creator Site and Contact, and 92 for Guide in both presets.
+- The three SEO failures are reproducible in navigation mode as `meta-description` failures even though the HTTP response and settled Chrome DOM contain the expected description element. This is recorded as a remote audit/runtime timing incompatibility rather than silently treated as a pass.
+- The available Chrome DevTools Lighthouse bundle filters out Performance audits. Its resulting Performance 100 is invalid and excluded. A formal four-category median cannot be claimed until the same matrix runs in an approved runner with full Lighthouse `13.4.1` already available; no dependency was installed in this worktree.
+- Non-destructive local characterization remains green: `node --test tests/performance-contract.test.mjs tests/cloudflare-opennext-contract.test.mjs` passes 14 / 14.
+
+### Remote runtime verdict and boundary
+
+- Repository / OpenNext build: **verified built** by the successful check on the same Git tree as preview tip `2c2d612`.
+- Remote Worker runtime: **verified for route, static-island, document, browser, image, navigation, Contact fail-closed, redirect, 404, asset, sitemap, and security-header behavior**.
+- Existing Lighthouse gate: **not passed**. The observed SEO medians are below 100 for three routes and the approved environment cannot produce a valid Lighthouse Performance category.
+- Independent visual gate: **REVISE** after both read-only reviewers opened all 20 captures. The functional pass found no overflow, clipped glyphs, tofu, form collapse, or broad responsive failure. The CJK precision pass flagged the existing forced Japanese `自分の / 場所` and `活動 / フロー`, the Tools modifier / noun split, and mobile English one-word / article orphans as product-level wrap issues. No source change was authorized.
+- Capture evidence also remains imperfect: `home-1280` and `guide-getting-started-375` contain one unpainted lazy image each despite successful decode / canvas sampling, and five captures expose the valid skip-link focus state instead of a labeled resting state. These are evidence defects, not proof of broken runtime images.
+- One reviewer initially treated English App Router delivery as a regression. Repository predicates and focused tests explicitly exclude English routes from static islands, so that finding is rejected against the approved source contract; English 200 / locale / document behavior remains the applicable gate.
+- Activation-preflight: **NO-GO** until a full Lighthouse 13.4.1 runner repeats 5 routes × 2 presets × 3 runs. If the meta-description failure reproduces there, source behavior change, Workers rebuild / deploy, and the exact same remote matrix require new approvals.
+- Visual revalidation also requires separate source-change authority for the listed wrap issues, followed by focus-cleared, fully painted fresh captures of all 20 route / width combinations and a new independent review.
+- No Cloudflare account setting, Worker resource, build, upload, deployment, secret / variable, domain / DNS / route, activation, provider, Pages production environment, dependency, manifest / lockfile, application source, commit, push, PR, merge, branch, or worktree was changed.
