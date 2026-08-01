@@ -70,6 +70,20 @@ test("theme changes invalidate the product media layer on the next frame", async
   assert.match(themeToggle, /translateZ/);
 });
 
+test("initial theme selection does not animate the whole document", async () => {
+  // Given: the server document starts without a persisted theme attribute.
+  const [layout, globalStyles] = await Promise.all([
+    readFile(new URL("../app/layout.js", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8")
+  ]);
+
+  // Then: first-paint palette selection suppresses transitions briefly and releases them after paint.
+  assert.match(layout, /dataset\.themeInitializing = ['"]true['"]/);
+  assert.match(layout, /requestAnimationFrame/);
+  assert.match(layout, /delete document\.documentElement\.dataset\.themeInitializing/);
+  assert.match(globalStyles, /html\[data-theme-initializing="true"\][\s\S]*transition:\s*none\s*!important/);
+});
+
 test("document language and navigation routes resolve without placeholder pages", async () => {
   // Given: locale-aware request handling, implemented hubs, and remaining temporary section redirects.
   const middlewareUrl = new URL("../middleware.js", import.meta.url);

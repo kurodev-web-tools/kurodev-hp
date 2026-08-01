@@ -7,6 +7,7 @@ import { SiteShell } from "@/components/site-shell";
 
 const themeInitScript = `
   (function () {
+    document.documentElement.dataset.themeInitializing = 'true';
     try {
       var saved = window.localStorage.getItem('kurodev-theme');
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -15,6 +16,11 @@ const themeInitScript = `
     } catch (error) {
       document.documentElement.dataset.theme = 'light';
     }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        delete document.documentElement.dataset.themeInitializing;
+      });
+    });
   })();
 `;
 
