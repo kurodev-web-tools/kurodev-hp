@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   htmlLimitedBots: /.*/,
+  images: {
+    unoptimized: true
+  },
   experimental: {
     inlineCss: true
   },

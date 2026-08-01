@@ -1,5 +1,5 @@
 import { GuideIndexPage } from "@/components/pages/guide-index-page";
-import { getGuideInventory } from "@/lib/guides/guide-loader.mjs";
+import { getGuideInventory } from "@/lib/guides/guide-runtime.mjs";
 import { buildPageMetadata } from "@/lib/seo.mjs";
 
 export const metadata = buildPageMetadata({

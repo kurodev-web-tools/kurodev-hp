@@ -1,5 +1,5 @@
 import { buildGuideRouteMetadata, GuideRoute } from "@/components/pages/guide-route";
-import { getGuideInventory, getGuideStaticParams } from "@/lib/guides/guide-loader.mjs";
+import { getGuideInventory, getGuideStaticParams } from "@/lib/guides/guide-runtime.mjs";
 
 export const dynamicParams = false;
 

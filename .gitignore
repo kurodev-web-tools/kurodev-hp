@@ -27,6 +27,7 @@ artifacts/
 out/
 output/
 .next/
+.open-next/
 .npm-cache/
 remotion-video/out/
 remotion-video/public/templates.json

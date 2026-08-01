@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { GuideArticlePage } from "@/components/pages/guide-article-page";
 import { statusRules } from "@/lib/content/status.mjs";
-import { getGuideAlternates, getGuideByRoute, getGuideInventory } from "@/lib/guides/guide-loader.mjs";
+import { getGuideAlternates, getGuideByRoute, getGuideInventory } from "@/lib/guides/guide-runtime.mjs";
 import { buildPageMetadata } from "@/lib/seo.mjs";
 
 export async function buildGuideRouteMetadata(locale, segments) {

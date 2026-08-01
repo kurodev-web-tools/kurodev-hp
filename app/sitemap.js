@@ -1,6 +1,6 @@
 import { statusRules } from "../lib/content/status.mjs";
 import { getPublicationApprovedWorkBySlug } from "../lib/content/work-content.mjs";
-import { getGuideAlternates, getGuideInventory } from "../lib/guides/guide-loader.mjs";
+import { getGuideAlternates, getGuideInventory } from "../lib/guides/guide-runtime.mjs";
 
 const SITE_URL = "https://kuro-lab.com";
 const CONTENT_UPDATED = new Date("2026-07-30T00:00:00.000Z");
