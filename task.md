@@ -2,6 +2,32 @@
 
 ## Current Board
 
+### Cloudflare OpenNext / Workers migration — local repository checkpoint
+
+#### Verified locally
+- `43625b4a841fdae6652512a43cd2092cbb7062ff` を含む専用worktree / `codex/cloudflare-opennext-workers` で開始し、既存worktreeへ変更を加えていない
+- Next.js `15.5.21`を維持し、`@opennextjs/cloudflare@1.20.2` / `wrangler@4.118.0`、OpenNext build / preview scripts、設計書どおりのWorker repository設定を追加
+- Contact / OG / static-islands characterization 42 / 42を変更前に確認し、OpenNext repository契約のfocused REDからGREENを確認
+- Guideのpublication hash・画像・Markdown・13 route validationをbuild時に維持し、検証済みplain inventoryをtracked moduleへ生成。Guide route / sitemapのrequest-time filesystem依存を除去
+- Guide runtime contractは3件のfocused RED後に実装し、loader / route inventory / OpenNext contractを含むfocused suite 25 / 25がGREEN。stale artifactはcheck commandが非0で拒否することを確認
+- `npm test` 110 / 110、lint、43-page Next build、production audit 0件、Git Bash OpenNext build、`git diff --check`が成功
+- React Doctorはexit 0。既知のsource warning 13件に加え、生成済み`.open-next` bundleを対象にしたheuristic warning 6件を報告
+- 生成済み`.open-next`にGuide loader名、`content/guides/publication-candidate.json`、build元Guide絶対pathが存在しないことを確認
+- 同じproduction buildの通常Next serverでは日英`/guide/getting-started`と`/sitemap.xml`がHTTP 200。日本語routeの`x-kurodev-rendering: static-guide-islands`、日英h1 / title、sitemapの日英URLを確認（Worker runtime PASSの代替とは扱わない）
+- 実装commit `c0b7043`を`codex/cloudflare-opennext-workers`へpushし、`codex/creator-platform-redesign-preview`向けDraft PR #21を作成
+- local Worker上で日本語Home / Tools / Creator Site / Contactが375 / 1280 pxともHTTP 200。期待する`x-kurodev-rendering`、security headers、document構造、言語、overflowなしを確認
+- Home / Toolsの日英visible画像は両幅でdecode後に1920 x 1080、全sampleがopaqueかつ非単色であることを確認
+- 3 legacy redirect、404、OG、favicon、robotsを確認。Contactは日英ともsynthetic payload / locale / consentを確認し、provider secretなしで`TURNSTILE_FAILED`へfail closed。外部provider requestは0件
+
+#### Release blockers
+- 修正後buildのlocal Worker previewは、Wrangler binding接続後にWindows `workerd` binaryが`std::terminate()`で起動失敗。TTY有無の2起動形態で同じstackを再現したため、現行承認境界では日英Guide / sitemapを含むcurrent buildのruntime smokeを完了できない
+- current buildの実Chrome 375 / 1280 px、全画像非blank、既存Lighthouse 5-route条件は未検証。repository / OpenNext buildは成功しているが、Worker runtimeは未検証として区別する
+
+#### Explicitly pending
+- Windows `workerd`が起動可能な状態で、修正済み同一buildのlocal Worker全route / sitemap / image / Lighthouse再検証
+- PR #21のreviewと、Windows `workerd` blockerを解消できる承認済み環境でのruntime再検証
+- merge、Cloudflare upload / deploy / Worker作成、secret / domain / DNS / route / activation変更
+
 ### Creator Platform redesign — local pre-merge checkpoint
 
 #### Verified locally
