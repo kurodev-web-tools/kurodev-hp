@@ -2,6 +2,29 @@
 
 ## Current Board
 
+### Cloudflare OpenNext / Workers migration — remote Worker runtime QA
+
+#### Verified remotely
+- `2026-08-01` JST、clean detached worktreeの`2c2d61244125a1eafa7b3824002f95502c1414ce`で開始。`git fetch origin --prune`後に指定preview tip包含、dirty差分なしを確認
+- PR #22のCloudflare `Workers Builds: kurodev-hp-opennext` checkはhead `80ec84f`でSUCCESS。`80ec84f`とmerge commit `2c2d612`は同一tree `b69f2ea`であり、公開Workerのpage contractを同treeのrepository contractと照合
+- 公開`workers.dev`の日本語5主要routeはHTTP 200、期待する`x-kurodev-rendering`、static marker、App Router chunk / Flight payload 0。英語5 routeもHTTP 200、正しい`lang` / title / h1を保持し、既存テストどおりstatic-islands対象外
+- Chrome `151.0.7922.71`で日英10 routeを375 / 1280 px、計20画面確認。全画面でh1 / main各1、horizontal overflow / console error / page error / 予期しない外部通信0。全visible画像はdecode後にopaqueかつ非単色
+- `/en/`、`/tool`、`/web`、`/profile`は各1回の308、synthetic missing routeは404。OG 1200 x 630、metadata参照favicon 64 x 64、robots、sitemapはHTTP 200で期待する日英Guide URLを保持
+- Contactは日英とも空送信で6 error・name focus、`example.test` fixtureのlocale / consent / current version fieldsをbrowser interceptionで確認。実provider通信0。current consent contract + tokenなしの実API POSTは400 `TURNSTILE_FAILED`でfail closed
+- cold browser transfer観測値は日本語route 8.3–1871.1 KiB、英語route 120.6–1989.5 KiB。独立の数値閾値は既存docsに定義されていないため、新規閾値判定は行わず記録のみ
+- Chrome DevTools traceは5 route × mobile / desktopでLCP 218–402 ms、TTFB 50–66 ms、CLS 0。targeted repository / static-islands contract testsは14 / 14 PASS
+
+#### Release blockers
+- 既存Task 14のLighthouse navigation条件は未達。3回中央値でHome / ToolsはAccessibility / Best Practices / SEO 100、Creator Site / ContactはSEO 91、GuideはSEO 92（他2カテゴリは100）。HTTP responseとsettled DOMにはdescription metaが存在する一方、Lighthouse navigation artifactが3 routeで欠落判定するため、remote Worker上の再現可能なaudit/runtime差分として扱う
+- 承認済み環境の組込みLighthouse bundleはPerformance auditsを除外するため、正式なPerformance scoreは取得不能。表示された100は無効として破棄し、trace結果と区別して記録した
+- fresh 20-captureの独立visual gateはREVISE。機能reviewはoverflow / clipping / tofu / layout collapseなしを確認したが、CJK精密reviewがCreator Siteの日英hero / workflow、Tools見出し、英語Creator CTAの不自然な孤立改行をblocker判定。加えて2枚のlazy image未paintと5枚のskip-link focus状態はcapture evidence不良。source変更は禁止scopeのため未修正
+
+#### Activation-preflight判定
+- **NO-GO**。remote runtime smoke、Contact fail-closed、asset / header / redirect / sitemapは通過したが、既存Lighthouse 4カテゴリ100条件を証明できない
+- 次はdependency追加なしでfull Lighthouse `13.4.1`を実行できる承認済みrunnerで同じ5 route × 2 preset × 3 runを再検証する。SEO欠落が再現する場合のみ、初期document metadata timingの最小修正と再build / deployに別承認が必要
+- visual側は別承認後に指定copy / line-breakだけを最小調整し、lazy imageをviewport内でdecode・paint後、focus解除 / `scrollY=0`を保証した20枚を再取得して独立reviewを再実行する
+- Cloudflare account設定、Worker、build、upload / deploy、secret / var、domain / DNS / route、activation、provider、Pages production、commit / push / PR / merge / cleanupは変更していない
+
 ### Cloudflare OpenNext / Workers migration — local repository checkpoint
 
 #### Verified locally
