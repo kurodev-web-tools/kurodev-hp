@@ -108,12 +108,23 @@ test("Creator Site headings preserve English word spaces and compact Japanese se
   const page = await readFile(pageUrl, "utf8");
   const styles = await readFile(new URL("../app/styles/creator-site.css", import.meta.url), "utf8");
   const japanese = siteCopy.ja.creatorSite;
+  const english = siteCopy.en.creatorSite;
   const groupedHeadings = [japanese.recognition, japanese.outcomes, japanese.workflow, japanese.process, japanese.routes, japanese.faq, japanese.final];
 
   assert.match(sectionIntro, /<Fragment key=\{line\}>/);
   assert.match(sectionIntro, /<\/span>\{index < titleLines\.length - 1 \? " " : null\}<\/Fragment>/);
   groupedHeadings.flatMap((section) => section.titleLines).forEach((line) => {
     assert.ok([...line].length <= 9, `semantic line is too long for the desktop split: ${line}`);
+  });
+  assert.deepEqual(japanese.hero.titleLines, ["SNSに流れていく", "活動を、", "自分の場所に", "まとめる。"]);
+  assert.deepEqual(japanese.workflow.titleLines, ["配信者の", "活動フローを", "理解して、", "運用できる形へ。"]);
+  assert.deepEqual(japanese.process.titleLines, ["活動と目的を", "整理してから、", "公開後の運用まで", "考える。"]);
+  assert.deepEqual(english.hero.titleLines, ["Give your", "creative work", "a place of its own."]);
+  Object.values(japanese).filter((section) => section.titleLines).forEach((section) => {
+    assert.equal(section.titleLines.join(""), section.title);
+  });
+  Object.values(english).filter((section) => section.titleLines).forEach((section) => {
+    assert.equal(section.titleLines.join(" "), section.title);
   });
   assert.match(page, /className="creator-site-page"/);
   assert.match(styles, /html\[lang="ja"\] \.creator-site-page \.section-intro \.display-line/);
