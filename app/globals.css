@@ -95,6 +95,12 @@ body {
   transition: background-color var(--motion-reveal) var(--ease-studio), color var(--motion-reveal) var(--ease-studio);
 }
 
+html[data-theme-initializing="true"] *,
+html[data-theme-initializing="true"] *::before,
+html[data-theme-initializing="true"] *::after {
+  transition: none !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;

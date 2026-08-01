@@ -2,8 +2,17 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
+  buildStaticHomeDocument,
   buildStaticGuideDocument,
-  isStaticGuideRequest
+  buildStaticCreatorSiteDocument,
+  buildStaticContactDocument,
+  buildStaticToolsDocument,
+  isStaticGuideRequest,
+  isStaticHomeRequest,
+  isStaticCreatorSiteRequest,
+  isStaticContactRequest,
+  isStaticToolsRequest,
+  staticSourceRequestHeaders
 } from "../lib/static-guide-document.mjs";
 
 const pageStyleOwners = [
@@ -85,7 +94,15 @@ test("the getting-started spike removes only Next bootstrap and installs a behav
       </head>
       <body>
         <script>window.__themeInitWasKept = true;</script>
-        <main id="main-content"><h1>Getting started</h1></main>
+        <main id="main-content">
+          <h1>Getting started</h1>
+          <img
+            loading="lazy"
+            srcSet="/_next/image?url=%2Fimages%2Fguide%2Foverview.png&amp;w=1920&amp;q=75 1x, /_next/image?url=%2Fimages%2Fguide%2Foverview.png&amp;w=3840&amp;q=75 2x"
+            src="/_next/image?url=%2Fimages%2Fguide%2Foverview.png&amp;w=3840&amp;q=75"
+            alt="Approved guide image"
+          />
+        </main>
         <script src="/_next/static/chunks/webpack.js" async></script>
         <script>self.__next_f.push([1,"flight payload"])</script>
       </body>
@@ -105,6 +122,11 @@ test("the getting-started spike removes only Next bootstrap and installs a behav
   assert.doesNotMatch(transformed, /self\.__next_f/);
   assert.match(transformed, /data-kurodev-static-guide/);
   assert.match(transformed, /data-kurodev-island/);
+
+  // And: the standalone document keeps one native lazy source that loads without Next's client runtime.
+  assert.match(transformed, /loading="lazy"/);
+  assert.match(transformed, /src="\/_next\/image\?url=%2Fimages%2Fguide%2Foverview\.png/);
+  assert.doesNotMatch(transformed, /\ssrcset=/i);
 });
 
 test("the spike targets only the exact Japanese getting-started document and bypasses its source fetch", () => {
@@ -112,4 +134,250 @@ test("the spike targets only the exact Japanese getting-started document and byp
   assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/guide/getting-started?__kurodev_app_source=1")), false);
   assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/guide")), false);
   assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/en/guide/getting-started")), false);
+});
+
+test("the Japanese home document preserves its server content and installs only required islands", () => {
+  // Given: the production Home document with approved metadata, CSS, media, and theme initialization.
+  const source = `<!doctype html>
+    <html data-theme="light">
+      <head>
+        <style data-precedence="next">.creator-hero{display:grid}</style>
+        <meta name="description" content="approved home metadata" />
+      </head>
+      <body>
+        <script>window.__themeInitWasKept = true;</script>
+        <main id="main-content">
+          <h1>Creator platform</h1>
+          <img src="/images/kuro-stream-kit-home.webp" width="1200" height="675" alt="Product" />
+        </main>
+        <script src="/_next/static/chunks/app/page.js" async></script>
+        <script>self.__next_f.push([1,"home flight payload"])</script>
+      </body>
+    </html>`;
+
+  // When: only the exact Japanese Home document is converted to static islands.
+  const transformed = buildStaticHomeDocument(source);
+
+  // Then: approved content, metadata, inline CSS, theme initialization, and media remain intact.
+  assert.match(transformed, /Creator platform/);
+  assert.match(transformed, /approved home metadata/);
+  assert.match(transformed, /data-precedence="next"/);
+  assert.match(transformed, /__themeInitWasKept/);
+  assert.match(transformed, /kuro-stream-kit-home\.webp/);
+
+  // And: the App Router bootstrap is replaced by the shared-control and Home locale-suggestion islands.
+  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
+  assert.doesNotMatch(transformed, /self\.__next_f/);
+  assert.match(transformed, /data-kurodev-static-home/);
+  assert.match(transformed, /data-kurodev-island/);
+  assert.match(transformed, /data-kurodev-english-suggestion-island/);
+  assert.match(transformed, /kurodev-english-suggestion-dismissed/);
+  assert.match(transformed, /requestAnimationFrame/);
+  assert.match(transformed, /product-media img/);
+});
+
+test("the Home static route is exact and internal source fetches carry no visitor credentials", () => {
+  // Given: public Home, locale variants, and a marked internal source request.
+  const publicHome = new URL("https://kuro-lab.com/");
+  const markedHome = new URL("https://kuro-lab.com/?__kurodev_app_source=1");
+
+  // When: route eligibility and internal source headers are built.
+  const sourceHeaders = staticSourceRequestHeaders("ja");
+
+  // Then: only public Japanese Home is eligible and no visitor credential can cross the extra hop.
+  assert.equal(isStaticHomeRequest(publicHome), true);
+  assert.equal(isStaticHomeRequest(markedHome), false);
+  assert.equal(isStaticHomeRequest(new URL("https://kuro-lab.com/en")), false);
+  assert.equal(isStaticHomeRequest(new URL("https://kuro-lab.com/tools")), false);
+  assert.equal(isStaticHomeRequest(publicHome, "POST"), false);
+  assert.equal(sourceHeaders.get("accept"), "text/html");
+  assert.equal(sourceHeaders.get("x-kurodev-locale"), "ja");
+  assert.equal(sourceHeaders.has("cookie"), false);
+  assert.equal(sourceHeaders.has("authorization"), false);
+});
+
+test("the Japanese tools document preserves products and external-link semantics", () => {
+  // Given: the production Tools document with approved metadata, CSS, media, and launch links.
+  const source = `<!doctype html>
+    <html data-theme="light">
+      <head>
+        <style data-precedence="next">.tools-hero{display:grid}</style>
+        <meta name="description" content="approved tools metadata" />
+      </head>
+      <body>
+        <script>window.__themeInitWasKept = true;</script>
+        <main id="main-content">
+          <h1>Kuro Stream Kit</h1>
+          <img src="/images/kuro-stream-kit/schedule-calendar.png" alt="Schedule Calendar" />
+          <a href="https://streamer-tools.kuro-lab.com/tools/schedule-calendar/" target="_blank" rel="noreferrer">
+            ツールを使う<span class="sr-only">（新しいタブで開きます）</span>
+          </a>
+        </main>
+        <script src="/_next/static/chunks/app/tools/page.js" async></script>
+        <script>self.__next_f.push([1,"tools flight payload"])</script>
+      </body>
+    </html>`;
+
+  // When: only the exact Japanese Tools document is converted to static islands.
+  const transformed = buildStaticToolsDocument(source);
+
+  // Then: approved content, metadata, inline CSS, theme initialization, media, and links remain intact.
+  assert.match(transformed, /Kuro Stream Kit/);
+  assert.match(transformed, /approved tools metadata/);
+  assert.match(transformed, /data-precedence="next"/);
+  assert.match(transformed, /__themeInitWasKept/);
+  assert.match(transformed, /schedule-calendar\.png/);
+  assert.match(transformed, /target="_blank" rel="noreferrer"/);
+  assert.match(transformed, /新しいタブで開きます/);
+
+  // And: the App Router bootstrap is replaced by the shared-control island only.
+  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
+  assert.doesNotMatch(transformed, /self\.__next_f/);
+  assert.match(transformed, /data-kurodev-static-tools/);
+  assert.match(transformed, /data-kurodev-island/);
+  assert.doesNotMatch(transformed, /data-kurodev-english-suggestion-island/);
+});
+
+test("the Tools static route is exact and GET-only", () => {
+  const publicTools = new URL("https://kuro-lab.com/tools");
+
+  assert.equal(isStaticToolsRequest(publicTools), true);
+  assert.equal(isStaticToolsRequest(new URL("https://kuro-lab.com/tools?__kurodev_app_source=1")), false);
+  assert.equal(isStaticToolsRequest(new URL("https://kuro-lab.com/en/tools")), false);
+  assert.equal(isStaticToolsRequest(new URL("https://kuro-lab.com/tool")), false);
+  assert.equal(isStaticToolsRequest(publicTools, "HEAD"), false);
+  assert.equal(isStaticToolsRequest(publicTools, "POST"), false);
+});
+
+test("the Japanese creator-site document preserves demonstrations and link semantics", () => {
+  // Given: the approved service document with fictional examples, motion CSS, and an external plan link.
+  const source = `<!doctype html>
+    <html data-theme="light">
+      <head>
+        <style data-precedence="next">
+          .service-demo__preview{transition:transform var(--motion-reveal)}
+          @media (forced-colors:active){.creator-site-hero::before{display:none}}
+        </style>
+        <meta name="description" content="approved creator-site metadata" />
+      </head>
+      <body>
+        <script>window.__themeInitWasKept = true;</script>
+        <main id="main-content">
+          <h1>活動を、自分の場所にまとめる。</h1>
+          <article><h2>水城ルカ</h2><p>架空の活動名とサンプル情報を使用しています。</p></article>
+          <article><h2>Aoi Atelier</h2><p>架空の活動名とサンプル情報を使用しています。</p></article>
+          <a href="https://templates.kuro-lab.com/plans" target="_blank" rel="noreferrer">
+            HP-portalのプランを見る<span class="sr-only">(opens in a new tab)</span>
+          </a>
+        </main>
+        <script src="/_next/static/chunks/app/creator-site/page.js" async></script>
+        <script>self.__next_f.push([1,"creator-site flight payload"])</script>
+      </body>
+    </html>`;
+
+  // When: only the exact Japanese Creator Site document is converted to static islands.
+  const transformed = buildStaticCreatorSiteDocument(source);
+
+  // Then: approved copy, fictional examples, metadata, CSS/motion, theme, and external link semantics remain intact.
+  assert.match(transformed, /活動を、自分の場所にまとめる。/);
+  assert.match(transformed, /水城ルカ/);
+  assert.match(transformed, /Aoi Atelier/);
+  assert.match(transformed, /架空の活動名とサンプル情報/);
+  assert.match(transformed, /approved creator-site metadata/);
+  assert.match(transformed, /--motion-reveal/);
+  assert.match(transformed, /forced-colors:active/);
+  assert.match(transformed, /__themeInitWasKept/);
+  assert.match(transformed, /target="_blank" rel="noreferrer"/);
+
+  // And: the App Router bootstrap is replaced by the shared-control island only.
+  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
+  assert.doesNotMatch(transformed, /self\.__next_f/);
+  assert.match(transformed, /data-kurodev-static-creator-site/);
+  assert.match(transformed, /data-kurodev-island/);
+});
+
+test("the Creator Site static route is exact and GET-only", () => {
+  const publicCreatorSite = new URL("https://kuro-lab.com/creator-site");
+
+  assert.equal(isStaticCreatorSiteRequest(publicCreatorSite), true);
+  assert.equal(isStaticCreatorSiteRequest(new URL("https://kuro-lab.com/creator-site?__kurodev_app_source=1")), false);
+  assert.equal(isStaticCreatorSiteRequest(new URL("https://kuro-lab.com/en/creator-site")), false);
+  assert.equal(isStaticCreatorSiteRequest(new URL("https://kuro-lab.com/creator-sites")), false);
+  assert.equal(isStaticCreatorSiteRequest(publicCreatorSite, "HEAD"), false);
+  assert.equal(isStaticCreatorSiteRequest(publicCreatorSite, "POST"), false);
+});
+
+test("the Japanese Contact document preserves consent and installs a form island", () => {
+  // Given: the production Contact form with approved visible consent copy and external-link semantics.
+  const source = `<!doctype html>
+    <html data-theme="light">
+      <head>
+        <style data-precedence="next">.contact-form__error{color:red}</style>
+        <meta name="description" content="approved contact metadata" />
+      </head>
+      <body>
+        <script>window.__themeInitWasKept = true;</script>
+        <main id="main-content">
+          <h1>制作について相談する</h1>
+          <form class="contact-form" novalidate>
+            <input id="contact-name" name="name" required maxlength="80" />
+            <input id="contact-email" name="email" type="email" required maxlength="120" />
+            <select id="contact-category" name="category" required><option value="">カテゴリを選択</option></select>
+            <input id="contact-reference-url" name="referenceUrl" type="url" maxlength="300" />
+            <textarea id="contact-message" name="message" required maxlength="3000" aria-describedby="message-guidance"></textarea>
+            <div class="contact-form__consent">
+              <input id="contact-privacy-acknowledged" name="privacyAcknowledged" type="checkbox" required />
+              <span>プライバシーポリシー（version 1.0.0）を確認しました。</span>
+            </div>
+            <div class="contact-form__consent">
+              <input id="contact-foreign-transfer-consent" name="foreignTransferConsent" type="checkbox" required />
+              <span>国外での個人データの取扱い（version 1.0.0）を確認し、同意します。</span>
+            </div>
+            <div class="contact-form__actions"><button type="submit">送信する</button></div>
+            <div class="contact-form__status contact-form__status--idle" role="status" aria-live="polite" aria-atomic="true"></div>
+          </form>
+          <a href="https://templates.kuro-lab.com/plans" target="_blank" rel="noreferrer">HP-portal</a>
+        </main>
+        <script src="/_next/static/chunks/app/contact/page.js" async></script>
+        <script>self.__next_f.push([1,"contact flight payload"])</script>
+      </body>
+    </html>`;
+
+  // When: the Japanese Contact document is converted to its form-island boundary.
+  const transformed = buildStaticContactDocument(source, "ja");
+
+  // Then: approved content, consent, metadata, CSS, theme initialization, and links remain intact.
+  assert.match(transformed, /制作について相談する/);
+  assert.match(transformed, /プライバシーポリシー（version 1\.0\.0）/);
+  assert.match(transformed, /国外での個人データの取扱い（version 1\.0\.0）/);
+  assert.match(transformed, /approved contact metadata/);
+  assert.match(transformed, /data-precedence="next"/);
+  assert.match(transformed, /__themeInitWasKept/);
+  assert.match(transformed, /target="_blank" rel="noreferrer"/);
+
+  // And: the form island pins current evidence, fallback, accessible states, and provider order.
+  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
+  assert.doesNotMatch(transformed, /self\.__next_f/);
+  assert.match(transformed, /data-kurodev-static-contact/);
+  assert.match(transformed, /data-kurodev-island/);
+  assert.match(transformed, /data-kurodev-contact-island/);
+  assert.match(transformed, /contact-privacy-acknowledgement-ja-v1/);
+  assert.match(transformed, /1aa2b6d9d69d6ef935db30eb410c288cac3460085feb8936d78ca32dd14c3898/);
+  assert.match(transformed, /e7f071b7850b82ddaf8d066fabae80649f1209a9577e55fd245b863c8bb0452a/);
+  assert.match(transformed, /mailto:contact@kuro-lab\.com/);
+  assert.match(transformed, /aria-live/);
+  assert.match(transformed, /requestAnimationFrame/);
+  assert.ok(transformed.indexOf("var nextErrors = validateValues(values)") < transformed.indexOf("await executeTurnstile()"));
+  assert.ok(transformed.indexOf("await executeTurnstile()") < transformed.indexOf('fetch("/api/contact"'));
+});
+
+test("the Contact static route is exact and GET-only", () => {
+  const publicContact = new URL("https://kuro-lab.com/contact");
+
+  assert.equal(isStaticContactRequest(publicContact), true);
+  assert.equal(isStaticContactRequest(new URL("https://kuro-lab.com/contact?__kurodev_app_source=1")), false);
+  assert.equal(isStaticContactRequest(new URL("https://kuro-lab.com/en/contact")), false);
+  assert.equal(isStaticContactRequest(new URL("https://kuro-lab.com/contacts")), false);
+  assert.equal(isStaticContactRequest(publicContact, "HEAD"), false);
+  assert.equal(isStaticContactRequest(publicContact, "POST"), false);
 });

@@ -6,7 +6,7 @@
 - Scheduled coordinated production activation date: `2026-08-04`
 - Surface: local integration production build at `http://localhost:3100`
 - Runtime: Next.js `15.5.21`, React / React DOM `18.3.1`
-- Overall verdict: **FAIL — release blocked**
+- Overall verdict: **FAIL — release blocked only by the separate `DEP-AUDIT-001`; Task 14 browser and Lighthouse gates pass locally**
 - Live-provider boundary: no live Turnstile, Siteverify, Resend, Contact delivery, secrets, provider settings, or real-person PII were used.
 
 The seven legal documents and six Contact consent copies use the exact fixed IDs, versions, dates, and SHA-256 values recorded by the active launch manifests and tests. Their public-use gate relies on the repository owner's owner-designated AI-assisted internal substitute and accepted residual risk. No human lawyer or independent human legal reviewer participated, and this evidence must not be described as human or attorney review.
@@ -15,15 +15,15 @@ The seven legal documents and six Contact consent copies use the exact fixed IDs
 
 | Step | Result | Evidence |
 | --- | --- | --- |
-| 1. Automated suite | PASS | `npm test` passes 96 / 96, and `npm run lint` and `npm run build` exit 0. The final production build generated 41 pages. The separately requested dependency-security audit remains red as `DEP-AUDIT-001`. |
+| 1. Automated suite | PASS | `npm test` passes 105 / 105, and `npm run lint`, `npm run diagnose:react`, and `npm run build` exit 0. The final production build generated 41 pages. React Doctor retains 13 documented warnings. The separately requested dependency-security audit remains red as `DEP-AUDIT-001`. |
 | 2. Production server | PASS | Next.js 15.5.21 production server reached Ready on local port 3100. |
-| 3. Four-width route QA | PASS | 36 public and launch-candidate routes, including the non-indexable Comment Translator pair, were captured at 375 / 768 / 1024 / 1280 px: 144 final-build captures, all HTTP 200, with no horizontal overflow, missing `h1`, wrong document language, missing description, console error, or external request. |
-| 4. Interactions and states | PASS | Keyboard focus, menu Escape close/focus return, theme change, locale links, missing-translation fallback, unavailable-guide noindex state, reduced motion, forced colors, Contact validation/live status, direct-email fallback, and synthetic Turnstile sequencing passed. |
-| 5. Lighthouse | FAIL | Desktop met the 100/100/100/100 threshold. The `/guide/getting-started` static/islands follow-up now meets 100/100/100/100 on mobile, but the other four required mobile Performance medians have not yet been brought to and reverified at 100. |
+| 3. Four-width route QA | PASS | The earlier 36-route inventory remains recorded. A fresh final-build sweep of the five Task 14 Lighthouse routes added 20 current captures at 375 / 768 / 1024 / 1280 px: all HTTP 200, with the correct static marker, no horizontal overflow, broken loaded image, App Router chunk, Flight payload, or incomplete initial-theme state. |
+| 4. Interactions and states | PASS | On the current build, all five routes passed visible keyboard focus, mobile-menu forward/backward focus trap, Escape close/focus return, theme and locale persistence, reduced motion, and forced colors. Contact passed six-error validation order, focus-on-first-error, polite/assertive live regions, direct-email fallback, consent-gated fictional Turnstile sequencing, and intercepted API delivery. |
+| 5. Lighthouse | PASS | Three real-Chrome runs per route and preset produced 100/100/100/100 medians for all five routes on mobile and desktop. |
 | 6. Publication/privacy review | PASS for local pre-merge scope | Tracked secret-pattern scan found no matching files. No credential, token, cookie, browser storage value, raw response, private identifier, or fixture body is included in this report. Provider calls were intercepted or absent. |
 | 7. Sanitized evidence | PASS | Per-route and per-width rows, interaction results, Lighthouse reports, stitched-capture provenance, and command summaries are stored in the workstation-local evidence directory below. |
-| 8. `task.md` | PASS | Locally verified slices and the two remaining release blockers are recorded; final PR, production activation, and Task 15 remain explicitly pending. |
-| 9. Final pre-merge checkpoint | FAIL because release blockers remain | Fresh `git fetch origin --prune` passed. HEAD and the remote preview are `475a2422125c35f87cf28b931be25217b098d361`; `origin/main` is contained with divergence `0 behind / 17 ahead`. `git diff --check` passed with line-ending warnings only. This QA snapshot predates any separately authorized Draft PR publication. |
+| 8. `task.md` | PASS | The locally completed Task 14 performance gate and the separate remaining `DEP-AUDIT-001` release blocker are recorded; final PR, production activation, and Task 15 remain explicitly pending. |
+| 9. Final pre-merge checkpoint | FAIL because the separate dependency gate remains | Work started from exact fetched preview commit `72c6c303345f2aca1496fd77f029a521b0267ce8` on isolated branch `codex/creator-platform-task14-performance-remaining`; PR #17 head `c6dcc1fd5d313de5c8357a9cd2c6d38a2d6d1386` is contained. Package manifests remain unchanged and `git diff --check` passes. No commit, push, PR, merge, deploy, activation, or worktree cleanup was performed. |
 
 ### Coverage matrix and issue labels
 
@@ -32,9 +32,8 @@ The seven legal documents and six Contact consent copies use the exact fixed IDs
 | 36-route final-build inventory | 375 / 768 / 1024 / 1280, system light | PASS | none |
 | Home, Contact, forced-color focus | 375 / 1280, forced colors | PASS | none |
 | Contact consent and synthetic provider sequencing | 375 / 1280, reduced motion | PASS | none |
-| Five Lighthouse routes | desktop preset, three runs | PASS | none |
-| `/guide/getting-started` | mobile preset, three-run follow-up | PASS | none |
-| Remaining four Lighthouse routes | mobile preset, three runs required | FAIL | `PERF-MOBILE-001` |
+| Five Lighthouse routes | desktop preset, three runs per route | PASS | none |
+| Five Lighthouse routes | mobile preset, three runs per route | PASS | none |
 | Production dependency graph | local audit | FAIL | `DEP-AUDIT-001` |
 
 Per-route Step 7 record:
@@ -113,6 +112,10 @@ Static/islands follow-up evidence:
 
 `C:/Users/taka/.codex/visualizations/2026/07/30/019fb417-77a4-71b3-b193-a0a074d9969c/perf-mobile-001-20260731`
 
+Remaining-route performance and fresh visual evidence:
+
+`C:/Users/taka/.codex/visualizations/2026/07/31/019fb63f-5567-7830-aba0-012255bbe6f0/task14-performance-remaining-20260731`
+
 Key machine-readable files:
 
 - `route-width-summary.json`
@@ -138,33 +141,31 @@ Three real-Chrome runs were performed per route and preset.
 
 | Preset | Route | Performance | Accessibility | Best Practices | SEO | LCP ms | CLS | TBT ms |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Desktop | `/` | 100 | 100 | 100 | 100 | 577 | 0 | 21 |
-| Desktop | `/tools` | 100 | 100 | 100 | 100 | 566 | 0 | 39 |
-| Desktop | `/creator-site` | 100 | 100 | 100 | 100 | 547 | 0 | 42 |
-| Desktop | `/guide/getting-started` | 100 | 100 | 100 | 100 | 584 | 0 | 18 |
-| Desktop | `/contact` | 100 | 100 | 100 | 100 | 524 | 0 | 39 |
-| Mobile | `/` | 86 | 100 | 100 | 100 | 2699 | 0 | 301 |
-| Mobile | `/tools` | 89 | 100 | 100 | 100 | 2399 | 0 | 340 |
-| Mobile | `/creator-site` | 75 | 100 | 100 | 100 | 2728 | 0 | 644 |
-| Mobile | `/guide/getting-started` | 90 | 100 | 100 | 100 | 2385 | 0 | 350 |
-| Mobile | `/contact` | 83 | 100 | 100 | 100 | 2182 | 0 | 624 |
+| Desktop | `/` | 100 | 100 | 100 | 100 | 249 | 0 | 0 |
+| Desktop | `/tools` | 100 | 100 | 100 | 100 | 255 | 0 | 0 |
+| Desktop | `/creator-site` | 100 | 100 | 100 | 100 | 273 | 0 | 0 |
+| Desktop | `/guide/getting-started` | 100 | 100 | 100 | 100 | 229 | 0 | 0 |
+| Desktop | `/contact` | 100 | 100 | 100 | 100 | 300 | 0 | 0 |
+| Mobile | `/` | 100 | 100 | 100 | 100 | 1146 | 0 | 0 |
+| Mobile | `/tools` | 100 | 100 | 100 | 100 | 943 | 0 | 0 |
+| Mobile | `/creator-site` | 100 | 100 | 100 | 100 | 1011 | 0 | 0 |
+| Mobile | `/guide/getting-started` | 100 | 100 | 100 | 100 | 850 | 0 | 0 |
+| Mobile | `/contact` | 100 | 100 | 100 | 100 | 1080 | 0 | 0 |
 
-The mobile app-owned deficits are simulated FCP/LCP, Speed Index, and especially TBT. Median TBT ranges from 301 to 644 ms. Representative Lighthouse diagnostics also identify about 21 KiB of unused JavaScript, about 12 KiB of legacy JavaScript, and roughly 300 ms of render-blocking work. The plan forbids removing approved features or motion merely to buy a score, so no broad performance rewrite was made during this dependency-migration and QA slice.
-
-Two mobile Lighthouse runs produced a Windows `EBUSY` warning while deleting a temporary Chrome profile after the JSON report had already been written. All 30 expected reports exist and parse successfully; this is an evidence-cleanup warning, not a missing measurement.
+The five routes now deliver the existing production-rendered document as route-specific static HTML with small behavior islands, removing App Router bootstrap and Flight payload from these exact GET surfaces while preserving metadata, inline CSS, approved content, images, theme/language/menu/focus behavior, motion, and link semantics. Contact keeps a separate form island with its existing validation, consent evidence, Turnstile-before-provider order, and direct-email fallback. The middleware source fetch forwards only the HTML accept header and locale; its generated response remains private and no-store, so this local result does not claim CDN cacheability or remove the extra internal server hop.
 
 ### `/guide/getting-started` static/islands follow-up
 
-The exact Japanese `/guide/getting-started` route was converted into a static/islands spike that preserves the existing SSG document, metadata, inline CSS, theme initialization, content, image, navigation, and accessibility behavior while removing the App Router client bootstrap and Flight payload from the delivered document. Other routes retain their existing App Router behavior.
+The exact Japanese `/guide/getting-started` route remains the known-good static/islands reference and preserves the existing SSG document, metadata, inline CSS, theme initialization, content, image, navigation, and accessibility behavior while removing the App Router client bootstrap and Flight payload from the delivered document.
 
 | Run | Performance | Accessibility | Best Practices | SEO | LCP ms | CLS | TBT ms |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | 100 | 100 | 100 | 100 | 930 | 0 | 0 |
-| 2 | 99 | 100 | 100 | 100 | 882 | 0 | 0 |
-| 3 | 100 | 100 | 100 | 100 | 1013 | 0 | 0 |
-| Median | 100 | 100 | 100 | 100 | 930 | 0 | 0 |
+| 1 | 100 | 100 | 100 | 100 | 850 | 0 | 0 |
+| 2 | 100 | 100 | 100 | 100 | 825 | 0 | 0 |
+| 3 | 100 | 100 | 100 | 100 | 851 | 0 | 0 |
+| Median | 100 | 100 | 100 | 100 | 850 | 0 | 0 |
 
-Real-Chrome follow-up QA passed at 375 / 768 / 1024 / 1280 px with no horizontal overflow, App Router chunk request, Flight payload, external request, or page error. Skip-link focus, mobile-menu initial focus and Tab trap, Escape close/focus return, scroll lock, theme and locale persistence, reduced motion, forced colors, and the approved guide image remained operable.
+Real-Chrome follow-up QA passed at 375 / 768 / 1024 / 1280 px with no horizontal overflow, App Router chunk request, Flight payload, external request, or page error. Skip-link focus, mobile-menu initial focus and Tab trap, Escape close/focus return, scroll lock, theme and locale persistence, reduced motion, and forced colors remained operable. The static Guide document removes only Next's unselected responsive `srcset` while retaining its native lazy `src`; the approved 1920 px guide image decoded and painted at all four widths without a client runtime.
 
 ## Diagnostics
 
@@ -174,11 +175,11 @@ Real-Chrome follow-up QA passed at 375 / 768 / 1024 / 1280 px with no horizontal
 - Next.js migration: Lighthouse initially reproduced missing SEO descriptions because Next 15 streamed metadata after the initial document head. `htmlLimitedBots: /.*/` now keeps metadata in the initial response, and the final Lighthouse SEO score is 100 on every audited run.
 - Language-switch accessibility: the visible `日本語 / EN` label is now included in the accessible name. The final Lighthouse Accessibility score is 100 on every audited run.
 - Visual evidence: the initial five over-limit legal screenshots and the 1024 px Contact title wrap were sanitized QA-artifact defects, not hidden application failures. Both were corrected and re-inspected; provenance is recorded beside the replacement captures.
-- Independent visual re-review: PASS for the repaired scope, including all 114 stitched joins, complete legal-page footers, the 1024 px Contact title, and its contact-sheet tile. No remaining visual-evidence blocker was reported.
+- Independent visual re-review: PASS. The final current-build set includes all five routes at four widths as both top and full-page captures, five settled skip-link focus captures, three settled theme frames, and the loaded Guide image at all four widths. The final CJK and integrity reviewers reported no remaining product or evidence blocker.
 
 ## Release blockers and next approvals
 
 1. `DEP-AUDIT-001` (additional security release gate requested by the repository owner, not the Task 14 Step 5 score criterion): Next.js 15.5.21 carries vulnerable PostCSS 8.4.31 and Sharp 0.34.5. The stable 15.5.22 and 16.2.12 metadata inspected on `2026-07-31` still use the affected dependency ranges. Moving to a 16.3 preview or applying out-of-range overrides is not authorized.
-2. `PERF-MOBILE-001`: `/guide/getting-started` now meets the required mobile median 100. The remaining `/`, `/tools`, `/creator-site`, and `/contact` routes still require bounded implementation and three-run mobile remeasurement.
+`PERF-MOBILE-001` is resolved locally: all five Task 14 routes meet the required mobile and desktop three-run medians.
 
-Because these gates are red, Task 14 is not complete and the final preview-to-`main` PR is not ready. Any intermediate Draft PR remains non-mergeable. Merge, deployment, production activation, live-provider verification, and Task 15 remain pending separate approval.
+Task 14's local browser, accessibility, and performance verification is complete, but the separately requested `DEP-AUDIT-001` still blocks release readiness. Merge, deployment, production activation, live-provider verification, and Task 15 remain pending separate approval.
