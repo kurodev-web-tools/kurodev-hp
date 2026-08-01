@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
 export const alt = "kurodev Creator Platform";
 export const size = {
   width: 1200,
