@@ -83,6 +83,23 @@ test("shared shell copy stays on the server while interactive controls remain is
   assert.match(shell, /SiteFooter locale={locale}/);
 });
 
+test("product media priority reaches the browser without eagerly loading below-fold tool media", async () => {
+  // Given: the shared product media primitive and the two below-fold tool sections.
+  const [productMedia, featuredTools, toolProductSection] = await Promise.all([
+    readFile(new URL("../components/ui/product-media.js", import.meta.url), "utf8"),
+    readFile(new URL("../components/sections/featured-tools.js", import.meta.url), "utf8"),
+    readFile(new URL("../components/sections/tool-product-section.js", import.meta.url), "utf8")
+  ]);
+
+  // When: image priority ownership is inspected at the component boundary.
+  const priorityHint = /fetchPriority=\{priority \? ["']high["'] : undefined\}/;
+
+  // Then: above-fold callers can emit a browser hint while below-fold media stays lazy.
+  assert.match(productMedia, priorityHint);
+  assert.doesNotMatch(featuredTools, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/>)/);
+  assert.doesNotMatch(toolProductSection, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/>)/);
+});
+
 test("the getting-started spike removes only Next bootstrap and installs a behavior island", () => {
   // Given: the production document shape emitted by the App Router.
   const source = `<!doctype html>
@@ -192,8 +209,27 @@ test("the Home static route is exact and internal source fetches carry no visito
   assert.equal(isStaticHomeRequest(publicHome, "POST"), false);
   assert.equal(sourceHeaders.get("accept"), "text/html");
   assert.equal(sourceHeaders.get("x-kurodev-locale"), "ja");
+  assert.equal(sourceHeaders.get("user-agent"), "kurodev-static-document/1.0");
   assert.equal(sourceHeaders.has("cookie"), false);
   assert.equal(sourceHeaders.has("authorization"), false);
+});
+
+test("static document transforms keep description metadata inside the document head", () => {
+  // Given: a source document whose description metadata is already in the head.
+  const source = `<!doctype html><html><head><meta name="description" content="qa-description" /></head><body><main>Content</main></body></html>`;
+
+  // When: each affected static route removes the Next.js runtime from that document.
+  const documents = [
+    buildStaticGuideDocument(source),
+    buildStaticCreatorSiteDocument(source),
+    buildStaticContactDocument(source, "ja")
+  ];
+
+  // Then: every transform preserves the description metadata inside the head.
+  documents.forEach((document) => {
+    const head = document.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? "";
+    assert.match(head, /<meta name="description" content="qa-description" \/>/);
+  });
 });
 
 test("the Japanese tools document preserves products and external-link semantics", () => {

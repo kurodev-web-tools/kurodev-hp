@@ -264,3 +264,106 @@ Task 14's local browser, accessibility, performance, and dependency-security ver
 - Activation-preflight: **NO-GO** until a full Lighthouse 13.4.1 runner repeats 5 routes × 2 presets × 3 runs. If the meta-description failure reproduces there, source behavior change, Workers rebuild / deploy, and the exact same remote matrix require new approvals.
 - Visual revalidation also requires separate source-change authority for the listed wrap issues, followed by focus-cleared, fully painted fresh captures of all 20 route / width combinations and a new independent review.
 - No Cloudflare account setting, Worker resource, build, upload, deployment, secret / variable, domain / DNS / route, activation, provider, Pages production environment, dependency, manifest / lockfile, application source, commit, push, PR, merge, branch, or worktree was changed.
+
+## PR #23 merge後 Remote Worker read-only revalidation
+
+- Verification date: `2026-08-01` JST.
+- Repository checkpoint: clean detached HEAD `7f987dc9aa04fb7714e5cc614458b57ccda349d2`, equal to the fetched preview tip and PR #23 merge commit. PR #23 head is `d87ad3404caf4f681bc8a59c27346c823a733100`; its `Workers Builds: kurodev-hp-opennext` check is SUCCESS.
+- Runtime-source identity: compared with PR #22 merge `2c2d61244125a1eafa7b3824002f95502c1414ce`, PR #23 changes only this QA record and `task.md`. Runtime source, package / lock, and Worker configuration have no diff.
+- Evidence: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/remote-worker-post-pr23-20260801`. The accepted visual evidence is the viewport `*-segment-*.png` and `*-skip-focus.png` set. Browser full-page stitching produced repeated / blank stitching artifacts and is excluded from the verdict.
+
+### HTTP, metadata, browser, and asset observations
+
+- The five Task 14 Japanese routes return HTTP 200 with their expected `x-kurodev-rendering` value. Their initial HTTP documents contain the expected description meta, no App Router chunk URL, and no Flight push. The settled DOM contains the same descriptions, one `h1`, one `main`, and the Japanese document language.
+- At 375 / 1280 px, all ten Japanese route / width combinations have no horizontal overflow or console error. CDP request evidence records only the Worker origin, with no network failure or unexpected external origin.
+- Every image that became visible during the scroll sweep completed with a 1920 x 1080 natural size. The viewport PNGs show the Home / Tools product media and Guide image painted and nonblank. Resting captures were taken at `scrollY=0`.
+- The skip link was focused in the real browser through DevTools because this automation surface did not deliver Tab to the document. All ten states expose one visible `本文へ移動` link with `href=#main-content` at `scrollY=0`. This resolves the prior skip-link capture defect but is not described as a physical keyboard event.
+- `/tool`, `/web`, and `/profile` return 308 to `/tools`, `/works`, and `/about`; a synthetic missing route returns 404. `/opengraph-image` is a 1200 x 630 PNG, and the document-referenced `/favicon.png` is a 64 x 64 PNG. `robots.txt` and `sitemap.xml` return 200; the sitemap includes the Japanese and English getting-started routes.
+- HSTS, nosniff, X-Frame-Options, Referrer-Policy, and Permissions-Policy match `next.config.mjs` on all five documents.
+- The only remote Contact request used an empty JSON object. It returned 400 `INVALID_INPUT` before the provider boundary. No live provider, secret, cookie, token, raw Contact payload, private identifier, or real-person PII was used or recorded.
+- `node --test tests/performance-contract.test.mjs tests/cloudflare-opennext-contract.test.mjs` passes 14 / 14.
+
+### Lighthouse and visual blocker classification
+
+- Existing gate remains the Task 14 matrix: five routes, mobile / desktop presets, three navigation runs each, with median 100 in Performance, Accessibility, Best Practices, and SEO. No replacement threshold was introduced.
+- Full Lighthouse `13.4.1` is a **runner blocker** in this revalidation. No Lighthouse package is available in the clean worktree, existing worktrees, npm cache, or global packages. The bundled Chrome DevTools audit could not start because its existing profile was already in use. Installing or updating a dependency was outside authority, so no current four-category score is claimed.
+- The prior SEO 91 / 92 result is therefore separated as follows: initial HTTP description meta **PASS**, settled DOM description meta **PASS**, current Lighthouse artifact **not obtained / runner blocker**. A metadata source fix is not justified until an approved full runner reproduces the audit failure.
+- The prior lazy-image and skip-link evidence defects are resolved by the accepted viewport / focus set.
+- The visual product blocker is **reproduced**. The latest `/creator-site` captures retain the forced Japanese hero break around `活動を、自分の / 場所にまとめる。` and the four-line Process heading. `/en/creator-site` at 375 px retains the isolated `work` line. The corresponding source-owned line arrays are in `lib/content/creator-site-content.mjs`; no source change was authorized.
+
+### Activation-preflight verdict and required approvals
+
+- Activation-preflight remains **NO-GO**. Repository / OpenNext build is verified by the successful Workers check; current remote runtime contracts and image paint are verified; full Lighthouse remains unverified; the visual wrap issue is a reproduced product defect.
+- Minimal visual fix: change only the approved `titleLines` boundaries in `lib/content/creator-site-content.mjs`, and only if a fresh visual review still requires it, the Tools boundary in `lib/content/site-copy.mjs`. Preserve copy meaning, legal / Consent / accessibility / motion invariants, and all package / lock versions.
+- Required approvals are separate: (1) source copy / line-break change, (2) repository and OpenNext rebuild, (3) Worker upload / deploy, and (4) remote revalidation. The revalidation must repeat 375 / 1280 viewport segments with every image painted, resting `scrollY=0`, skip-link focus evidence, and independent visual review.
+- Lighthouse must first run in an approved dependency-free full `13.4.1` runner for 5 routes x 2 presets x 3 runs. Only if meta-description fails there should an initial-document metadata timing fix be authorized, followed by rebuild / deploy and the same remote matrix.
+- No account setting, Worker resource, build, upload, deployment, secret / variable, domain / DNS / route, activation, provider, Pages production environment, dependency, manifest / lockfile, application source, commit, push, PR, merge, branch, worktree, or cleanup action was performed.
+
+## Approved post-fix Worker deployment and remote revalidation
+
+- Verification date: `2026-08-01` JST. The approved local Creator Site title-line, static-source User-Agent, and Windows CRLF check changes passed `npm test` 112 / 112, lint, the 43-page repository build, and the OpenNext build before deployment. `package.json`, `package-lock.json`, `wrangler.jsonc`, and the generated Guide inventory remained unchanged.
+- Wrangler `4.118.0` dry-run and deployment used the named `kurodev-web-tools` profile plus `--keep-vars --strict`. The returned target exactly matched `https://kurodev-hp-opennext.kurodev-web-tools.workers.dev/`. Before that profile existed, the default local Wrangler account caused one same-name deployment under the different public `luminous-design-web.workers.dev` subdomain. No rollback, deletion, account setting, secret / variable, domain, DNS, or route change was authorized or performed.
+- Fresh Chrome `151.0.7922.71` evidence covers the five Japanese Task 14 routes at 375 and 1280 px. All ten checks returned 200, kept description metadata in HEAD only, had no horizontal overflow, console error, page error, failed request, or unexpected origin, and exposed the visible `#main-content` skip link through a real Tab action at `scrollY=0`. All 23 rendered images decoded and produced nonblank PNG evidence.
+- The Creator Site hero now preserves the approved four semantic lines at both widths: `SNSに流れていく / 活動を、 / 自分の場所に / まとめる。`. Visual and runtime evidence is stored under `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/remote-worker-post-fixes-20260801`.
+- The route / header regression sweep passes: all five `x-kurodev-rendering` values, zero App Router chunks / Flight pushes, configured HSTS / nosniff / Referrer-Policy / X-Frame-Options / Permissions-Policy, three exact 308 redirects, synthetic 404, empty-JSON Contact 400 `INVALID_INPUT` before provider handling, nonblank 1200 x 630 OG PNG, nonblank 64 x 64 favicon, robots, and a 34-URL sitemap containing the Japanese and English getting-started routes.
+
+### Lighthouse 13.4.1 matrix
+
+The original Task 14 gate remains unchanged: three-run median 100 in Performance, Accessibility, Best Practices, and SEO for every route / preset row. The dedicated repository-external runner produced 30 / 30 raw reports with the exact Lighthouse `13.4.1` version, no runtime error, and no run warning.
+
+| Route | Preset | Performance | Accessibility | Best Practices | SEO | Meta-description failures | Gate |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Home | Mobile | 85 | 100 | 100 | 100 | 0 | FAIL |
+| Tools | Mobile | 96 | 100 | 100 | 100 | 0 | FAIL |
+| Creator Site | Mobile | 100 | 100 | 100 | 100 | 0 | PASS |
+| Guide | Mobile | 100 | 100 | 100 | 100 | 0 | PASS |
+| Contact | Mobile | 100 | 100 | 100 | 100 | 0 | PASS |
+| Home | Desktop | 96 | 100 | 100 | 100 | 0 | FAIL |
+| Tools | Desktop | 100 | 100 | 100 | 100 | 0 | PASS |
+| Creator Site | Desktop | 100 | 100 | 100 | 100 | 0 | PASS |
+| Guide | Desktop | 100 | 100 | 100 | 100 | 0 | PASS |
+| Contact | Desktop | 100 | 100 | 100 | 100 | 0 | PASS |
+
+- The former Creator Site / Guide / Contact SEO 91 / 92 failure does not reproduce. Initial HTTP documents, settled DOM, and all Lighthouse artifacts now place exactly one description in HEAD and none in BODY.
+- Remaining failing medians are Home mobile Performance 85, Tools mobile 96, and Home desktop 96. Their median LCP values are 4335, 2672, and 1428 ms. The reports identify the same Kuro Stream Kit hero PNG as LCP, report no high-priority hint, and estimate about 1.7 MiB image-delivery savings. The deployed Home HTML has four eager images and Tools has two, with no image preload or `fetchpriority` attribute.
+- Full reports and checksums: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/lighthouse-13.4.1-30run-post-fixes-20260801`.
+
+### Independent visual verdict and activation preflight
+
+- Both read-only reviewers inspected all ten fresh full-page captures. The requested Creator Site hero fix, real DOM / token-driven implementation, responsive layout, image paint, focus evidence, and metadata/runtime contracts pass.
+- The combined visual verdict remains **REVISE** for existing, unmodified surfaces: the CJK pass found meaning-unit splits on Home, Tools, Guide, Contact, and Creator Site workflow / FAQ headings; the functional pass flagged the existing non-interactive Creator Site demo-card hover lift / saturation as decorative motion. These observations are outside the current source approval and were not changed.
+- Activation-preflight is **NO-GO** because three Lighthouse Performance rows remain below the existing 100 threshold and the independent visual verdict is REVISE.
+- Minimal performance authorization request: make priority `ProductMedia` emit an actual high fetch-priority hint, remove eager priority from below-fold Featured Tools and Tools product media, and add focused HTML / priority contracts. Then rerun repository / OpenNext builds, deploy, and repeat the same remote Chrome and 30-run matrix. Responsive or modern image assets should be considered only if this smaller source change does not reach the existing gate.
+- No activation, live-provider request, real PII, commit, push, PR, merge, branch / worktree cleanup, wrong-account rollback, or deployment deletion was performed.
+
+## ProductMedia priority performance slice deployment and revalidation
+
+- Verification date: `2026-08-01` JST. The approved source delta adds an explicit browser `fetchpriority="high"` for priority `ProductMedia` and removes priority from the below-fold Featured Tools and Tools product sections. The focused contract failed before the source edit and passed afterward. Copy, layout, motion, image assets, package manifests, and the lockfile were not changed.
+- `npm test` passes 113 / 113. Lint, the 43-route repository build, and the OpenNext build complete successfully. `package.json`, `package-lock.json`, `wrangler.jsonc`, and the generated Guide inventory have no diff.
+- Wrangler dry-run and deployment used the named `kurodev-web-tools` profile with `--keep-vars --strict`. The returned deployment target exactly matches `https://kurodev-hp-opennext.kurodev-web-tools.workers.dev/`.
+- The deployed Home initial document contains seven images: exactly one eager hero with `fetchpriority="high"` and six lazy images. Tools contains four images: exactly one eager hero with `fetchpriority="high"` and three lazy product images. Lighthouse now passes all three LCP discovery checks for the Home hero: high-priority hint, initial-document discoverability, and eager loading.
+- Fresh Chrome `151.0.7922.71` evidence covers five routes at 375 / 1280 px. All 10 checks return 200, retain one description in HEAD and none in BODY, have no horizontal overflow, console error, page error, failed request, or unexpected origin, and expose the visible `#main-content` skip link at `scrollY=0`. All 23 rendered images decode and paint nonblank.
+- Both independent read-only visual reviewers pass the performance-regression gate after inspecting all 30 top / full / skip-focus captures. The 30 baseline comparisons retain matching dimensions and alpha. The largest numerical differences are one-level rasterization noise, scrollbar paint, or skip-focus timing rather than product changes. Existing separately recorded CJK-wrap and decorative-motion observations are unchanged and were not modified in this scope.
+- Visual evidence and supplemental checksums: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/remote-worker-performance-priority-20260801`.
+
+### Lighthouse 13.4.1 matrix after the priority slice
+
+The existing Task 14 threshold remains median 100 in all four categories for every route / preset row. The repository-external runner produced 30 / 30 reports at exact Lighthouse `13.4.1`, with no runtime error, no run warning, and no meta-description failure.
+
+| Route | Preset | Performance | Accessibility | Best Practices | SEO | LCP ms | Gate |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Home | Mobile | 98 | 100 | 100 | 100 | 2128 | FAIL |
+| Tools | Mobile | 98 | 100 | 100 | 100 | 2166 | FAIL |
+| Creator Site | Mobile | 99 | 100 | 100 | 100 | 1306 | FAIL |
+| Guide | Mobile | 100 | 100 | 100 | 100 | 939 | PASS |
+| Contact | Mobile | 99 | 100 | 100 | 100 | 1591 | FAIL |
+| Home | Desktop | 100 | 100 | 100 | 100 | 500 | PASS |
+| Tools | Desktop | 100 | 100 | 100 | 100 | 577 | PASS |
+| Creator Site | Desktop | 100 | 100 | 100 | 100 | 396 | PASS |
+| Guide | Desktop | 100 | 100 | 100 | 100 | 300 | PASS |
+| Contact | Desktop | 100 | 100 | 100 | 100 | 388 | PASS |
+
+- Compared with the immediately preceding matrix, Home mobile improves from 85 to 98, Tools mobile from 96 to 98, and Home desktop from 96 to 100. The stricter complete matrix nevertheless passes only 6 / 10 rows because four mobile medians are below 100.
+- Home and Tools still report approximately 1.7 MiB of image-delivery savings from responsive sizing and modern formats. This is the next technical lever indicated by the artifacts, but responsive / modern image work is outside the current approval and was not implemented.
+- Lighthouse reports and checksums: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/lighthouse-13.4.1-30run-performance-priority-20260801`.
+- Activation-preflight remains **NO-GO**. No activation, responsive / modern image change, commit, push, PR, cleanup, or rollback / deletion of the retained wrong-account deployment was performed.

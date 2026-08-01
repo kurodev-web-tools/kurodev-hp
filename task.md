@@ -2,6 +2,51 @@
 
 ## Current Board
 
+### Cloudflare OpenNext / Workers migration — PR #23 merge後read-only再検証
+
+#### Approved ProductMedia priority performance slice
+- `ProductMedia`の既存`priority`をbrowserの`fetchpriority="high"`へ明示的に伝播し、below-foldの`FeaturedTools`と`ToolProductSection`からpriorityを除去。focused contractは修正前に期待どおりRED、修正後GREEN。copy、layout、motion、画像asset、`package.json`、`package-lock.json`は変更していない
+- `npm test` 113 / 113、lint、43-route repository build、OpenNext build、named Wrangler profile `kurodev-web-tools`での`--dry-run --keep-vars --strict`が成功。続くdeployの返却先は`https://kurodev-hp-opennext.kurodev-web-tools.workers.dev/`と一致
+- 公開HTMLはHome 7画像のうちhero 1件だけ`fetchpriority=high` / eager、残り6件lazy。Toolsは4画像のうちhero 1件だけhigh / eager、残り3件lazy。LighthouseのLCP discoveryもpriority hinted / initial-document discoverable / eagerly loadedの3条件をPASS
+- fresh Chrome `151.0.7922.71`は5 route × 375 / 1280 pxを10 / 10 PASS。23 rendered imageはdecode / nonblank、overflow / console error / page error / failed request / unexpected origin 0、skip-linkは全画面で可視`#main-content`かつ`scrollY=0`。独立2 reviewerもperformance変更由来のvisual / CJK / functional regressionなしでPASS
+- full Lighthouse `13.4.1`は30 / 30、exact version 30 / 30、runtime error / warning 0、meta-description failure 0。Performance中央値はHome mobile 98、Tools mobile 98、Creator Site mobile 99、Guide mobile 100、Contact mobile 99、desktopは全route 100。Accessibility / Best Practices / SEOは全行100
+- 直前matrix比でHome mobile 85→98、Tools mobile 96→98、Home desktop 96→100へ改善したが、既存の全カテゴリ中央値100条件は6 / 10行PASSに留まり、activation-preflightは**NO-GO**。Home / Toolsの残存主要指摘はresponsive / modern image化による推定約1.7 MiB削減で、この次段は未承認のためsource追加変更を停止
+- visual evidence: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/remote-worker-performance-priority-20260801`
+- Lighthouse evidence: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/lighthouse-13.4.1-30run-performance-priority-20260801`
+- activation、responsive / modern image asset変更、commit、push、PR、cleanup、誤account側deployのrollback / deleteは実行していない
+
+#### Approved post-fix deploy / remote revalidation
+- local approved changesを含むOpenNext artifactを、named Wrangler profile `kurodev-web-tools`と`--keep-vars --strict`を明示して既存Workerへdeploy。返却された公開先は`https://kurodev-hp-opennext.kurodev-web-tools.workers.dev/`と一致した
+- profile作成前のdefault Wrangler認証は別accountを向いており、同名Workerを`luminous-design-web.workers.dev`側へ1回deployした。cleanup / rollbackは未承認のため実行していない。account setting、domain、DNS、route、secret / varは変更していない
+- Chrome `151.0.7922.71`で日本語5 route × 375 / 1280 pxをfresh再確認。10 / 10でHTTP 200、HEAD description 1 / BODY 0、overflow / console error / page error / request failure / unexpected origin 0、skip-linkは実Tabで可視`#main-content`かつ`scrollY=0`。23 / 23 rendered imageはdecode・nonblank
+- Creator Site heroは両幅で`SNSに流れていく / 活動を、 / 自分の場所に / まとめる。`を保持。sanitized visual evidence: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/remote-worker-post-fixes-20260801`
+- full Lighthouse `13.4.1`を5 route × mobile / desktop × 3 runs（30 / 30、runtime error / warning 0）で実行。Accessibility / Best Practices / SEOは全run 100、meta-description failureは0 / 30。Creator Site / Guide / Contactの従来SEO 91 / 92は再現せず、HTTP初期document、settled DOM、Lighthouse artifactの全境界でdescriptionはHEAD配置
+- 既存Task 14の全カテゴリ3-run中央値100条件は7 / 10行PASS。FAILはHome mobile Performance 85、Tools mobile 96、Home desktop 96。LCPは各4335 / 2672 / 1428 msで、Lighthouseは共通hero PNGにpriority hintなし、Home / Toolsで複数のfull-size PNGがeager、image delivery推定節約約1.7 MiBを報告
+- 独立visual reviewはCreator Site heroとruntime / evidence integrityをPASSしたが、既存Home / Tools / Guide / ContactおよびCreator Site workflow / FAQの意味単位分断をCJK reviewerがREVISE、非対話demo cardの既存hover motionをfunctional reviewerがREVISE。今回のsource承認外のため変更していない
+- activation-preflightは**NO-GO**。次の最小performance切り分けは、priority指定されたheroへ実際の`fetchpriority=high`を出し、below-foldのFeatured Tools / Tools product mediaからeager priorityを外すfocused contractを先行すること。source修正、build、deploy、同一30-run matrixは別承認。これで100に届かない場合のみresponsive / modern image asset案を次段で検討する
+- Lighthouse evidence: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/lighthouse-13.4.1-30run-post-fixes-20260801`
+
+#### Verified remotely / locally
+- `2026-08-01` JST、`git fetch origin --prune`後のclean detached worktreeで開始し、HEAD / preview tipがPR #23 merge commit `7f987dc9aa04fb7714e5cc614458b57ccda349d2`と一致することを確認。PR #23 headは`d87ad3404caf4f681bc8a59c27346c823a733100`、`Workers Builds: kurodev-hp-opennext`はSUCCESS
+- PR #22 merge `2c2d612`からPR #23 merge `7f987dc9`までの差分は`task.md`と`docs/KURODEV_CREATOR_PLATFORM_QA.md`のみ。runtime source / package / lock / configは同一で、公開Workerの5主要route contractを最新artifact上で再照合
+- `/`、`/tools`、`/creator-site`、`/guide/getting-started`、`/contact`はHTTP 200、期待する`x-kurodev-rendering`、初期HTTP document内のdescription meta、App Router chunk / Flight payload 0を保持。settled DOMにも同じdescription metaが存在
+- 375 / 1280 pxの実ブラウザで5主要routeを再確認。全10画面でh1 / main各1、horizontal overflow / console error / network failure / 予期しない外部origin 0。全visible画像は実際にviewportへ入れた後、`complete=true`かつ1920 x 1080で、viewport PNGでも非blank表示を確認
+- resting captureは全10画面で`scrollY=0`。skip-linkはDevTools focusで全10画面とも`本文へ移動`、`href=#main-content`、可視、`scrollY=0`を確認。前回のlazy未paint 2件とskip-link capture 5件の証拠不良は解消
+- `/tool`、`/web`、`/profile`は各308、synthetic missing routeは404。OGは1200 x 630 PNG、metadata参照favicon `/favicon.png`は64 x 64 PNG、robots / sitemapは200、sitemapは日英Guide URLを保持。主要documentのsecurity headersもrepository contractと一致
+- Contactは無効な空JSONだけを送信し、provider前段で400 `INVALID_INPUT`へfail closed。実provider、実PII、secretは使用していない。targeted repository / static-islands contract testsは14 / 14 PASS
+- sanitized viewport / focus evidence: `C:/Users/taka/.codex/visualizations/2026/08/01/019fbd10-ec27-7482-b15e-08c25824e258/remote-worker-post-pr23-20260801`（採用対象は`*-segment-*.png`と`*-skip-focus.png`。組込みfull-page stitchの不正確な出力は判定から除外）
+
+#### Confirmed blockers
+- full Lighthouse `13.4.1`はrunner blocker。worktree、既存worktree、npm cache、global packageに利用可能なLighthouse packageがなく、組込みChrome DevTools runnerも既存profile競合でnavigation auditを開始できなかった。dependency install/updateは禁止のため、5 route × mobile / desktop × 3 runsの4カテゴリ中央値は今回取得していない
+- SEO 91 / 92は今回のfull Lighthouse artifactで再現可否を判定できない。最新artifactのHTTP初期documentとsettled DOMでは5 routeすべてdescription metaが存在するため、「HTTP / DOM PASS、Lighthouse artifact未取得（runner blocker）」として分離する
+- visual product blockerは最新artifactでも再現。`/creator-site`の日本語hero（`活動を、自分の / 場所にまとめる。`）とProcess見出しの強制改行、`/en/creator-site` 375 pxの単語`work`孤立をviewport PNGで確認。前回指摘のcopy / line-break問題は未解消で、visual gateはREVISE
+
+#### Activation-preflight判定
+- **NO-GO**。remote runtime / image / capture evidence / HTTP contractはgreenだが、既存Task 14のLighthouse 4カテゴリ100条件を証明できず、visual product blockerも再現した
+- 最小修正案は`lib/content/creator-site-content.mjs`と必要な場合のみ`lib/content/site-copy.mjs`の既存`titleLines`を、意味単位と375 / 1280 pxの折返しだけに限定して調整すること。copy / layout source変更、repository build、Worker rebuild / deployはそれぞれ別承認が必要
+- Lighthouse側はsource修正を先行しない。dependency追加なしでfull Lighthouse `13.4.1`を実行できる承認済みrunnerを確保し、同一matrixでSEO欠落が再現した場合に限り、初期metadata timingの最小修正、rebuild / deploy、同一remote matrixの再検証を別承認する
+- Cloudflare account設定、Worker、build、upload / deploy、secret / var、domain / DNS / route、activation、provider、Pages production、source、dependency、manifest / lockfile、commit / push / PR / merge / cleanupは変更していない
+
 ### Cloudflare OpenNext / Workers migration — remote Worker runtime QA
 
 #### Verified remotely

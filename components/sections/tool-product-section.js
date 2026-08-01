@@ -16,7 +16,7 @@ export function ToolProductSection({ locale, tool, index }) {
   return (
     <article className="tool-product" id={tool.id}>
       <div className="tool-product__media">
-        <ProductMedia src={tool.image} alt={item.alt} width={tool.imageWidth} height={tool.imageHeight} priority={index === 0} />
+        <ProductMedia src={tool.image} alt={item.alt} width={tool.imageWidth} height={tool.imageHeight} />
       </div>
       <div className="tool-product__copy">
         <div className="tool-product__meta">

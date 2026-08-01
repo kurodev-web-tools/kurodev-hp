@@ -19,7 +19,7 @@ const expected = renderModule(await loadGuideInventory());
 
 if (checkOnly) {
   const actual = await readFile(artifactUrl, "utf8").catch(() => "");
-  if (actual !== expected) {
+  if (actual.replace(/\r\n/g, "\n") !== expected) {
     console.error("Guide runtime inventory is stale. Run npm run generate:guide-runtime.");
     process.exitCode = 1;
   } else {
