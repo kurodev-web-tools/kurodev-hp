@@ -242,6 +242,17 @@
   white-space: nowrap;
 }
 
+@media (max-width: 767px) {
+  .tools-hero__stage {
+    contain: layout;
+  }
+
+  .site-main > .tools-hero ~ * {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+}
+
 @media (min-width: 768px) {
   .tools-hero {
     padding-block: var(--space-16) var(--space-20);

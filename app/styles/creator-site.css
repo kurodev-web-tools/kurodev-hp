@@ -20,6 +20,10 @@ html[lang="ja"] .creator-site-page .section-intro .display-line {
     white-space: normal;
   }
 
+  .creator-site-hero {
+    contain: layout;
+  }
+
   .creator-site-hero__stage {
     contain: layout;
   }

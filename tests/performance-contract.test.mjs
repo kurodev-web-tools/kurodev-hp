@@ -113,7 +113,7 @@ test("mobile performance paths use responsive modern product media and defer off
   ]);
 
   // When: responsive source generation and below-fold rendering boundaries are inspected.
-  const responsiveWidths = /\[640,\s*1024,\s*1600\]/;
+  const responsiveWidths = /\[640,\s*768,\s*1024,\s*1600\]/;
   const modernSource = /<source\s+type=["']image\/webp["'][^>]*srcSet=\{modernSrcSet\}[^>]*sizes=\{productMediaSizes\}/s;
   const sizedPicture = /\.product-media\s+picture\s*\{[^}]*display:\s*block;[^}]*width:\s*100%;[^}]*height:\s*100%;[^}]*\}/s;
   const deferredRendering = /content-visibility:\s*auto;[\s\S]*?contain-intrinsic-(?:block-)?size:\s*auto\s+\d+px;/;
@@ -124,6 +124,23 @@ test("mobile performance paths use responsive modern product media and defer off
   assert.match(componentStyles, sizedPicture);
   assert.match(creatorSiteStyles, deferredRendering);
   assert.match(contactStyles, deferredRendering);
+});
+
+test("responsive product media includes the intermediate mobile decode rung", async () => {
+  // Given: the four approved Kuro Stream Kit screenshots used by Home and Tools.
+  const imageNames = ["portal-home", "schedule-calendar", "thumbnail-editor", "sns-split"];
+
+  // When: the intermediate mobile sources are resolved from the public asset tree.
+  const intermediateSources = await Promise.all(
+    imageNames.map((imageName) =>
+      readFile(new URL(`../public/images/kuro-stream-kit/${imageName}-768.webp`, import.meta.url))
+        .then((contents) => contents.subarray(0, 4).toString("ascii"))
+        .catch(() => "missing")
+    )
+  );
+
+  // Then: every source is a WebP container instead of falling through to the 1024 px rung.
+  assert.deepEqual(intermediateSources, imageNames.map(() => "RIFF"));
 });
 
 test("home mobile first paint defers sections after the creator hero", async () => {
@@ -146,6 +163,40 @@ test("creator site mobile first paint isolates the decorative hero stage", async
 
   // Then: layout work inside the decoration cannot expand the LCP copy's layout scope.
   assert.match(creatorSiteStyles, isolatedHeroStage);
+});
+
+test("image-backed mobile heroes contain layout while Tools defers post-hero work", async () => {
+  // Given: Home and Tools both paint an eager product image before their long-form sections.
+  const [homeHeroStyles, toolsStyles] = await Promise.all([
+    readFile(new URL("../app/styles/home-hero.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/styles/tools-page.css", import.meta.url), "utf8")
+  ]);
+
+  // When: mobile-only hero and post-hero boundaries are inspected.
+  const homeHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.product-stage\s*\{[^}]*contain:\s*layout;/;
+  const toolsHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.tools-hero__stage\s*\{[^}]*contain:\s*layout;/;
+  const deferredToolsSections = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.tools-hero\s*~\s*\*\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/;
+
+  // Then: decoding and below-fold layout cannot widen the initial mobile layout scope.
+  assert.match(homeHeroStyles, homeHeroContainment);
+  assert.match(toolsStyles, toolsHeroContainment);
+  assert.match(toolsStyles, deferredToolsSections);
+});
+
+test("image-free mobile heroes contain their text LCP layout scope", async () => {
+  // Given: Creator Site and Contact use text rather than an image as their mobile LCP element.
+  const [creatorSiteStyles, contactStyles] = await Promise.all([
+    readFile(new URL("../app/styles/creator-site.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/styles/contact-page.css", import.meta.url), "utf8")
+  ]);
+
+  // When: the route hero boundaries are inspected at the mobile breakpoint.
+  const creatorHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.creator-site-hero\s*\{[^}]*contain:\s*layout;/;
+  const contactHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.contact-hero\s*\{[^}]*contain:\s*layout;/;
+
+  // Then: lower-page layout cannot expand either text LCP hero's layout scope.
+  assert.match(creatorSiteStyles, creatorHeroContainment);
+  assert.match(contactStyles, contactHeroContainment);
 });
 
 test("the getting-started spike removes only Next bootstrap and installs a behavior island", () => {
