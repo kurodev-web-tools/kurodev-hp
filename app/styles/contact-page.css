@@ -383,6 +383,12 @@
   line-height: 1.75;
 }
 
+@media (max-width: 767px) {
+  .contact-hero {
+    contain: layout;
+  }
+}
+
 @media (min-width: 768px) {
   .contact-hero {
     padding-block: var(--space-20) var(--space-28);

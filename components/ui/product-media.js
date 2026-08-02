@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 const productMediaSizes = "(max-width: 767px) 92vw, (max-width: 1023px) 80vw, 56vw";
-const responsiveProductMediaWidths = [640, 1024, 1600];
+const responsiveProductMediaWidths = [640, 768, 1024, 1600];
 
 export function ProductMedia({ src, alt, width, height, priority = false, className = "" }) {
   const modernSrcSet = src.startsWith("/images/kuro-stream-kit/")
