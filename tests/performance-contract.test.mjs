@@ -93,11 +93,59 @@ test("product media priority reaches the browser without eagerly loading below-f
 
   // When: image priority ownership is inspected at the component boundary.
   const priorityHint = /fetchPriority=\{priority \? ["']high["'] : undefined\}/;
+  const eagerLoading = /loading=\{priority \? ["']eager["'] : ["']lazy["']\}/;
 
-  // Then: above-fold callers can emit a browser hint while below-fold media stays lazy.
+  // Then: above-fold callers emit one browser hint without preloading the fallback behind a picture source.
   assert.match(productMedia, priorityHint);
+  assert.match(productMedia, eagerLoading);
+  assert.doesNotMatch(productMedia, /<Image\b[^>]*\bpriority=\{priority\}/s);
   assert.doesNotMatch(featuredTools, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/>)/);
   assert.doesNotMatch(toolProductSection, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/>)/);
+});
+
+test("mobile performance paths use responsive modern product media and defer offscreen route sections", async () => {
+  // Given: shared product media plus the two image-free routes whose mobile work is layout-bound.
+  const [productMedia, componentStyles, creatorSiteStyles, contactStyles] = await Promise.all([
+    readFile(new URL("../components/ui/product-media.js", import.meta.url), "utf8"),
+    readFile(new URL("../app/styles/components.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/styles/creator-site.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/styles/contact-page.css", import.meta.url), "utf8")
+  ]);
+
+  // When: responsive source generation and below-fold rendering boundaries are inspected.
+  const responsiveWidths = /\[640,\s*1024,\s*1600\]/;
+  const modernSource = /<source\s+type=["']image\/webp["'][^>]*srcSet=\{modernSrcSet\}[^>]*sizes=\{productMediaSizes\}/s;
+  const sizedPicture = /\.product-media\s+picture\s*\{[^}]*display:\s*block;[^}]*width:\s*100%;[^}]*height:\s*100%;[^}]*\}/s;
+  const deferredRendering = /content-visibility:\s*auto;[\s\S]*?contain-intrinsic-(?:block-)?size:\s*auto\s+\d+px;/;
+
+  // Then: Kuro Stream Kit media can select a right-sized WebP while other routes skip offscreen layout initially.
+  assert.match(productMedia, responsiveWidths);
+  assert.match(productMedia, modernSource);
+  assert.match(componentStyles, sizedPicture);
+  assert.match(creatorSiteStyles, deferredRendering);
+  assert.match(contactStyles, deferredRendering);
+});
+
+test("home mobile first paint defers sections after the creator hero", async () => {
+  // Given: the Home route stylesheet owns every section after the above-fold creator hero.
+  const homeStyles = await readFile(new URL("../app/styles/home-sections.css", import.meta.url), "utf8");
+
+  // When: the mobile rendering boundary is inspected.
+  const deferredHomeSections = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.creator-hero\s*~\s*\*\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/;
+
+  // Then: below-fold Home sections do not join the initial mobile layout pass.
+  assert.match(homeStyles, deferredHomeSections);
+});
+
+test("creator site mobile first paint isolates the decorative hero stage", async () => {
+  // Given: the Creator Site hero contains a decorative grid beside the LCP copy.
+  const creatorSiteStyles = await readFile(new URL("../app/styles/creator-site.css", import.meta.url), "utf8");
+
+  // When: the mobile hero rendering boundary is inspected.
+  const isolatedHeroStage = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.creator-site-hero__stage\s*\{[^}]*contain:\s*layout;/;
+
+  // Then: layout work inside the decoration cannot expand the LCP copy's layout scope.
+  assert.match(creatorSiteStyles, isolatedHeroStage);
 });
 
 test("the getting-started spike removes only Next bootstrap and installs a behavior island", () => {
