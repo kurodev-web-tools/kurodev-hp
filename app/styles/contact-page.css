@@ -2,6 +2,11 @@
   word-break: auto-phrase;
 }
 
+.contact-page > :not(.contact-hero) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
 .contact-hero {
   position: relative;
   overflow: hidden;

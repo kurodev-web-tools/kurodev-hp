@@ -4,6 +4,11 @@
   padding-block: var(--space-16) var(--space-20);
 }
 
+.creator-site-page > :not(.creator-site-hero) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
 html[lang="ja"] .creator-site-page .section-intro .display-line {
   display: block;
   white-space: nowrap;
@@ -13,6 +18,10 @@ html[lang="ja"] .creator-site-page .section-intro .display-line {
   html[lang="en"] .creator-site-page .section-intro .display-line {
     display: inline;
     white-space: normal;
+  }
+
+  .creator-site-hero__stage {
+    contain: layout;
   }
 }
 
