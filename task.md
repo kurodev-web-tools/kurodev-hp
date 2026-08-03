@@ -2,6 +2,21 @@
 
 ## Current Board
 
+### Cloudflare production protection Gate B1 — local implementation（2026-08-03）
+
+#### Current verdict
+- **Local implementation: PASS / deploy未承認**。baseは`main`の`e0e143d120c591086ab534f747225e0c9d550e75`。既存WAF ruleには触れず、Workers Rate Limiting binding `CONTACT_RATE_LIMITER`とprivacy-minimalなWorkers Logs repository設定を追加した
+- `POST /api/contact`はbody読込前に固定key `contact-submit`でbindingを判定する。許可時だけvalidation / consent / Turnstile / Resendへ進み、超過時は`429 RATE_LIMITED`、binding欠落・例外時は`503 RATE_LIMIT_UNAVAILABLE`でfail closedする。どちらもproviderを呼ばない
+- 超過ログは固定code `RATE_LIMITED`だけを1% sampling、binding unavailableは固定code `RATE_LIMIT_UNAVAILABLE`だけを記録する。IP、email、本文、token、locale、secret、query、raw provider responseをkeyまたは新規logへ渡さない
+- `wrangler.jsonc`は10 requests / 60 secondsのsimple binding、`observability.enabled=true`、`head_sampling_rate=1`、`logs.invocation_logs=false`を固定する。Traces / Logpush / Tail Worker / Web Analyticsは変更していない
+- namespace candidate `78106443`は既知のlocal checkout / worktree設定とのcollision 0件を確認して選定した。Cloudflareはaccount-wide namespace一覧を公開するread-only surfaceを持たないため、全Workerを横断した一意性は未証明であり、remote deploy前のSTOP / 再確認項目とする
+
+#### Verification
+- focused REDは5 / 5件が未実装contractで失敗し、実装後GREEN 5 / 5。Contact関連は28 / 28、全体は同一lockfileの既存依存を使ったrepository外の検証コピーで123 / 123 PASS
+- lintはwarning / error 0、Next production buildは43 / 43 pages、OpenNext `1.20.2` buildは成功
+- Wrangler `4.118.0 deploy --dry-run --keep-vars --strict`はexit 0で、`CONTACT_RATE_LIMITER (10 requests/60s)`、service、assets bindingを認識。生成bundle由来のdirect-eval warning 1件は残るがuploadは行っていない
+- dependency install、`package.json` / `package-lock.json`変更、Cloudflare dashboard / WAF / domain / DNS / route変更、commit / push / PR / merge、deploy、live provider call、Task 15、cleanupは行っていない
+
 ### Task 14 current preflight — PR #27 merge後（2026-08-03）
 
 #### Current verdict

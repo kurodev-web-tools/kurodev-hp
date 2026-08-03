@@ -10,6 +10,8 @@ import {
   validateContactConsentSubmission
 } from "@/lib/contact-consent.mjs";
 import { readBoundedContactJson } from "@/lib/contact-request.mjs";
+import { checkContactRateLimit } from "@/lib/contact-rate-limit.mjs";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const RESEND_EMAIL_URL = "https://api.resend.com/emails";
@@ -22,6 +24,10 @@ function jsonResponse(body, status = 200) {
 
 function logContactError(code, details = {}) {
   console.error("[contact-api]", code, details);
+}
+
+function logContactRateLimitEvent(code) {
+  console.error("[contact-api]", code);
 }
 
 async function fetchWithTimeout(url, options, timeoutMs) {
@@ -171,6 +177,26 @@ async function sendContactEmail(payload, consentRecord) {
 }
 
 export async function POST(request) {
+  let limiter;
+
+  try {
+    limiter = getCloudflareContext().env.CONTACT_RATE_LIMITER;
+  } catch {
+    limiter = undefined;
+  }
+
+  const rateLimitResult = await checkContactRateLimit({
+    limiter,
+    logEvent: logContactRateLimitEvent
+  });
+
+  if (!rateLimitResult.ok) {
+    return jsonResponse(
+      { ok: false, error: rateLimitResult.error },
+      rateLimitResult.status
+    );
+  }
+
   let body;
 
   try {
