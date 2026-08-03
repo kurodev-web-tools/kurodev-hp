@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
   buildStaticHomeDocument,
   buildStaticGuideDocument,
@@ -10,8 +11,7 @@ import {
   isStaticCreatorSiteRequest,
   isStaticContactRequest,
   isStaticToolsRequest,
-  staticSourceRequestHeaders,
-  staticGuideSourceUrl
+  fetchStaticSourceResponse
 } from "@/lib/static-guide-document.mjs";
 
 export async function middleware(request) {
@@ -26,9 +26,13 @@ export async function middleware(request) {
   const staticContact = isStaticContactRequest(request.nextUrl, request.method);
 
   if (staticGuide || staticHome || staticTools || staticCreatorSite || staticContact) {
-    const sourceResponse = await fetch(staticGuideSourceUrl(request.nextUrl), {
-      headers: staticSourceRequestHeaders(locale)
-    });
+    let selfBinding;
+    try {
+      selfBinding = getCloudflareContext().env.WORKER_SELF_REFERENCE;
+    } catch {
+      selfBinding = undefined;
+    }
+    const sourceResponse = await fetchStaticSourceResponse(selfBinding, request.nextUrl, locale);
     if (!sourceResponse.ok) return sourceResponse;
 
     const responseHeaders = new Headers(sourceResponse.headers);

@@ -4,7 +4,7 @@ import test from "node:test";
 
 test("OpenNext repository configuration keeps the approved Workers contract", async () => {
   // Given: the repository files consumed by the OpenNext and Wrangler CLIs.
-  const [packageJson, lockfile, openNextConfig, wranglerConfig, gitignore, nextConfig, contactRoute, ogRoute] =
+  const [packageJson, lockfile, openNextConfig, wranglerConfig, gitignore, nextConfig, contactRoute, ogRoute, middleware] =
     await Promise.all([
       readFile(new URL("../package.json", import.meta.url), "utf8").then(JSON.parse),
       readFile(new URL("../package-lock.json", import.meta.url), "utf8").then(JSON.parse),
@@ -13,7 +13,8 @@ test("OpenNext repository configuration keeps the approved Workers contract", as
       readFile(new URL("../.gitignore", import.meta.url), "utf8"),
       readFile(new URL("../next.config.mjs", import.meta.url), "utf8"),
       readFile(new URL("../app/api/contact/route.js", import.meta.url), "utf8"),
-      readFile(new URL("../app/opengraph-image.js", import.meta.url), "utf8")
+      readFile(new URL("../app/opengraph-image.js", import.meta.url), "utf8"),
+      readFile(new URL("../middleware.js", import.meta.url), "utf8")
     ]);
 
   // When: the repository-level runtime contract is inspected.
@@ -80,5 +81,15 @@ test("OpenNext repository configuration keeps the approved Workers contract", as
     /if \(!rateLimitResult\.ok\) \{[\s\S]*?return jsonResponse\([\s\S]*?rateLimitResult\.status[\s\S]*?\);\s*\}\s*let body;/,
     "Denied or unavailable rate limits must return before body and provider processing"
   );
+  const invalidInputResponse = contactRoute.indexOf(
+    'return jsonResponse({ ok: false, error: "INVALID_INPUT" }, 400);'
+  );
+  assert.ok(invalidInputResponse > contactRoute.indexOf("validateContactInput(payload)"));
+  assert.ok(invalidInputResponse < contactRoute.indexOf("await verifyTurnstile"));
+  assert.ok(invalidInputResponse < contactRoute.indexOf("await sendContactEmail"));
   assert.doesNotMatch(ogRoute, /export const runtime\s*=\s*["']edge["']/);
+  assert.match(middleware, /getCloudflareContext/);
+  assert.match(middleware, /WORKER_SELF_REFERENCE/);
+  assert.match(middleware, /fetchStaticSourceResponse/);
+  assert.doesNotMatch(middleware, /await fetch\(staticGuideSourceUrl/);
 });
