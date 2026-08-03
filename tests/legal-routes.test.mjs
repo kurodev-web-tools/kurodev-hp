@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const loaderUrl = new URL("../lib/legal/legal-loader.mjs", import.meta.url);
+const runtimeSourcesUrl = new URL("../lib/legal/legal-runtime-sources.generated.mjs", import.meta.url);
 
 const routeFiles = [
   ["../app/terms/page.js", "ja", "/terms"],
@@ -16,8 +17,19 @@ const routeFiles = [
   ["../app/en/privacy/foreign-processing/page.js", "en", "/en/privacy/foreign-processing"]
 ];
 
+const approvedRuntimeSources = [
+  ["/terms", "../content/legal/ja/terms.md"],
+  ["/en/terms", "../content/legal/en/terms.md"],
+  ["/privacy", "../content/legal/ja/privacy.md"],
+  ["/en/privacy", "../content/legal/en/privacy.md"],
+  ["/legal/tokushoho", "../content/legal/ja/tokushoho.md"],
+  ["/privacy/foreign-processing", "../content/legal/ja/foreign-processing.md"],
+  ["/en/privacy/foreign-processing", "../content/legal/en/foreign-processing.md"]
+];
+
 const canonicalize = (source) => `${source.replaceAll("\r\n", "\n").trimEnd()}\n`;
 const sha256 = (source) => createHash("sha256").update(canonicalize(source), "utf8").digest("hex");
+const canonicalApprovedBytes = (source) => Buffer.from(source.toString("utf8").replaceAll("\r\n", "\n"), "utf8");
 
 const validSource = `---
 documentId: creator-platform-terms-ja-v1
@@ -100,6 +112,45 @@ test("loader accepts exact ready metadata and returns only public fields", async
   ]);
   assert.equal(document.documentId, validExpected.documentId);
   assert.equal(document.equivalent?.route, "/en/terms");
+});
+
+test("runtime legal sources preserve every approved byte and loader public contract", async () => {
+  // Given: the seven canonical approved Markdown files and their tracked runtime mapping.
+  const [{ LEGAL_DOCUMENT_REGISTRY, loadApprovedLegalDocument }, { LEGAL_RUNTIME_SOURCES }] = await Promise.all([
+    import(loaderUrl),
+    import(runtimeSourcesUrl)
+  ]);
+  const expectedRoutes = approvedRuntimeSources.map(([route]) => route).toSorted();
+
+  // When: each runtime source is compared with its canonical source and loaded through the public API.
+  // Then: no route, approved byte, identity, locale, type, or public field changes at the runtime boundary.
+  assert.equal(expectedRoutes.length, 7);
+  assert.deepEqual(Object.keys(LEGAL_RUNTIME_SOURCES).toSorted(), expectedRoutes);
+  assert.deepEqual(Object.keys(LEGAL_DOCUMENT_REGISTRY).toSorted(), expectedRoutes);
+
+  for (const [route, relativePath] of approvedRuntimeSources) {
+    const expected = LEGAL_DOCUMENT_REGISTRY[route];
+    const sourceBytes = await readFile(new URL(relativePath, import.meta.url));
+    const document = loadApprovedLegalDocument(route);
+
+    assert.equal(expected.sourcePath, relativePath.slice("../".length), route);
+    assert.deepEqual(Buffer.from(LEGAL_RUNTIME_SOURCES[route], "utf8"), canonicalApprovedBytes(sourceBytes), route);
+    assert.deepEqual(Object.keys(document), [
+      "documentId",
+      "locale",
+      "documentType",
+      "title",
+      "effectiveDate",
+      "updateDate",
+      "html",
+      "equivalent"
+    ]);
+    assert.equal(document.documentId, expected.documentId, route);
+    assert.equal(document.locale, expected.locale, route);
+    assert.equal(document.documentType, expected.documentType, route);
+    assert.equal(document.effectiveDate, "2026-08-04", route);
+    assert.equal(document.updateDate, "2026-08-04", route);
+  }
 });
 
 test("loader rejects unapproved metadata, dates, identity, route, and fingerprints", async () => {
