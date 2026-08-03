@@ -2,6 +2,41 @@
 
 ## Current Board
 
+### Task 14 current preflight — PR #27 merge後（2026-08-03）
+
+#### Current verdict
+- **Task 14 formal Chrome / Lighthouse evidence gate: GO（10 / 10 rows PASS）**。下記のPR #23以前および2026-08-01 performance / runner matrixに残る`NO-GO`は履歴であり、current formal gateの判定ではない。旧independent visual `REVISE`は履歴上のproduct-review noteとして残るが、PR #27後のsource handoffはTask 14 performance完了、残件をfinal promotion / activation / Task 15と分類している。このpreflight自体は新しいindependent semantic visual reviewを実施していない
+- **Production activation: pending / 未承認**。final preview-to-`main` PR、merge、production activation、Task 15はそれぞれ別承認のまま
+- `git fetch origin --prune`後のfresh clean detached worktreeで、HEAD / remote preview tipはPR #27 merge commit `a57c8a50172620b93d39bffe17f9928882a84e76`。PR head `9e746a4a2b785bee4d759fd8b262d1d1c102a6e5`とmerge commitは同一tree `83eeab4d227f2aab5ed24fbce7e9cb30cd580173`、Workers BuildsはSUCCESS、open PRは0件
+- remote previewは`origin/main` `8a46bcebb6f68a5071998041fc84995d00dbd184`を包含し、`main..preview`は48 commits / 215 files
+
+#### Current remote evidence
+- Chrome evidenceの31 checksum entryは31 / 31一致。5 route × 375 / 1280 pxは10 / 10 PASS、23 / 23 imagesはdecode / nonblank。overflow、console error、page error、failed request、unexpected originは0、skip-linkは10 / 10で可視`#main-content`かつ`scrollY=0`
+- Lighthouse evidenceの32 checksum entryは32 / 32一致。raw reportは30 / 30、exact `13.4.1`は30 / 30、runtime error / warning / meta-description failureは0。5 route × mobile / desktopの全10行でPerformance / Accessibility / Best Practices / SEOの3-run中央値が100
+- Tools mobile Performanceは96 / 100 / 100、中央値100、Speed Index中央値1656 ms。Guide mobile Performanceは100 / 100 / 100、Speed Index中央値2197 ms
+- workstation-local Chrome evidence label: `remote-worker-mobile-stability-deploy-20260803`
+- workstation-local Lighthouse evidence label: `lighthouse-13.4.1-30run-mobile-stability-deploy-20260803`
+
+#### Sanitized Cloudflare read-only inventory
+- configured auth profile listには`kurodev-web-tools`が存在する。ただしfresh preflightの`whoami --profile kurodev-web-tools`は未認証を返したため、active account identityは**UNKNOWN**。同じprofile指定のread-only queryは期待するWorkerとPages projectを返したが、外部mutation前にprofile/accountを再確認する
+- Worker `kurodev-hp-opennext`は存在し、最新deploymentは`2026-08-03T02:04:26Z`、public workers.dev URLはHTTP 200。Access challenge / redirectは観測されず、public previewとして扱う。PR #27 head上の`Workers Builds: kurodev-hp-opennext`はSUCCESS
+- existing Pages rollback targetはproject `kurodev-hp`、production branch `main`、production source `8a46bce`（current `origin/main` `8a46bcebb6f68a5071998041fc84995d00dbd184`と一致）、domains `kurodev-hp.pages.dev` / `kuro-lab.com`。`kuro-lab.com`のpublic DNSはproxied A / AAAAとして観測
+- encrypted Worker secretsはlist結果0件。`TURNSTILE_SECRET_KEY` / `RESEND_API_KEY`はencrypted secretとして未登録。runtime var `CONTACT_FROM_EMAIL` / `CONTACT_TO_EMAIL`の有無は、値を返し得るsettings endpointを使わなかったため**UNKNOWN**。値は取得・表示・保存していない
+- Worker custom domain / route attach、Pages mappingとの優先関係、`/api/contact` POST rate-limit ruleの存在とWorker route適用可否、Workers Logs / Logpush / account-level Web Analytics設定は**UNKNOWN**。public HTMLではWorker previewにWeb Analytics beaconなし、現行`kuro-lab.com`にbeaconあり
+- data boundaryは現行設計どおりCloudflare edge / Worker / static assetsまで。Contact activation時だけTurnstile / Resendへ進む。live provider call、実PII、secret値の確認は行っていない
+
+#### Exact rollback and date boundary
+- trigger: 5主要routeの5xx / 表示欠損、Contact障害、security header欠落、重大performance回帰、誤account / 誤route、またはactivation success check不成立
+- action: 新規Worker custom domain / routeだけを外し、Pages project `kurodev-hp`の`kuro-lab.com` mapping、production branch `main`、source `8a46bce`へ戻す。既存Pages project / deployment / DNS recordを削除しない
+- actor: primaryはrepository / Cloudflare account owner。backup account operatorはactivation前に実名指定し、同じPages targetと権限を確認する。未指定ならactivation STOP
+- success: `/`、`/tools`、`/creator-site`、`/guide/getting-started`、`/contact`の200 / expected rendering、security headers、OG / favicon / robots / sitemap、Contact fail-closedを確認。live delivery確認は別承認
+- secret handling: Pagesの既存値を保持し、rollback時にWorkerから値を抽出・表示・転記しない。secret rotation / registrationは別承認
+- `2026-08-04`は**条件付き維持可能**。同日activation window前にprofile/account identity、backup actor、Worker route/custom domain、runtime vars/secrets、rate-limit適用、Logs / Analytics / data boundary、rollbackのowner承認が完了しない場合はSTOPし、日付を動かさずに延期判断へ移る。calendar dateを変更する場合は7文書のdate / fingerprint / approvalを失効扱いにして再作成・再承認し、影響するTask 12–14 checksを再実行する
+
+#### Final PR readiness
+- **CONDITIONAL GO / approval-ready**。Task 14のcurrent formal evidence、PR #27 merge、`origin/main` containmentはgreen。docs-only条件は今回のcloseout branch / PRにだけ適用する。final preview-to-`main` PR直前は`origin/main`を再fetchし、containmentと想定するintegration差分からのunexpected driftがないことを確認する
+- 推奨する次の承認対象は、このdocs-only差分用の専用branch作成とcommitだけ。push、`codex/creator-platform-redesign-preview`向けDraft PR作成、そのPRのmerge、後続のfinal preview-to-`main` PR作成、final merge、Cloudflare設定変更、production activation、live provider verification、Task 15、cleanupはそれぞれ後続の別承認とする
+
 ### Cloudflare OpenNext / Workers migration — PR #23 merge後read-only再検証
 
 #### Approved ProductMedia priority performance slice
