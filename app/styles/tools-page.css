@@ -247,7 +247,7 @@
     contain: layout;
   }
 
-  .site-main > .tools-hero ~ * {
+  .site-main > .tools-hero ~ :not(.tool-workflow) {
     content-visibility: auto;
     contain-intrinsic-size: auto 800px;
   }
