@@ -12,6 +12,7 @@ import {
   isStaticCreatorSiteRequest,
   isStaticContactRequest,
   isStaticToolsRequest,
+  staticGuideSourceUrl,
   staticSourceRequestHeaders
 } from "../lib/static-guide-document.mjs";
 
@@ -252,6 +253,113 @@ test("the spike targets only the exact Japanese getting-started document and byp
   assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/guide/getting-started?__kurodev_app_source=1")), false);
   assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/guide")), false);
   assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/en/guide/getting-started")), false);
+});
+
+test("static source URLs discard visitor queries and keep only the recursion marker", () => {
+  const requests = [
+    "https://kuro-lab.com/guide/getting-started",
+    "https://kuro-lab.com/guide/getting-started?utm_source=visitor&preview=1",
+    "https://kurodev-hp-opennext.example.workers.dev/guide/getting-started",
+    "https://kurodev-hp-opennext.example.workers.dev/guide/getting-started?arbitrary=value"
+  ];
+
+  for (const requestUrl of requests) {
+    const sourceUrl = staticGuideSourceUrl(new URL(requestUrl));
+
+    assert.equal(sourceUrl.search, "?__kurodev_app_source=1");
+    assert.equal(sourceUrl.searchParams.size, 1);
+    assert.equal(sourceUrl.searchParams.get("__kurodev_app_source"), "1");
+    assert.equal(isStaticGuideRequest(sourceUrl), false);
+  }
+});
+
+test("static source fetches use only the self binding and minimal request metadata", async () => {
+  const staticDocumentModule = await import("../lib/static-guide-document.mjs");
+  const fetchStaticSourceResponse = staticDocumentModule.fetchStaticSourceResponse;
+  let capturedRequest;
+  const selfBinding = {
+    async fetch(request) {
+      capturedRequest = request;
+      return new Response("<!doctype html><main>source</main>", {
+        status: 200,
+        headers: { "content-type": "text/html" }
+      });
+    }
+  };
+
+  assert.equal(typeof fetchStaticSourceResponse, "function");
+  const response = await fetchStaticSourceResponse(
+    selfBinding,
+    new URL("https://kuro-lab.com/guide/getting-started?visitor=private"),
+    "ja"
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(capturedRequest.method, "GET");
+  assert.equal(capturedRequest.url, "https://kuro-lab.com/guide/getting-started?__kurodev_app_source=1");
+  assert.equal(capturedRequest.headers.get("accept"), "text/html");
+  assert.equal(capturedRequest.headers.get("x-kurodev-locale"), "ja");
+  assert.equal(capturedRequest.headers.get("user-agent"), "kurodev-static-document/1.0");
+  assert.equal(capturedRequest.headers.has("cookie"), false);
+  assert.equal(capturedRequest.headers.has("authorization"), false);
+  assert.equal(capturedRequest.headers.has("forwarded"), false);
+  assert.equal(capturedRequest.headers.has("x-forwarded-for"), false);
+});
+
+test("static source fetches fail closed with a fixed 503 when the self binding is unavailable", async () => {
+  const staticDocumentModule = await import("../lib/static-guide-document.mjs");
+  const fetchStaticSourceResponse = staticDocumentModule.fetchStaticSourceResponse;
+  const expectedBody = { ok: false, code: "STATIC_SOURCE_UNAVAILABLE" };
+  const requestUrl = new URL("https://kuro-lab.com/guide/getting-started?visitor=private");
+  const unavailableBindings = [
+    undefined,
+    {},
+    {
+      async fetch() {
+        throw new Error("sensitive binding failure");
+      }
+    }
+  ];
+
+  assert.equal(typeof fetchStaticSourceResponse, "function");
+  for (const binding of unavailableBindings) {
+    const response = await fetchStaticSourceResponse(binding, requestUrl, "ja");
+
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.get("cache-control"), "private, no-store");
+    assert.deepEqual(await response.json(), expectedBody);
+  }
+});
+
+test("static source fetches return a self-binding 404 without falling back to public fetch", async () => {
+  const { fetchStaticSourceResponse } = await import("../lib/static-guide-document.mjs");
+  const originalFetch = globalThis.fetch;
+  let publicFetchCalls = 0;
+  const selfBindingResponse = new Response("worker source not found", { status: 404 });
+  const selfBinding = {
+    async fetch() {
+      return selfBindingResponse;
+    }
+  };
+
+  globalThis.fetch = async () => {
+    publicFetchCalls += 1;
+    return new Response("pages fallback", { status: 200 });
+  };
+
+  try {
+    const response = await fetchStaticSourceResponse(
+      selfBinding,
+      new URL("https://kuro-lab.com/guide/getting-started"),
+      "ja"
+    );
+
+    assert.equal(response, selfBindingResponse);
+    assert.equal(response.status, 404);
+    assert.equal(publicFetchCalls, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("the Japanese home document preserves its server content and installs only required islands", () => {
