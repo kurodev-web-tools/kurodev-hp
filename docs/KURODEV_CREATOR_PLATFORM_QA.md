@@ -7,10 +7,88 @@
 - Scheduled coordinated production activation date: `2026-08-04`
 - Surface: local integration production build at `http://localhost:3100`
 - Runtime: Next.js `15.5.21`, React / React DOM `18.3.1`
-- Overall verdict: **PASS for the local pre-merge gate — `DEP-AUDIT-001`, Task 14 browser, and Lighthouse gates pass locally**
+- Current overall verdict: **GO for the formal Task 14 Chrome / Lighthouse evidence gate; production activation remains pending and unapproved**
 - Live-provider boundary: no live Turnstile, Siteverify, Resend, Contact delivery, secrets, provider settings, or real-person PII were used.
 
 The seven legal documents and six Contact consent copies use the exact fixed IDs, versions, dates, and SHA-256 values recorded by the active launch manifests and tests. Their public-use gate relies on the repository owner's owner-designated AI-assisted internal substitute and accepted residual risk. No human lawyer or independent human legal reviewer participated, and this evidence must not be described as human or attorney review.
+
+The performance / runner `NO-GO` matrices below this current section are retained as dated history and are superseded for the formal Task 14 Chrome / Lighthouse gate by the 2026-08-03 PR #27 evidence. Earlier independent visual `REVISE` observations are retained as historical product-review notes: the PR #27 source handoff classified Task 14 performance as complete and the remaining work as final promotion, activation, and Task 15. This preflight did not perform a new independent semantic visual review, so it does not rewrite that historical review as a fresh visual acceptance result.
+
+## 2026-08-03 PR #27 current activation preflight
+
+### Repository and build identity
+
+- `git fetch origin --prune` was run in a fresh clean worktree. The worktree is on detached HEAD `a57c8a50172620b93d39bffe17f9928882a84e76`, equal to the current remote preview tip and containing PR #27's merge commit.
+- PR #27 is MERGED at `2026-08-03T02:02:50Z`. Its head is `9e746a4a2b785bee4d759fd8b262d1d1c102a6e5`; the head and merge commit share exact tree `83eeab4d227f2aab5ed24fbce7e9cb30cd580173`. `Workers Builds: kurodev-hp-opennext` is SUCCESS.
+- `origin/main` is `8a46bcebb6f68a5071998041fc84995d00dbd184` and is an ancestor of the remote preview. The current range is 48 commits / 215 files. GitHub reports zero open PRs.
+
+### Artifact integrity and current Task 14 gate
+
+- Workstation-local Chrome evidence label: `remote-worker-mobile-stability-deploy-20260803`. All 31 listed checksum entries match. The local user path and run identifier are intentionally omitted.
+- Workstation-local Lighthouse evidence label: `lighthouse-13.4.1-30run-mobile-stability-deploy-20260803`. All 32 listed checksum entries match. The local user path and run identifier are intentionally omitted.
+- The Lighthouse raw set is exactly 30 reports: 5 routes × mobile / desktop × 3 runs. All 30 report exact Lighthouse `13.4.1`; runtime errors, run warnings, and meta-description failures are zero.
+- Chrome covers 5 routes × 375 / 1280 px. All 10 surfaces return 200 with no horizontal overflow, console error, page error, failed request, or unexpected origin. All 23 rendered images decode and paint nonblank. The visible skip link targets `#main-content` at `scrollY=0` on all 10 surfaces.
+
+| Route | Preset | Performance runs | Performance median | Accessibility | Best Practices | SEO | Speed Index median ms | Gate |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Home | Mobile | 100 / 100 / 99 | 100 | 100 | 100 | 100 | 1456 | PASS |
+| Tools | Mobile | 96 / 100 / 100 | 100 | 100 | 100 | 100 | 1656 | PASS |
+| Creator Site | Mobile | 100 / 100 / 100 | 100 | 100 | 100 | 100 | 2298 | PASS |
+| Guide | Mobile | 100 / 100 / 100 | 100 | 100 | 100 | 100 | 2197 | PASS |
+| Contact | Mobile | 100 / 100 / 98 | 100 | 100 | 100 | 100 | 2333 | PASS |
+| Home | Desktop | 100 / 100 / 100 | 100 | 100 | 100 | 100 | 473 | PASS |
+| Tools | Desktop | 100 / 100 / 100 | 100 | 100 | 100 | 100 | 352 | PASS |
+| Creator Site | Desktop | 100 / 100 / 100 | 100 | 100 | 100 | 100 | 384 | PASS |
+| Guide | Desktop | 100 / 100 / 100 | 100 | 100 | 100 | 100 | 462 | PASS |
+| Contact | Desktop | 100 / 100 / 100 | 100 | 100 | 100 | 100 | 390 | PASS |
+
+The unchanged formal Task 14 requirement is met in all 10 route / preset rows: three-run median 100 in Performance, Accessibility, Best Practices, and SEO, together with the current 10 / 10 Chrome surface contract. **Current formal Task 14 Chrome / Lighthouse evidence verdict: GO.** This is not a new independent semantic visual review or production activation approval.
+
+### Sanitized Cloudflare read-only inventory
+
+| Area | Observed state | Activation consequence |
+| --- | --- | --- |
+| Named profile | `kurodev-web-tools` is present in the configured profile list, but `whoami --profile kurodev-web-tools` returned not authenticated. Read-only queries with the same profile flag returned the expected Worker and Pages project. Active account identity is therefore **UNKNOWN**, not claimed verified. | Reconfirm profile and account immediately before any mutation; STOP on mismatch. |
+| Worker / deployment | Worker `kurodev-hp-opennext` exists. The newest listed deployment is `2026-08-03T02:04:26Z`, source `wrangler`. | Identity name is ready; account identity remains gated above. |
+| Workers Build | GitHub-visible PR #27 check `Workers Builds: kurodev-hp-opennext` is SUCCESS on head branch `codex/creator-platform-mobile-performance-stability` / head `9e746a4…`. Account-level production build-branch setting is **UNKNOWN**. | Reconfirm configured production branch before activation. |
+| Public preview / Access | `https://kurodev-hp-opennext.kurodev-web-tools.workers.dev/` returns 200 and no Access challenge / redirect. No Web Analytics beacon is present in the returned HTML. | Treat as public; do not use real PII or expose provider credentials during pre-activation checks. |
+| Existing Pages rollback mapping | Pages project `kurodev-hp` maps `kurodev-hp.pages.dev` and `kuro-lab.com`; production branch is `main`, and the newest listed production source is `8a46bce`, matching current `origin/main` `8a46bcebb6f68a5071998041fc84995d00dbd184`. Public DNS for `kuro-lab.com` resolves as proxied A / AAAA. | Preserve this project, mapping, deployment, and DNS as rollback target. |
+| Worker custom domain / route | Account-level Worker custom-domain and route attachment, plus precedence over the Pages mapping, are **UNKNOWN** from the permitted CLI surface. | Confirm exact pre-change state in the dashboard before activation and record it in the activation log. |
+| Runtime secrets / vars | Encrypted Worker secret list is empty: `TURNSTILE_SECRET_KEY` and `RESEND_API_KEY` are not registered as encrypted secrets. `CONTACT_FROM_EMAIL` / `CONTACT_TO_EMAIL` presence is **UNKNOWN** because no endpoint that could return values was called. No value was retrieved, displayed, or saved. | Registration / correction is a separate approval and must use the confirmed account. Keep values out of tickets, Git, logs, and this report. |
+| Contact rate limit | Existence of the `/api/contact` POST rule and its applicability to the Worker route are **UNKNOWN**. The intended predicate remains `http.request.uri.path eq "/api/contact" and http.request.method eq "POST"`. | Confirm or separately approve configuration before activation; do not infer Pages coverage applies to Workers. |
+| Logs / Analytics | Worker Logs / Logpush / account-level Web Analytics configuration is **UNKNOWN**. Public Worker HTML has no beacon; current `kuro-lab.com` HTML has a Web Analytics beacon. | Owner must approve retention, access, and processing boundary before activation. |
+| Data processing | Current preview request path is Cloudflare edge / Worker / static assets. Contact activation adds Turnstile and Resend only after validation and consent. No live provider call or real-person data was used here. | Preserve approved legal / consent data flow; treat any provider or logging change as fingerprint / approval-impacting. |
+
+### Exact Pages rollback runbook
+
+| Field | Exact runbook |
+| --- | --- |
+| Trigger | Any 5xx or material render loss on the five Task 14 routes; Contact failure; required security-header loss; material performance regression; wrong-account / wrong-route activation; or any immediate success check that does not pass. |
+| Action | Remove only the newly attached Worker custom domain / route. Restore traffic to existing Pages project `kurodev-hp`, custom domain `kuro-lab.com`, production branch `main`, production source `8a46bcebb6f68a5071998041fc84995d00dbd184`. Do not delete or disable the Pages project, its retained production deployment, or the existing DNS record. If the activation method changed DNS, restore the exact recorded pre-change proxied Pages mapping rather than inventing a new target. |
+| Actor | Primary: repository / Cloudflare account owner. Backup: a separately named Cloudflare account operator who has confirmed access to the same account and this exact Pages target. If the backup is not named before activation, STOP. |
+| Success checks | Confirm 200 and expected rendering for `/`, `/tools`, `/creator-site`, `/guide/getting-started`, and `/contact`; required HSTS / nosniff / Referrer-Policy / X-Frame-Options / Permissions-Policy; OG image, favicon, robots, sitemap; and Contact fail-closed without provider credentials. A live delivery check remains separately approved Task 15 work. |
+| Secret handling | Retain existing Pages-side values. Never extract, print, save, or copy values back from the Worker during rollback. Secret registration, rotation, or deletion requires a separate approved action on the confirmed account. |
+
+### Date and final PR readiness
+
+- The coordinated `2026-08-04` date is **conditionally maintainable**, not yet activated. Before that calendar date's approved activation window, the owner must close the UNKNOWN items above, name the backup actor, approve the exact pre-change inventory / rollback target, and separately approve runtime configuration, rate limit, route / domain change, deployment, and activation.
+- If those gates cannot complete on `2026-08-04`, STOP before final merge or production deployment. Do not edit legal bytes under this preflight. A new date invalidates affected dates, fingerprints, and approval; update all seven promoted sources / rows, reproduce hashes, repeat exact owner-designated legal approval, and rerun affected Task 12–14 checks before proceeding.
+- Final preview-to-`main` PR readiness is **CONDITIONAL GO / approval-ready**: formal Task 14 evidence, PR #27 merge, and current `origin/main` containment pass. The docs-only condition applies only to this closeout branch / PR. Immediately before the later integration PR, re-fetch `origin/main`, require containment exit 0, and confirm the expected preview-to-`main` integration range has no unexpected drift; that final integration PR is expected to contain the recorded 48 commits / 215 files rather than a docs-only diff.
+- Commit, push, final PR creation, final merge, Cloudflare mutation, production activation, live provider checks, Task 15, and cleanup were not performed in this preflight.
+
+#### Copy-ready next approval request
+
+```text
+Creator Platform Task 14 current-preflight docs-only commitを承認します。
+
+承認範囲:
+- current detached HEAD a57c8a50172620b93d39bffe17f9928882a84e76からdocs-only専用branchを作成
+- task.mdとdocs/KURODEV_CREATOR_PLATFORM_QA.mdの今回差分のみをcommit
+
+実行前にgit fetch origin --pruneを再実行し、origin/mainがpreviewに包含されること、PR #27 merge tree、変更pathが上記2文書だけであること、git diff --check、secret / private-ID scanを再確認してください。commit後にactual committed diffとstatusを再確認してください。
+
+この承認にpush、Draft PR作成 / merge、final preview-to-main PR作成、final merge、deploy、domain / DNS / route、secret / var、rate limit、Access、Logs / Analytics、production activation、live provider call、Task 15、branch / worktree cleanupは含めません。それぞれ実行時に別承認を取得してください。
+```
 
 ## Task 14 Steps 1–9
 
