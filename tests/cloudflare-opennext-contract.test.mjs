@@ -43,11 +43,42 @@ test("OpenNext repository configuration keeps the approved Workers contract", as
         service: "kurodev-hp-opennext"
       }
     ],
+    ratelimits: [
+      {
+        name: "CONTACT_RATE_LIMITER",
+        namespace_id: "78106443",
+        simple: {
+          limit: 10,
+          period: 60
+        }
+      }
+    ],
+    observability: {
+      enabled: true,
+      head_sampling_rate: 1,
+      logs: {
+        invocation_logs: false
+      }
+    },
     workers_dev: true,
     preview_urls: true
   });
   assert.match(gitignore, /^\.open-next\/$/m);
   assert.match(nextConfig, /images:\s*{\s*unoptimized:\s*true\s*}/);
+  assert.match(nextConfig, /initOpenNextCloudflareForDev\(\)/);
   assert.doesNotMatch(contactRoute, /export const runtime\s*=\s*["']edge["']/);
+  assert.match(contactRoute, /getCloudflareContext/);
+  assert.match(contactRoute, /checkContactRateLimit/);
+  assert.match(contactRoute, /logEvent:\s*logContactRateLimitEvent/);
+  assert.ok(
+    contactRoute.indexOf("const rateLimitResult = await checkContactRateLimit") <
+      contactRoute.indexOf("body = await readBoundedContactJson"),
+    "Contact rate limiting must run before reading the request body"
+  );
+  assert.match(
+    contactRoute,
+    /if \(!rateLimitResult\.ok\) \{[\s\S]*?return jsonResponse\([\s\S]*?rateLimitResult\.status[\s\S]*?\);\s*\}\s*let body;/,
+    "Denied or unavailable rate limits must return before body and provider processing"
+  );
   assert.doesNotMatch(ogRoute, /export const runtime\s*=\s*["']edge["']/);
 });

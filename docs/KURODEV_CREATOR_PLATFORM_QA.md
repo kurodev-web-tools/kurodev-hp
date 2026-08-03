@@ -14,6 +14,30 @@ The seven legal documents and six Contact consent copies use the exact fixed IDs
 
 The performance / runner `NO-GO` matrices below this current section are retained as dated history and are superseded for the formal Task 14 Chrome / Lighthouse gate by the 2026-08-03 PR #27 evidence. Earlier independent visual `REVISE` observations are retained as historical product-review notes: the PR #27 source handoff classified Task 14 performance as complete and the remaining work as final promotion, activation, and Task 15. This preflight did not perform a new independent semantic visual review, so it does not rewrite that historical review as a fresh visual acceptance result.
 
+## 2026-08-03 Cloudflare production protection Gate B1 local implementation
+
+### Repository contract
+
+- Base: exact `main` commit `e0e143d120c591086ab534f747225e0c9d550e75`. This gate changes repository configuration only; it does not change or replace the existing WAF rule.
+- `CONTACT_RATE_LIMITER` is configured as a simple Workers Rate Limiting binding for 10 requests per 60 seconds per Cloudflare location. The application always uses the fixed key `contact-submit`; IP, email, request body, token, locale, and query data are not part of the key.
+- `POST /api/contact` checks the binding before reading the request body. A denial returns `429 RATE_LIMITED`; a missing or failed binding returns `503 RATE_LIMIT_UNAVAILABLE`. Both paths return before Turnstile or Resend can be called.
+- Denials emit only the fixed code `RATE_LIMITED` at 1% sampling. Binding unavailability emits only the fixed code `RATE_LIMIT_UNAVAILABLE`. No request body, query, IP, email, token, secret, locale, or raw provider response was added to logs.
+- Workers observability is enabled with `head_sampling_rate=1` and `logs.invocation_logs=false`. Traces, Logpush, Tail Worker, Web Analytics, and Cloudflare plan-default retention are not modified by this repository slice.
+- Namespace candidate `78106443` had zero collisions across the known local repository checkout / worktree binding configurations. Cloudflare does not expose an account-wide namespace registry through the approved read-only surface, so cross-Worker uniqueness is not claimed proven. Reconfirm this STOP condition before any remote deployment.
+
+### Local evidence
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Focused RED / GREEN | PASS | Five focused tests first failed only on the missing helper / Wrangler contract, then passed 5 / 5 after implementation. |
+| Contact suite | PASS | Contact rate-limit, validation, consent, provider-order, and OpenNext contract tests passed 28 / 28. |
+| Full suite | PASS | `npm test` passed 123 / 123 in a repository-external verification copy using an existing dependency tree whose lockfile SHA-256 exactly matched this checkout. No dependency install occurred. |
+| Lint / Next build | PASS | `next lint` reported no warnings or errors. Next `15.5.21` production build generated 43 / 43 pages. |
+| OpenNext build | PASS | Git Bash OpenNext `1.20.2` build completed and generated `.open-next/worker.js`. The documented Windows compatibility warning and Node `punycode` deprecation warning remain environment/tooling warnings. |
+| Wrangler strict dry-run | PASS | Wrangler `4.118.0 deploy --dry-run --keep-vars --strict` exited 0 and recognized `CONTACT_RATE_LIMITER (10 requests/60s)`, the self-reference service, and assets. The generated bundle retains one direct-eval warning. `--dry-run` exited without upload. |
+
+No dependency or manifest / lockfile change, Cloudflare dashboard / WAF / domain / DNS / route mutation, commit, push, PR, merge, build upload, deploy, live provider call, Task 15 work, or cleanup was performed.
+
 ## 2026-08-03 PR #27 current activation preflight
 
 ### Repository and build identity
