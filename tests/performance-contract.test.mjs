@@ -165,7 +165,7 @@ test("creator site mobile first paint isolates the decorative hero stage", async
   assert.match(creatorSiteStyles, isolatedHeroStage);
 });
 
-test("image-backed mobile heroes contain layout while Tools defers post-hero work", async () => {
+test("image-backed mobile heroes contain layout while Tools defers only work below the near-viewport workflow", async () => {
   // Given: Home and Tools both paint an eager product image before their long-form sections.
   const [homeHeroStyles, toolsStyles] = await Promise.all([
     readFile(new URL("../app/styles/home-hero.css", import.meta.url), "utf8"),
@@ -175,12 +175,14 @@ test("image-backed mobile heroes contain layout while Tools defers post-hero wor
   // When: mobile-only hero and post-hero boundaries are inspected.
   const homeHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.product-stage\s*\{[^}]*contain:\s*layout;/;
   const toolsHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.tools-hero__stage\s*\{[^}]*contain:\s*layout;/;
-  const deferredToolsSections = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.tools-hero\s*~\s*\*\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/;
+  const deferredToolsSections = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.tools-hero\s*~\s*:not\(\.tool-workflow\)\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/;
+  const broadPostHeroDeferral = /\.site-main\s*>\s*\.tools-hero\s*~\s*\*\s*\{/;
 
   // Then: decoding and below-fold layout cannot widen the initial mobile layout scope.
   assert.match(homeHeroStyles, homeHeroContainment);
   assert.match(toolsStyles, toolsHeroContainment);
   assert.match(toolsStyles, deferredToolsSections);
+  assert.doesNotMatch(toolsStyles, broadPostHeroDeferral);
 });
 
 test("image-free mobile heroes contain their text LCP layout scope", async () => {
