@@ -2,6 +2,16 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+test("legal runtime loader is filesystem-free and uses a tracked runtime source mapping", async () => {
+  // Given: the server-side legal loader that ships in the OpenNext bundle.
+  const loaderSource = await readFile(new URL("../lib/legal/legal-loader.mjs", import.meta.url), "utf8");
+
+  // When/Then: request-time filesystem reads cannot remain in the production path.
+  assert.doesNotMatch(loaderSource, /node:fs|readFileSync/);
+  assert.match(loaderSource, /legal-runtime-sources\.generated\.mjs/);
+  assert.match(loaderSource, /LEGAL_RUNTIME_SOURCES/);
+});
+
 test("OpenNext repository configuration keeps the approved Workers contract", async () => {
   // Given: the repository files consumed by the OpenNext and Wrangler CLIs.
   const [packageJson, lockfile, openNextConfig, wranglerConfig, gitignore, nextConfig, contactRoute, ogRoute, middleware] =
