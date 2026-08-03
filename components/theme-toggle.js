@@ -1,34 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Icon } from "@/components/ui/icon";
 
-export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState("light");
+function subscribeToTheme(onStoreChange) {
+  window.addEventListener("kurodev-theme-change", onStoreChange);
+  return () => window.removeEventListener("kurodev-theme-change", onStoreChange);
+}
 
-  useEffect(() => {
-    const current = document.documentElement.dataset.theme || "light";
-    setTheme(current);
-    setMounted(true);
-  }, []);
+function getThemeSnapshot() {
+  return document.documentElement.dataset.theme || "light";
+}
+
+function getServerThemeSnapshot() {
+  return "light";
+}
+
+function refreshProductMediaLayers(theme) {
+  window.requestAnimationFrame(() => {
+    const depth = theme === "dark" ? "0.002px" : "0.001px";
+    document.querySelectorAll(".product-media img").forEach((image) => {
+      image.style.transform = `translateZ(${depth})`;
+    });
+  });
+}
+
+export function ThemeToggle() {
+  const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
 
   function toggleTheme() {
     const nextTheme = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = nextTheme;
     window.localStorage.setItem("kurodev-theme", nextTheme);
-    setTheme(nextTheme);
-  }
-
-  if (!mounted) {
-    return <div className="h-11 w-11 rounded-full border border-[var(--border)] bg-[var(--panel-muted)]" />;
+    window.dispatchEvent(new Event("kurodev-theme-change"));
+    refreshProductMediaLayers(nextTheme);
   }
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      className="theme-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--panel-muted)] text-[var(--text)] hover:border-[var(--border-strong)] hover:text-[var(--accent)]"
+      className="theme-toggle"
       aria-label={theme === "dark" ? "ライトテーマに切り替え" : "ダークテーマに切り替え"}
     >
       <Icon

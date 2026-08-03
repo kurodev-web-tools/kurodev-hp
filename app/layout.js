@@ -1,8 +1,13 @@
 import "./globals.css";
+import "./styles/shell.css";
+import "./styles/components.css";
+import Script from "next/script";
+import { headers } from "next/headers";
 import { SiteShell } from "@/components/site-shell";
 
 const themeInitScript = `
   (function () {
+    document.documentElement.dataset.themeInitializing = 'true';
     try {
       var saved = window.localStorage.getItem('kurodev-theme');
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -11,6 +16,11 @@ const themeInitScript = `
     } catch (error) {
       document.documentElement.dataset.theme = 'light';
     }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        delete document.documentElement.dataset.themeInitializing;
+      });
+    });
   })();
 `;
 
@@ -46,11 +56,24 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const locale = headers().get("x-kurodev-locale") === "en" ? "en" : "ja";
+  const enableReactDevTools =
+    process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_DISABLE_REACT_DEVTOOLS !== "1";
+
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        {enableReactDevTools ? (
+          <>
+            <Script src="//unpkg.com/react-grab/dist/index.global.js" crossOrigin="anonymous" strategy="beforeInteractive" />
+            <Script src="//unpkg.com/react-scan/dist/auto.global.js" crossOrigin="anonymous" strategy="beforeInteractive" />
+          </>
+        ) : null}
+      </head>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <SiteShell>{children}</SiteShell>
+        <a className="skip-link" href="#main-content">{locale === "ja" ? "本文へ移動" : "Skip to main content"}</a>
+        <SiteShell locale={locale}>{children}</SiteShell>
       </body>
     </html>
   );

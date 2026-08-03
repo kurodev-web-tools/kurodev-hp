@@ -1,9 +1,18 @@
-export const runtime = "edge";
+import {
+  contactCategoryLabel,
+  isContactPayloadTooLarge,
+  normalizeContactPayload,
+  validateContactInput
+} from "@/lib/contact-validation.mjs";
+import {
+  createContactConsentRecord,
+  formatContactConsentRecord,
+  validateContactConsentSubmission
+} from "@/lib/contact-consent.mjs";
+import { readBoundedContactJson } from "@/lib/contact-request.mjs";
 
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const RESEND_EMAIL_URL = "https://api.resend.com/emails";
-const CATEGORY_VALUES = new Set(["新規制作", "既存サイト改善", "業務ツール相談", "運用整理"]);
-const MAX_BODY_BYTES = 16 * 1024;
 const TURNSTILE_TIMEOUT_MS = 5000;
 const RESEND_TIMEOUT_MS = 10000;
 
@@ -13,22 +22,6 @@ function jsonResponse(body, status = 200) {
 
 function logContactError(code, details = {}) {
   console.error("[contact-api]", code, details);
-}
-
-function cleanText(value, maxLength) {
-  return String(value || "").trim().slice(0, maxLength);
-}
-
-function isBodyTooLarge(request) {
-  const contentLength = request.headers.get("content-length");
-  if (!contentLength) return false;
-
-  const parsedLength = Number(contentLength);
-  return Number.isFinite(parsedLength) && parsedLength > MAX_BODY_BYTES;
-}
-
-function isParsedBodyTooLarge(body) {
-  return new TextEncoder().encode(JSON.stringify(body)).length > MAX_BODY_BYTES;
 }
 
 async function fetchWithTimeout(url, options, timeoutMs) {
@@ -45,21 +38,6 @@ async function fetchWithTimeout(url, options, timeoutMs) {
   }
 }
 
-function isEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function isValidUrl(value) {
-  if (!value) return true;
-
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -69,11 +47,13 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function formatContactEmail({ name, email, category, referenceUrl, message }) {
+function formatContactEmail({ name, email, category, referenceUrl, message, locale }, consentRecord) {
+  const categoryLabel = contactCategoryLabel(category, locale);
+  const consentText = formatContactConsentRecord(consentRecord);
   const rows = [
     ["お名前", name],
     ["メール", email],
-    ["相談カテゴリ", category],
+    ["相談カテゴリ", categoryLabel],
     ["参考URL", referenceUrl || "なし"]
   ];
 
@@ -83,7 +63,9 @@ function formatContactEmail({ name, email, category, referenceUrl, message }) {
     ...rows.map(([label, value]) => `${label}: ${value}`),
     "",
     "相談内容:",
-    message
+    message,
+    "",
+    consentText
   ].join("\n");
 
   const htmlRows = rows
@@ -99,6 +81,8 @@ function formatContactEmail({ name, email, category, referenceUrl, message }) {
       <table style="border-collapse:collapse;margin:16px 0;">${htmlRows}</table>
       <p style="margin:16px 0 8px;font-weight:700;">相談内容</p>
       <div style="white-space:pre-wrap;border:1px solid #e5e7eb;border-radius:8px;padding:12px;">${escapeHtml(message)}</div>
+      <p style="margin:16px 0 8px;font-weight:700;">Consent record</p>
+      <div style="white-space:pre-wrap;border:1px solid #e5e7eb;border-radius:8px;padding:12px;">${escapeHtml(consentText)}</div>
     </div>
   `;
 
@@ -141,7 +125,7 @@ async function verifyTurnstile(token, request) {
   return Boolean(result.success);
 }
 
-async function sendContactEmail(payload) {
+async function sendContactEmail(payload, consentRecord) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.CONTACT_FROM_EMAIL;
   const to = process.env.CONTACT_TO_EMAIL;
@@ -150,7 +134,7 @@ async function sendContactEmail(payload) {
     return { ok: false, status: 503 };
   }
 
-  const { text, html } = formatContactEmail(payload);
+  const { text, html } = formatContactEmail(payload, consentRecord);
   let response;
 
   try {
@@ -165,7 +149,7 @@ async function sendContactEmail(payload) {
         body: JSON.stringify({
           from,
           to: [to],
-          subject: `制作相談: ${payload.category}`,
+          subject: `制作相談: ${contactCategoryLabel(payload.category, "ja")}`,
           reply_to: payload.email,
           text,
           html,
@@ -189,48 +173,36 @@ async function sendContactEmail(payload) {
 export async function POST(request) {
   let body;
 
-  if (isBodyTooLarge(request)) {
-    logContactError("PAYLOAD_TOO_LARGE", { phase: "content-length" });
-    return jsonResponse({ ok: false, error: "PAYLOAD_TOO_LARGE" }, 413);
-  }
-
   try {
-    body = await request.json();
-  } catch {
-    logContactError("INVALID_JSON");
-    return jsonResponse({ ok: false, error: "INVALID_JSON" }, 400);
+    body = await readBoundedContactJson(request);
+  } catch (error) {
+    const code = error?.code === "PAYLOAD_TOO_LARGE" ? "PAYLOAD_TOO_LARGE" : "INVALID_JSON";
+    logContactError(code, error?.phase ? { phase: error.phase } : {});
+    return jsonResponse({ ok: false, error: code }, code === "PAYLOAD_TOO_LARGE" ? 413 : 400);
   }
 
-  if (isParsedBodyTooLarge(body)) {
+  if (isContactPayloadTooLarge(body)) {
     logContactError("PAYLOAD_TOO_LARGE", { phase: "parsed-body" });
     return jsonResponse({ ok: false, error: "PAYLOAD_TOO_LARGE" }, 413);
   }
 
-  const payload = {
-    name: cleanText(body.name, 80),
-    email: cleanText(body.email, 120),
-    category: cleanText(body.category, 40),
-    referenceUrl: cleanText(body.referenceUrl, 300),
-    message: cleanText(body.message, 3000)
-  };
-
-  if (
-    !payload.name ||
-    !isEmail(payload.email) ||
-    !CATEGORY_VALUES.has(payload.category) ||
-    payload.message.length < 20 ||
-    !isValidUrl(payload.referenceUrl)
-  ) {
+  const payload = normalizeContactPayload(body);
+  if (Object.keys(validateContactInput(payload)).length > 0) {
     return jsonResponse({ ok: false, error: "INVALID_INPUT" }, 400);
   }
 
-  const turnstileToken = cleanText(body.turnstileToken, 2048);
+  if (!validateContactConsentSubmission(body)) {
+    return jsonResponse({ ok: false, error: "CONSENT_REQUIRED" }, 400);
+  }
+
+  const turnstileToken = String(body?.turnstileToken ?? "").trim().slice(0, 2048);
   const turnstileOk = await verifyTurnstile(turnstileToken, request);
   if (!turnstileOk) {
     return jsonResponse({ ok: false, error: "TURNSTILE_FAILED" }, 400);
   }
 
-  const sendResult = await sendContactEmail(payload);
+  const consentRecord = createContactConsentRecord(body.locale);
+  const sendResult = await sendContactEmail({ ...payload, locale: body.locale }, consentRecord);
   if (!sendResult.ok) {
     return jsonResponse({ ok: false, error: "SEND_FAILED" }, sendResult.status === 503 ? 503 : 502);
   }

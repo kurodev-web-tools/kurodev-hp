@@ -1,6 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  htmlLimitedBots: /.*/,
+  images: {
+    unoptimized: true
+  },
+  experimental: {
+    inlineCss: true
+  },
+  async redirects() {
+    return [
+      { source: "/tool", destination: "/tools", permanent: true },
+      { source: "/web", destination: "/works", permanent: true },
+      { source: "/profile", destination: "/about", permanent: true }
+    ];
+  },
   async headers() {
     return [
       {

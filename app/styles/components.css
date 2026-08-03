@@ -1,0 +1,130 @@
+.action-link {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-6);
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform var(--motion-control) var(--ease-studio), background-color var(--motion-control), border-color var(--motion-control), color var(--motion-control);
+}
+
+.action-link:hover {
+  transform: translateY(-2px);
+}
+
+.action-link:active {
+  transform: translateY(0);
+}
+
+.action-link--primary {
+  background: var(--action);
+  color: var(--action-text);
+}
+
+.action-link--primary:hover {
+  background: var(--action-hover);
+}
+
+.action-link--secondary {
+  border-color: var(--border-strong);
+  background: transparent;
+  color: var(--action);
+}
+
+.action-link--secondary:hover {
+  background: color-mix(in srgb, var(--action) 10%, transparent);
+}
+
+.action-link--quiet {
+  color: var(--action);
+  padding-inline: 0;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: var(--space-1) var(--space-3);
+  color: var(--action);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.section-intro {
+  max-width: 720px;
+}
+
+.section-intro__eyebrow {
+  margin: 0 0 var(--space-3);
+  color: var(--action);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.section-intro h2 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.display-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.section-intro__body {
+  max-width: 58ch;
+  margin: var(--space-4) 0 0;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.product-media {
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-media);
+  background: var(--surface-raised);
+}
+
+.product-media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.product-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(0);
+}
+
+@media (min-width: 1024px) {
+  .section-intro .display-line {
+    display: inline;
+    white-space: normal;
+  }
+
+  #guide .section-intro {
+    max-width: none;
+  }
+}
