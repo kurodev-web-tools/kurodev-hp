@@ -17,13 +17,14 @@ const runtimeConsumers = [
   "app/en/guide/[segment]/page.js",
   "app/en/guide/[segment]/[slug]/page.js",
   "components/pages/guide-route.js",
-  "app/sitemap.js"
+  "lib/public-route-inventory.mjs"
 ];
 
 test("Guide runtime consumers use a filesystem-free validated inventory", async () => {
-  const [runtimeSource, generatedSource, consumerSources] = await Promise.all([
+  const [runtimeSource, generatedSource, sitemapSource, consumerSources] = await Promise.all([
     readFile(new URL("../lib/guides/guide-runtime.mjs", import.meta.url), "utf8"),
     readFile(new URL("../lib/guides/guide-runtime-inventory.generated.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../app/sitemap.js", import.meta.url), "utf8"),
     Promise.all(runtimeConsumers.map(async (pathname) => ({
       pathname,
       source: await readFile(new URL(`../${pathname}`, import.meta.url), "utf8")
@@ -34,6 +35,8 @@ test("Guide runtime consumers use a filesystem-free validated inventory", async 
     assert.doesNotMatch(source, /guide-loader\.mjs/, `${pathname} must not import the filesystem loader`);
     assert.match(source, /guide-runtime\.mjs/, `${pathname} must import the runtime facade`);
   }
+  assert.doesNotMatch(sitemapSource, /guide-loader\.mjs/);
+  assert.match(sitemapSource, /public-route-inventory\.mjs/);
   assert.doesNotMatch(runtimeSource, /node:(?:fs|path)|content\/guides|import\.meta\.url/);
   assert.doesNotMatch(generatedSource, /node:(?:fs|path)|content\/guides|import\.meta\.url/);
 });

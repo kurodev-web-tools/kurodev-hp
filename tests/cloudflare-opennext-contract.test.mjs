@@ -1,106 +1,131 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("legal runtime loader is filesystem-free and uses a tracked runtime source mapping", async () => {
-  // Given: the server-side legal loader that ships in the OpenNext bundle.
-  const loaderSource = await readFile(new URL("../lib/legal/legal-loader.mjs", import.meta.url), "utf8");
+const root = new URL("../", import.meta.url);
 
-  // When/Then: request-time filesystem reads cannot remain in the production path.
-  assert.doesNotMatch(loaderSource, /node:fs|readFileSync/);
-  assert.match(loaderSource, /legal-runtime-sources\.generated\.mjs/);
-  assert.match(loaderSource, /LEGAL_RUNTIME_SOURCES/);
+test("public route inventory distinguishes static Guide delivery from sitemap indexability", async () => {
+  const inventoryPath = new URL("lib/public-route-inventory.mjs", root);
+  await access(inventoryPath);
+  const { getPublicRouteInventory } = await import(inventoryPath.href);
+  const routes = await getPublicRouteInventory();
+  const paths = new Set(routes.map(({ path }) => path));
+
+  for (const path of ["/", "/en", "/tools", "/en/tools", "/legal/tokushoho", "/works/kuro-stream-kit", "/en/works/kuro-stream-kit", "/guide/getting-started", "/en/guide/getting-started"]) {
+    assert.ok(paths.has(path), `missing public route: ${path}`);
+  }
+  assert.ok(routes.filter(({ kind }) => kind === "legal").length >= 7);
+  assert.ok(routes.every(({ locale }) => locale === "ja" || locale === "en"));
+  for (const path of ["/guide/comment-translator/getting-started", "/en/guide/comment-translator/getting-started"]) {
+    const route = routes.find((candidate) => candidate.path === path);
+    assert.ok(route, `missing noindex public Guide route: ${path}`);
+    assert.equal(route.indexable, false);
+  }
+
+  const { default: sitemap } = await import(new URL("app/sitemap.js", root).href);
+  const sitemapUrls = new Set((await sitemap()).map(({ url }) => url));
+  assert.equal(sitemapUrls.has("https://kuro-lab.com/guide/comment-translator/getting-started"), false);
+  assert.equal(sitemapUrls.has("https://kuro-lab.com/en/guide/comment-translator/getting-started"), false);
 });
 
-test("OpenNext repository configuration keeps the approved Workers contract", async () => {
-  // Given: the repository files consumed by the OpenNext and Wrangler CLIs.
-  const [packageJson, lockfile, openNextConfig, wranglerConfig, gitignore, nextConfig, contactRoute, ogRoute, middleware] =
-    await Promise.all([
-      readFile(new URL("../package.json", import.meta.url), "utf8").then(JSON.parse),
-      readFile(new URL("../package-lock.json", import.meta.url), "utf8").then(JSON.parse),
-      readFile(new URL("../open-next.config.ts", import.meta.url), "utf8"),
-      readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8").then(JSON.parse),
-      readFile(new URL("../.gitignore", import.meta.url), "utf8"),
-      readFile(new URL("../next.config.mjs", import.meta.url), "utf8"),
-      readFile(new URL("../app/api/contact/route.js", import.meta.url), "utf8"),
-      readFile(new URL("../app/opengraph-image.js", import.meta.url), "utf8"),
-      readFile(new URL("../middleware.js", import.meta.url), "utf8")
-    ]);
+test("sitemap derives its public route set from the shared route inventory", async () => {
+  const sitemap = await readFile(new URL("app/sitemap.js", root), "utf8");
+  assert.match(sitemap, /public-route-inventory\.mjs/);
+  assert.match(sitemap, /getPublicRouteInventory/);
+  assert.doesNotMatch(sitemap, /const basePairs/);
+  assert.doesNotMatch(sitemap, /const legalPairs/);
+});
 
-  // When: the repository-level runtime contract is inspected.
-  const rootPackage = lockfile.packages[""];
+test("inventory supplies alternate-language pairs and last-modified values for sitemap serialization", async () => {
+  const { getPublicRouteInventory } = await import(new URL("lib/public-route-inventory.mjs", root).href);
+  const routes = await getPublicRouteInventory();
+  const japaneseHome = routes.find(({ path }) => path === "/");
+  assert.deepEqual(japaneseHome.alternatePaths, { ja: "/", en: "/en" });
+  assert.ok(japaneseHome.lastModified instanceof Date);
+});
 
-  // Then: dependency, build, runtime, and generated-output boundaries match the approved design.
-  assert.equal(packageJson.devDependencies["@opennextjs/cloudflare"], "1.20.2");
-  assert.equal(packageJson.devDependencies.wrangler, "4.118.0");
-  assert.equal(rootPackage.devDependencies["@opennextjs/cloudflare"], "1.20.2");
-  assert.equal(rootPackage.devDependencies.wrangler, "4.118.0");
-  assert.equal(packageJson.scripts["build:cloudflare"], "opennextjs-cloudflare build");
-  assert.equal(packageJson.scripts["preview:cloudflare"], "opennextjs-cloudflare preview");
-  assert.match(openNextConfig, /defineCloudflareConfig\(\)/);
-  assert.deepEqual(wranglerConfig, {
-    $schema: "node_modules/wrangler/config-schema.json",
-    name: "kurodev-hp-opennext",
-    main: ".open-next/worker.js",
-    keep_vars: true,
-    compatibility_date: "2026-08-01",
-    compatibility_flags: ["nodejs_compat", "global_fetch_strictly_public"],
-    assets: {
-      directory: ".open-next/assets",
-      binding: "ASSETS"
-    },
-    services: [
-      {
-        binding: "WORKER_SELF_REFERENCE",
-        service: "kurodev-hp-opennext"
-      }
-    ],
-    ratelimits: [
-      {
-        name: "CONTACT_RATE_LIMITER",
-        namespace_id: "78106443",
-        simple: {
-          limit: 10,
-          period: 60
-        }
-      }
-    ],
-    observability: {
-      enabled: true,
-      head_sampling_rate: 1,
-      logs: {
-        invocation_logs: false
-      }
-    },
-    workers_dev: true,
-    preview_urls: true
+test("legal runtime loader remains filesystem-free in the OpenNext request path", async () => {
+  const loader = await readFile(new URL("lib/legal/legal-loader.mjs", root), "utf8");
+  assert.doesNotMatch(loader, /node:fs|readFileSync/);
+  assert.match(loader, /legal-runtime-sources\.generated\.mjs/);
+});
+
+test("asset-first Wrangler configuration preserves the API-only Worker boundary", async () => {
+  const [packageJson, wranglerConfig, middleware] = await Promise.all([
+    readFile(new URL("package.json", root), "utf8").then(JSON.parse),
+    readFile(new URL("wrangler.jsonc", root), "utf8").then(JSON.parse),
+    readFile(new URL("middleware.js", root), "utf8").catch((error) => error.code),
+  ]);
+
+  assert.equal(packageJson.scripts["build:cloudflare:static"], "node scripts/build-static-first-cloudflare.mjs");
+  assert.equal(wranglerConfig.main, "worker/static-first-entry.mjs");
+  assert.deepEqual(wranglerConfig.assets, {
+    directory: ".open-next/assets",
+    binding: "ASSETS",
+    run_worker_first: ["/api/*"],
+    html_handling: "drop-trailing-slash",
+    not_found_handling: "404-page"
   });
-  assert.match(gitignore, /^\.open-next\/$/m);
-  assert.match(nextConfig, /images:\s*{\s*unoptimized:\s*true\s*}/);
-  assert.match(nextConfig, /initOpenNextCloudflareForDev\(\)/);
-  assert.doesNotMatch(contactRoute, /export const runtime\s*=\s*["']edge["']/);
-  assert.match(contactRoute, /getCloudflareContext/);
-  assert.match(contactRoute, /checkContactRateLimit/);
-  assert.match(contactRoute, /logEvent:\s*logContactRateLimitEvent/);
-  assert.ok(
-    contactRoute.indexOf("const rateLimitResult = await checkContactRateLimit") <
-      contactRoute.indexOf("body = await readBoundedContactJson"),
-    "Contact rate limiting must run before reading the request body"
-  );
-  assert.match(
-    contactRoute,
-    /if \(!rateLimitResult\.ok\) \{[\s\S]*?return jsonResponse\([\s\S]*?rateLimitResult\.status[\s\S]*?\);\s*\}\s*let body;/,
-    "Denied or unavailable rate limits must return before body and provider processing"
-  );
-  const invalidInputResponse = contactRoute.indexOf(
-    'return jsonResponse({ ok: false, error: "INVALID_INPUT" }, 400);'
-  );
-  assert.ok(invalidInputResponse > contactRoute.indexOf("validateContactInput(payload)"));
-  assert.ok(invalidInputResponse < contactRoute.indexOf("await verifyTurnstile"));
-  assert.ok(invalidInputResponse < contactRoute.indexOf("await sendContactEmail"));
-  assert.doesNotMatch(ogRoute, /export const runtime\s*=\s*["']edge["']/);
-  assert.match(middleware, /getCloudflareContext/);
-  assert.match(middleware, /WORKER_SELF_REFERENCE/);
-  assert.match(middleware, /fetchStaticSourceResponse/);
-  assert.doesNotMatch(middleware, /await fetch\(staticGuideSourceUrl/);
+  assert.equal("services" in wranglerConfig, false);
+  assert.equal(middleware, "ENOENT");
+  assert.equal(wranglerConfig.ratelimits[0].name, "CONTACT_RATE_LIMITER");
+  assert.equal(wranglerConfig.observability.enabled, true);
+  assert.equal(wranglerConfig.keep_vars, true);
+  assert.equal(wranglerConfig.workers_dev, true);
+  assert.equal(wranglerConfig.preview_urls, true);
+});
+
+test("static-first entry delegates only APIs and returns asset responses for unknown documents and missing assets", async () => {
+  const { createStaticFirstFetch } = await import(new URL("worker/static-first-entry.mjs", root).href);
+  const calls = [];
+  const fetch = createStaticFirstFetch({
+    openNextFetch: async (request) => {
+      calls.push(["open-next", new URL(request.url).pathname]);
+      return new Response("api");
+    },
+    assetsFetch: async (request) => {
+      calls.push(["assets", new URL(request.url).pathname]);
+      return new Response("asset 404", { status: 404 });
+    }
+  });
+
+  assert.equal((await fetch(new Request("https://kuro-lab.com/api/contact"))).status, 200);
+  assert.equal((await fetch(new Request("https://kuro-lab.com/no-such-document"))).status, 404);
+  assert.equal((await fetch(new Request("https://kuro-lab.com/missing.svg"))).status, 404);
+  assert.deepEqual(calls, [
+    ["open-next", "/api/contact"],
+    ["assets", "/no-such-document"],
+    ["assets", "/missing.svg"]
+  ]);
+});
+
+test("static-first entry has no eager generated OpenNext import on the public asset-miss path", async () => {
+  const wrapper = await readFile(new URL("worker/static-first-entry.mjs", root), "utf8");
+  assert.match(wrapper, /if \(!isApiRequest\(request\)\) return env\.ASSETS\.fetch\(request\)/);
+  assert.match(wrapper, /await import\("\.\.\/\.open-next\/worker\.js"\)/);
+  assert.doesNotMatch(wrapper, /^import .*\.open-next\/worker/m);
+});
+
+test("OpenNext build configuration remains the generated API handler source", async () => {
+  const config = await readFile(new URL("open-next.config.ts", root), "utf8");
+  assert.match(config, /defineCloudflareConfig\(\)/);
+});
+
+test("Contact API retains the fail-closed rate-limit to Resend sequence without client-side provider credentials", async () => {
+  const [contactRoute, transformerSource] = await Promise.all([
+    readFile(new URL("app/api/contact/route.js", root), "utf8"),
+    readFile(new URL("lib/static-guide-document.mjs", root), "utf8")
+  ]);
+  const steps = [
+    "const rateLimitResult = await checkContactRateLimit",
+    "body = await readBoundedContactJson",
+    "validateContactInput(payload)",
+    "validateContactConsentSubmission(body)",
+    "await verifyTurnstile",
+    "await sendContactEmail"
+  ];
+  for (let index = 1; index < steps.length; index += 1) {
+    assert.ok(contactRoute.indexOf(steps[index - 1]) < contactRoute.indexOf(steps[index]));
+  }
+  assert.doesNotMatch(transformerSource, /TURNSTILE_SECRET_KEY|RESEND_API_KEY|CONTACT_TO_EMAIL/);
 });

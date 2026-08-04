@@ -9,6 +9,7 @@
     "prebuild": "npm run check:guide-runtime",
     "build": "next build",
     "build:cloudflare": "opennextjs-cloudflare build",
+    "build:cloudflare:static": "node scripts/build-static-first-cloudflare.mjs",
     "preview:cloudflare": "opennextjs-cloudflare preview",
     "start": "next start",
     "lint": "next lint",

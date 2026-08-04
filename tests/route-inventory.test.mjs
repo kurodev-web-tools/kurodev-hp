@@ -23,7 +23,7 @@ const legacyRoutes = ["/tool", "/web", "/profile"];
 test("route inventory/sitemap emits every indexable route and only real locale alternates", async () => {
   const [{ default: sitemap }, { getGuideAlternates, getGuideInventory }, { statusRules }] = await Promise.all([
     import(new URL("../app/sitemap.js", import.meta.url)),
-    import(new URL("../lib/guides/guide-loader.mjs", import.meta.url)),
+    import(new URL("../lib/guides/guide-runtime.mjs", import.meta.url)),
     import(new URL("../lib/content/status.mjs", import.meta.url))
   ]);
   const [entries, guides] = await Promise.all([sitemap(), getGuideInventory()]);

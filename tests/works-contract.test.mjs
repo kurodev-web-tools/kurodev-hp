@@ -114,12 +114,12 @@ test("only approved work records with scope and evidence can render", async () =
   );
 });
 
-test("Home, case-study routes, components, and sitemap share the publication gate", async () => {
-  const [homePage, featuredWork, caseStudy, sitemap, japaneseCase, englishCase] = await Promise.all([
+test("Home, case-study routes, components, and shared public inventory share the publication gate", async () => {
+  const [homePage, featuredWork, caseStudy, inventorySource, japaneseCase, englishCase] = await Promise.all([
     readFile(homePageUrl, "utf8"),
     readFile(featuredWorkUrl, "utf8"),
     readFile(caseStudyPageUrl, "utf8"),
-    readFile(sitemapUrl, "utf8"),
+    readFile(new URL("../lib/public-route-inventory.mjs", import.meta.url), "utf8"),
     readFile(routeUrls[1], "utf8"),
     readFile(routeUrls[3], "utf8")
   ]);
@@ -137,8 +137,8 @@ test("Home, case-study routes, components, and sitemap share the publication gat
     assert.match(route, /notFound\(\)/);
     assert.match(route, /work=\{work\}/);
   });
-  assert.match(sitemap, /getPublicationApprovedWorkBySlug/);
-  assert.match(sitemap, /flagship\s*\?/);
+  assert.match(inventorySource, /getPublicationApprovedWorks/);
+  assert.match(inventorySource, /filter\(\(work\) => work\.external !== true\)/);
 
   const creatorHero = await readFile(new URL("../components/sections/creator-hero.js", import.meta.url), "utf8");
   assert.match(creatorHero, /src=\{flagship\.image\}/);
@@ -248,12 +248,12 @@ test("HP-portal Works image matches the owner-approved public asset", async () =
   assert.equal(createHash("sha256").update(bytes).digest("hex"), "04c6f763a4b0219a6259bd261b07d764c55b6c006db100377bae8d179260ba80");
 });
 
-test("localized breadcrumbs and the verified legacy redirect are wired", async () => {
+test("localized breadcrumbs, inventory routes, and the verified legacy redirect are wired", async () => {
   const breadcrumbs = await readFile(breadcrumbsUrl, "utf8");
   const nextConfig = await readFile(new URL("../next.config.mjs", import.meta.url), "utf8");
   const languageSwitch = await readFile(new URL("../components/layout/language-switch.js", import.meta.url), "utf8");
   const shellStyles = await readFile(shellStylesUrl, "utf8");
-  const sitemap = await readFile(new URL("../app/sitemap.js", import.meta.url), "utf8");
+  const { getPublicRouteInventory } = await import(new URL("../lib/public-route-inventory.mjs", import.meta.url));
 
   assert.match(breadcrumbs, /aria-label/);
   assert.match(breadcrumbs, /localePath/);
@@ -262,10 +262,9 @@ test("localized breadcrumbs and the verified legacy redirect are wired", async (
   assert.equal(existsSync(new URL("../app/web/page.js", import.meta.url)), false);
   assert.match(languageSwitch, /["']\/works\/kuro-stream-kit["']/);
   assert.match(shellStyles, /\.language-switch\s*\{[^}]*white-space:\s*nowrap/);
-  ["/works", "/works/kuro-stream-kit", "/en/works", "/en/works/kuro-stream-kit"].forEach((route) => {
-    assert.match(sitemap, new RegExp(route.replaceAll("/", "\\/")));
-  });
-  assert.doesNotMatch(sitemap, /["']\/web["']/);
+  const inventoryPaths = new Set((await getPublicRouteInventory()).map(({ path }) => path));
+  ["/works", "/works/kuro-stream-kit", "/en/works", "/en/works/kuro-stream-kit"].forEach((route) => assert.equal(inventoryPaths.has(route), true));
+  assert.equal(inventoryPaths.has("/web"), false);
 });
 
 test("Works headings preserve semantic lines through tablet widths", async () => {

@@ -28,6 +28,8 @@ out/
 output/
 .next/
 .open-next/
+.open-next-candidate/
+.open-next-recovery/
 .npm-cache/
 remotion-video/out/
 remotion-video/public/templates.json

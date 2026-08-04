@@ -442,12 +442,12 @@ test("implemented localized Guide destinations enable Home and Tools Guide entri
   assert.match(toolGettingStarted, /href=\{guide\[locale\]\.href\}/);
 });
 
-test("non-indexable status Guides are noindex and excluded from the sitemap", async () => {
+test("non-indexable status Guides are noindex and excluded from the shared public route inventory", async () => {
   const { readFile } = await import("node:fs/promises");
-  const [sitemap, guideRoute] = await Promise.all([
-    readFile(sitemapUrl, "utf8"),
+  const [inventory, guideRoute] = await Promise.all([
+    readFile(new URL("../lib/public-route-inventory.mjs", import.meta.url), "utf8"),
     readFile(guideRouteUrl, "utf8")
   ]);
-  assert.match(sitemap, /statusRules\[guide\.status\]\.indexable/);
+  assert.match(inventory, /statusRules\[guide\.status\]\?\.indexable === true/);
   assert.match(guideRoute, /indexable:\s*statusRules\[guide\.status\]\.indexable/);
 });

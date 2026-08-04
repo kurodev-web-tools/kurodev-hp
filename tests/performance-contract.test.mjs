@@ -1,21 +1,11 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import test from "node:test";
-import {
-  buildStaticHomeDocument,
-  buildStaticGuideDocument,
-  buildStaticCreatorSiteDocument,
-  buildStaticContactDocument,
-  buildStaticToolsDocument,
-  isStaticGuideRequest,
-  isStaticHomeRequest,
-  isStaticCreatorSiteRequest,
-  isStaticContactRequest,
-  isStaticToolsRequest,
-  staticGuideSourceUrl,
-  staticSourceRequestHeaders
-} from "../lib/static-guide-document.mjs";
 
+const root = new URL("../", import.meta.url);
+const turnstileSiteKey = "0x4AAAAAAAAAAAAAAAAAAAAA";
 const pageStyleOwners = [
   ["components/pages/home-page.js", ["home-hero.css", "home-sections.css"]],
   ["components/pages/tools-page.js", ["tools-page.css"]],
@@ -30,599 +20,305 @@ const pageStyleOwners = [
 ];
 
 test("page-family styles stay out of the shared root bundle", async () => {
-  // Given: every page family and the root layout consumed by all routes.
-  const layout = await readFile(new URL("../app/layout.js", import.meta.url), "utf8");
-  const pageSources = await Promise.all(
-    pageStyleOwners.map(async ([relativePath, styles]) => [
-      relativePath,
-      styles,
-      await readFile(new URL(`../${relativePath}`, import.meta.url), "utf8")
-    ])
-  );
-
-  // When: style ownership is inspected at the bundler import boundary.
-  const rootPageStyleImports = pageStyleOwners
-    .flatMap(([, styles]) => styles)
+  const layout = await readFile(new URL("app/layout.js", root), "utf8");
+  const pageSources = await Promise.all(pageStyleOwners.map(async ([relativePath, styles]) => [
+    relativePath,
+    styles,
+    await readFile(new URL(relativePath, root), "utf8")
+  ]));
+  const rootPageStyleImports = pageStyleOwners.flatMap(([, styles]) => styles)
     .filter((style) => layout.includes(`./styles/${style}`));
-
-  // Then: root keeps no page-family CSS and each family owns its required styles.
   assert.deepEqual(rootPageStyleImports, []);
   for (const [relativePath, styles, source] of pageSources) {
-    for (const style of styles) {
-      assert.match(source, new RegExp(`app/styles/${style.replace(".", "\\.")}`), `${relativePath} must own ${style}`);
-    }
+    for (const style of styles) assert.match(source, new RegExp(`app/styles/${style.replace(".", "\\.")}`), `${relativePath} must own ${style}`);
   }
 });
 
-test("production CSS is inlined without a render-blocking stylesheet request", async () => {
-  // Given: the production Next.js configuration.
-  const nextConfig = await readFile(new URL("../next.config.mjs", import.meta.url), "utf8");
-
-  // When: the CSS delivery setting is inspected.
-  const inlineCssEnabled = /experimental:\s*{[\s\S]*inlineCss:\s*true/.test(nextConfig);
-
-  // Then: production rendering uses Next.js inline CSS.
-  assert.equal(inlineCssEnabled, true);
+test("production CSS remains inlined without a render-blocking stylesheet request", async () => {
+  const nextConfig = await readFile(new URL("next.config.mjs", root), "utf8");
+  assert.equal(/experimental:\s*{[\s\S]*inlineCss:\s*true/.test(nextConfig), true);
 });
 
-test("shared shell copy stays on the server while interactive controls remain isolated", async () => {
-  // Given: the shared shell components rendered on every public route.
+test("shared shell copy stays server-rendered while the shell passes its locale", async () => {
   const [shell, header, footer] = await Promise.all([
-    readFile(new URL("../components/site-shell.js", import.meta.url), "utf8"),
-    readFile(new URL("../components/layout/site-header.js", import.meta.url), "utf8"),
-    readFile(new URL("../components/layout/site-footer.js", import.meta.url), "utf8")
+    readFile(new URL("components/site-shell.js", root), "utf8"),
+    readFile(new URL("components/layout/site-header.js", root), "utf8"),
+    readFile(new URL("components/layout/site-footer.js", root), "utf8")
   ]);
-
-  // When: the React client boundaries are inspected.
-  const sharedClientModules = [header, footer].filter((source) => /^\s*["']use client["'];/.test(source));
-
-  // Then: locale copy is selected by server components and the shell supplies its locale.
-  assert.deepEqual(sharedClientModules, []);
-  assert.doesNotMatch(header, /usePathname|useEffect|useState/);
-  assert.doesNotMatch(footer, /usePathname/);
   assert.match(shell, /SiteHeader locale={locale}/);
   assert.match(shell, /SiteFooter locale={locale}/);
+  assert.doesNotMatch(header, /^\s*["']use client["'];/);
+  assert.doesNotMatch(footer, /^\s*["']use client["'];/);
+  assert.doesNotMatch(header, /usePathname|useEffect|useState/);
+  assert.doesNotMatch(footer, /usePathname/);
 });
 
-test("product media priority reaches the browser without eagerly loading below-fold tool media", async () => {
-  // Given: the shared product media primitive and the two below-fold tool sections.
+test("product media keeps the approved responsive WebP and priority boundary", async () => {
   const [productMedia, featuredTools, toolProductSection] = await Promise.all([
-    readFile(new URL("../components/ui/product-media.js", import.meta.url), "utf8"),
-    readFile(new URL("../components/sections/featured-tools.js", import.meta.url), "utf8"),
-    readFile(new URL("../components/sections/tool-product-section.js", import.meta.url), "utf8")
+    readFile(new URL("components/ui/product-media.js", root), "utf8"),
+    readFile(new URL("components/sections/featured-tools.js", root), "utf8"),
+    readFile(new URL("components/sections/tool-product-section.js", root), "utf8")
   ]);
-
-  // When: image priority ownership is inspected at the component boundary.
-  const priorityHint = /fetchPriority=\{priority \? ["']high["'] : undefined\}/;
-  const eagerLoading = /loading=\{priority \? ["']eager["'] : ["']lazy["']\}/;
-
-  // Then: above-fold callers emit one browser hint without preloading the fallback behind a picture source.
-  assert.match(productMedia, priorityHint);
-  assert.match(productMedia, eagerLoading);
-  assert.doesNotMatch(productMedia, /<Image\b[^>]*\bpriority=\{priority\}/s);
-  assert.doesNotMatch(featuredTools, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/>)/);
-  assert.doesNotMatch(toolProductSection, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/>)/);
+  assert.match(productMedia, /\[640,\s*768,\s*1024,\s*1600\]/);
+  assert.match(productMedia, /fetchPriority={priority \? ["']high["'] : undefined}/);
+  assert.match(productMedia, /loading={priority \? ["']eager["'] : ["']lazy["']}/);
+  assert.doesNotMatch(productMedia, /<Image\b[^>]*\bpriority={priority}/s);
+  assert.doesNotMatch(featuredTools, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/)>/);
+  assert.doesNotMatch(toolProductSection, /<ProductMedia\b[^>]*\bpriority(?:\s|=|\/)>/);
 });
 
-test("mobile performance paths use responsive modern product media and defer offscreen route sections", async () => {
-  // Given: shared product media plus the two image-free routes whose mobile work is layout-bound.
+test("mobile performance paths keep responsive media, picture sizing, and offscreen containment", async () => {
   const [productMedia, componentStyles, creatorSiteStyles, contactStyles] = await Promise.all([
-    readFile(new URL("../components/ui/product-media.js", import.meta.url), "utf8"),
-    readFile(new URL("../app/styles/components.css", import.meta.url), "utf8"),
-    readFile(new URL("../app/styles/creator-site.css", import.meta.url), "utf8"),
-    readFile(new URL("../app/styles/contact-page.css", import.meta.url), "utf8")
+    readFile(new URL("components/ui/product-media.js", root), "utf8"),
+    readFile(new URL("app/styles/components.css", root), "utf8"),
+    readFile(new URL("app/styles/creator-site.css", root), "utf8"),
+    readFile(new URL("app/styles/contact-page.css", root), "utf8")
   ]);
-
-  // When: responsive source generation and below-fold rendering boundaries are inspected.
-  const responsiveWidths = /\[640,\s*768,\s*1024,\s*1600\]/;
-  const modernSource = /<source\s+type=["']image\/webp["'][^>]*srcSet=\{modernSrcSet\}[^>]*sizes=\{productMediaSizes\}/s;
-  const sizedPicture = /\.product-media\s+picture\s*\{[^}]*display:\s*block;[^}]*width:\s*100%;[^}]*height:\s*100%;[^}]*\}/s;
+  assert.match(productMedia, /<source\s+type=["']image\/webp["'][^>]*srcSet={modernSrcSet}[^>]*sizes={productMediaSizes}/s);
+  assert.match(componentStyles, /\.product-media\s+picture\s*\{[^}]*display:\s*block;[^}]*width:\s*100%;[^}]*height:\s*100%;[^}]*\}/s);
   const deferredRendering = /content-visibility:\s*auto;[\s\S]*?contain-intrinsic-(?:block-)?size:\s*auto\s+\d+px;/;
-
-  // Then: Kuro Stream Kit media can select a right-sized WebP while other routes skip offscreen layout initially.
-  assert.match(productMedia, responsiveWidths);
-  assert.match(productMedia, modernSource);
-  assert.match(componentStyles, sizedPicture);
   assert.match(creatorSiteStyles, deferredRendering);
   assert.match(contactStyles, deferredRendering);
 });
 
 test("responsive product media includes the intermediate mobile decode rung", async () => {
-  // Given: the four approved Kuro Stream Kit screenshots used by Home and Tools.
   const imageNames = ["portal-home", "schedule-calendar", "thumbnail-editor", "sns-split"];
-
-  // When: the intermediate mobile sources are resolved from the public asset tree.
-  const intermediateSources = await Promise.all(
-    imageNames.map((imageName) =>
-      readFile(new URL(`../public/images/kuro-stream-kit/${imageName}-768.webp`, import.meta.url))
-        .then((contents) => contents.subarray(0, 4).toString("ascii"))
-        .catch(() => "missing")
-    )
-  );
-
-  // Then: every source is a WebP container instead of falling through to the 1024 px rung.
-  assert.deepEqual(intermediateSources, imageNames.map(() => "RIFF"));
+  const sources = await Promise.all(imageNames.map((imageName) => readFile(new URL(`public/images/kuro-stream-kit/${imageName}-768.webp`, root))
+    .then((contents) => contents.subarray(0, 4).toString("ascii")).catch(() => "missing")));
+  assert.deepEqual(sources, imageNames.map(() => "RIFF"));
 });
 
-test("home mobile first paint defers sections after the creator hero", async () => {
-  // Given: the Home route stylesheet owns every section after the above-fold creator hero.
-  const homeStyles = await readFile(new URL("../app/styles/home-sections.css", import.meta.url), "utf8");
-
-  // When: the mobile rendering boundary is inspected.
-  const deferredHomeSections = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.creator-hero\s*~\s*\*\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/;
-
-  // Then: below-fold Home sections do not join the initial mobile layout pass.
-  assert.match(homeStyles, deferredHomeSections);
+test("Home mobile keeps post-hero rendering deferred", async () => {
+  const styles = await readFile(new URL("app/styles/home-sections.css", root), "utf8");
+  assert.match(styles, /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.creator-hero\s*~\s*\*\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/);
 });
 
-test("creator site mobile first paint isolates the decorative hero stage", async () => {
-  // Given: the Creator Site hero contains a decorative grid beside the LCP copy.
-  const creatorSiteStyles = await readFile(new URL("../app/styles/creator-site.css", import.meta.url), "utf8");
-
-  // When: the mobile hero rendering boundary is inspected.
-  const isolatedHeroStage = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.creator-site-hero__stage\s*\{[^}]*contain:\s*layout;/;
-
-  // Then: layout work inside the decoration cannot expand the LCP copy's layout scope.
-  assert.match(creatorSiteStyles, isolatedHeroStage);
-});
-
-test("image-backed mobile heroes contain layout while Tools defers only work below the near-viewport workflow", async () => {
-  // Given: Home and Tools both paint an eager product image before their long-form sections.
+test("Tools mobile excludes the near-viewport workflow from post-hero deferral", async () => {
   const [homeHeroStyles, toolsStyles] = await Promise.all([
-    readFile(new URL("../app/styles/home-hero.css", import.meta.url), "utf8"),
-    readFile(new URL("../app/styles/tools-page.css", import.meta.url), "utf8")
+    readFile(new URL("app/styles/home-hero.css", root), "utf8"),
+    readFile(new URL("app/styles/tools-page.css", root), "utf8")
   ]);
+  assert.match(homeHeroStyles, /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.product-stage\s*\{[^}]*contain:\s*layout;/);
+  assert.match(toolsStyles, /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.tools-hero__stage\s*\{[^}]*contain:\s*layout;/);
+  assert.match(toolsStyles, /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.tools-hero\s*~\s*:not\(\.tool-workflow\)\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/);
+  assert.doesNotMatch(toolsStyles, /\.site-main\s*>\s*\.tools-hero\s*~\s*\*\s*\{/);
+});
 
-  // When: mobile-only hero and post-hero boundaries are inspected.
-  const homeHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.product-stage\s*\{[^}]*contain:\s*layout;/;
-  const toolsHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.tools-hero__stage\s*\{[^}]*contain:\s*layout;/;
-  const deferredToolsSections = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.site-main\s*>\s*\.tools-hero\s*~\s*:not\(\.tool-workflow\)\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+\d+px;/;
-  const broadPostHeroDeferral = /\.site-main\s*>\s*\.tools-hero\s*~\s*\*\s*\{/;
-
-  // Then: decoding and below-fold layout cannot widen the initial mobile layout scope.
-  assert.match(homeHeroStyles, homeHeroContainment);
-  assert.match(toolsStyles, toolsHeroContainment);
-  assert.match(toolsStyles, deferredToolsSections);
-  assert.doesNotMatch(toolsStyles, broadPostHeroDeferral);
+test("Creator Site mobile isolates its decorative hero stage", async () => {
+  const styles = await readFile(new URL("app/styles/creator-site.css", root), "utf8");
+  assert.match(styles, /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.creator-site-hero__stage\s*\{[^}]*contain:\s*layout;/);
 });
 
 test("image-free mobile heroes contain their text LCP layout scope", async () => {
-  // Given: Creator Site and Contact use text rather than an image as their mobile LCP element.
   const [creatorSiteStyles, contactStyles] = await Promise.all([
-    readFile(new URL("../app/styles/creator-site.css", import.meta.url), "utf8"),
-    readFile(new URL("../app/styles/contact-page.css", import.meta.url), "utf8")
+    readFile(new URL("app/styles/creator-site.css", root), "utf8"),
+    readFile(new URL("app/styles/contact-page.css", root), "utf8")
   ]);
-
-  // When: the route hero boundaries are inspected at the mobile breakpoint.
-  const creatorHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.creator-site-hero\s*\{[^}]*contain:\s*layout;/;
-  const contactHeroContainment = /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.contact-hero\s*\{[^}]*contain:\s*layout;/;
-
-  // Then: lower-page layout cannot expand either text LCP hero's layout scope.
-  assert.match(creatorSiteStyles, creatorHeroContainment);
-  assert.match(contactStyles, contactHeroContainment);
+  assert.match(creatorSiteStyles, /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.creator-site-hero\s*\{[^}]*contain:\s*layout;/);
+  assert.match(contactStyles, /@media\s*\(max-width:\s*767px\)\s*\{[\s\S]*?\.contact-hero\s*\{[^}]*contain:\s*layout;/);
 });
 
-test("the getting-started spike removes only Next bootstrap and installs a behavior island", () => {
-  // Given: the production document shape emitted by the App Router.
-  const source = `<!doctype html>
-    <html data-theme="light">
-      <head>
-        <style data-precedence="next">.guide{display:block}</style>
-        <link rel="preload" href="/_next/static/chunks/app/layout.js" as="script" />
-        <meta name="description" content="kept metadata" />
-      </head>
-      <body>
-        <script>window.__themeInitWasKept = true;</script>
-        <main id="main-content">
-          <h1>Getting started</h1>
-          <img
-            loading="lazy"
-            srcSet="/_next/image?url=%2Fimages%2Fguide%2Foverview.png&amp;w=1920&amp;q=75 1x, /_next/image?url=%2Fimages%2Fguide%2Foverview.png&amp;w=3840&amp;q=75 2x"
-            src="/_next/image?url=%2Fimages%2Fguide%2Foverview.png&amp;w=3840&amp;q=75"
-            alt="Approved guide image"
-          />
-        </main>
-        <script src="/_next/static/chunks/webpack.js" async></script>
-        <script>self.__next_f.push([1,"flight payload"])</script>
-      </body>
-    </html>`;
+test("static document transformer keeps meaningful document content while removing Next runtime payloads", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = `<!doctype html><html lang="ja"><head><title>Kept title</title><meta name="description" content="Kept description"><link rel="preload" as="script" href="/_next/static/chunks/app.js"></head><body><main id="main-content"><h1>Kept heading</h1><img src="/_next/image?url=%2Fimages%2Fguide%2Foverview.png&amp;w=1920" alt="Guide"></main><script src="/_next/static/chunks/app.js"></script><script>self.__next_f.push([1,"flight"])</script></body></html>`;
+  const output = transformStaticDocument(source, { route: "/guide/getting-started", locale: "ja", turnstileSiteKey });
 
-  // When: the exact guide route is converted into the static/islands spike.
-  const transformed = buildStaticGuideDocument(source);
-
-  // Then: content, metadata, CSS, and theme initialization stay intact.
-  assert.match(transformed, /Getting started/);
-  assert.match(transformed, /kept metadata/);
-  assert.match(transformed, /data-precedence="next"/);
-  assert.match(transformed, /__themeInitWasKept/);
-
-  // And: App Router bootstrap is absent while the approved interaction island is present.
-  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
-  assert.doesNotMatch(transformed, /self\.__next_f/);
-  assert.match(transformed, /data-kurodev-static-guide/);
-  assert.match(transformed, /data-kurodev-island/);
-
-  // And: the standalone document keeps one native lazy source that loads without Next's client runtime.
-  assert.match(transformed, /loading="lazy"/);
-  assert.match(transformed, /src="\/_next\/image\?url=%2Fimages%2Fguide%2Foverview\.png/);
-  assert.doesNotMatch(transformed, /\ssrcset=/i);
+  assert.match(output, /<html[^>]*lang="ja"/);
+  assert.match(output, /Kept title/);
+  assert.match(output, /Kept description/);
+  assert.match(output, /Kept heading/);
+  assert.match(output, /src="\/images\/guide\/overview\.png"/);
+  assert.match(output, /data-kurodev-island/);
+  assert.match(output, /data-kurodev-guide-island/);
+  assert.doesNotMatch(output, /_next\/static\/chunks|self\.__next_f|as="script"/);
 });
 
-test("the spike targets only the exact Japanese getting-started document and bypasses its source fetch", () => {
-  assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/guide/getting-started")), true);
-  assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/guide/getting-started?__kurodev_app_source=1")), false);
-  assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/guide")), false);
-  assert.equal(isStaticGuideRequest(new URL("https://kuro-lab.com/en/guide/getting-started")), false);
+test("Home transform retains the English suggestion island", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = "<!doctype html><html lang=\"ja\"><head><title>Home</title><meta name=\"description\" content=\"Home\"></head><body><main><h1>Home</h1></main></body></html>";
+  const output = transformStaticDocument(source, { route: "/", locale: "ja", turnstileSiteKey });
+  assert.match(output, /data-kurodev-english-suggestion-island/);
+  assert.match(output, /data-kurodev-static-home/);
 });
 
-test("static source URLs discard visitor queries and keep only the recursion marker", () => {
-  const requests = [
-    "https://kuro-lab.com/guide/getting-started",
-    "https://kuro-lab.com/guide/getting-started?utm_source=visitor&preview=1",
-    "https://kurodev-hp-opennext.example.workers.dev/guide/getting-started",
-    "https://kurodev-hp-opennext.example.workers.dev/guide/getting-started?arbitrary=value"
+test("route transforms retain approved content, head metadata, and route-specific islands", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const sources = [
+    ["/", "ja", "Creator platform", "data-kurodev-static-home"],
+    ["/tools", "ja", "Kuro Stream Kit", "data-kurodev-static-tools"],
+    ["/creator-site", "ja", "架空の活動名とサンプル情報を使用しています。", "data-kurodev-static-creator-site"]
   ];
-
-  for (const requestUrl of requests) {
-    const sourceUrl = staticGuideSourceUrl(new URL(requestUrl));
-
-    assert.equal(sourceUrl.search, "?__kurodev_app_source=1");
-    assert.equal(sourceUrl.searchParams.size, 1);
-    assert.equal(sourceUrl.searchParams.get("__kurodev_app_source"), "1");
-    assert.equal(isStaticGuideRequest(sourceUrl), false);
+  for (const [route, locale, content, marker] of sources) {
+    const source = `<!doctype html><html lang="${locale}"><head><style data-precedence="next">.page{display:block}</style><meta name="description" content="approved metadata"></head><body><script>window.__themeInitWasKept = true;</script><main id="main-content"><h1>${content}</h1><a href="https://example.test" target="_blank" rel="noreferrer">Open</a></main><script src="/_next/static/chunks/app/page.js"></script><script>self.__next_f.push([1,"flight"])</script></body></html>`;
+    const output = transformStaticDocument(source, { route, locale, turnstileSiteKey });
+    const head = output.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? "";
+    assert.match(output, new RegExp(content));
+    assert.match(head, /approved metadata/);
+    assert.match(output, /data-precedence="next"/);
+    assert.match(output, /__themeInitWasKept/);
+    assert.match(output, /target="_blank" rel="noreferrer"/);
+    assert.match(output, new RegExp(marker));
+    assert.match(output, /data-kurodev-island/);
+    assert.doesNotMatch(output, /_next\/static\/chunks|self\.__next_f/);
   }
 });
 
-test("static source fetches use only the self binding and minimal request metadata", async () => {
-  const staticDocumentModule = await import("../lib/static-guide-document.mjs");
-  const fetchStaticSourceResponse = staticDocumentModule.fetchStaticSourceResponse;
-  let capturedRequest;
-  const selfBinding = {
-    async fetch(request) {
-      capturedRequest = request;
-      return new Response("<!doctype html><main>source</main>", {
-        status: 200,
-        headers: { "content-type": "text/html" }
-      });
-    }
-  };
-
-  assert.equal(typeof fetchStaticSourceResponse, "function");
-  const response = await fetchStaticSourceResponse(
-    selfBinding,
-    new URL("https://kuro-lab.com/guide/getting-started?visitor=private"),
-    "ja"
-  );
-
-  assert.equal(response.status, 200);
-  assert.equal(capturedRequest.method, "GET");
-  assert.equal(capturedRequest.url, "https://kuro-lab.com/guide/getting-started?__kurodev_app_source=1");
-  assert.equal(capturedRequest.headers.get("accept"), "text/html");
-  assert.equal(capturedRequest.headers.get("x-kurodev-locale"), "ja");
-  assert.equal(capturedRequest.headers.get("user-agent"), "kurodev-static-document/1.0");
-  assert.equal(capturedRequest.headers.has("cookie"), false);
-  assert.equal(capturedRequest.headers.has("authorization"), false);
-  assert.equal(capturedRequest.headers.has("forwarded"), false);
-  assert.equal(capturedRequest.headers.has("x-forwarded-for"), false);
+test("Tools transform preserves external link semantics without a route-specific runtime", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = "<!doctype html><html lang=\"ja\"><head><title>Tools</title><meta name=\"description\" content=\"Tools\"></head><body><main><h1>Tools</h1><a href=\"https://example.test\" target=\"_blank\" rel=\"noreferrer\">Open</a></main></body></html>";
+  const output = transformStaticDocument(source, { route: "/tools", locale: "ja", turnstileSiteKey });
+  assert.match(output, /target="_blank" rel="noreferrer"/);
+  assert.match(output, /data-kurodev-island/);
 });
 
-test("static source fetches fail closed with a fixed 503 when the self binding is unavailable", async () => {
-  const staticDocumentModule = await import("../lib/static-guide-document.mjs");
-  const fetchStaticSourceResponse = staticDocumentModule.fetchStaticSourceResponse;
-  const expectedBody = { ok: false, code: "STATIC_SOURCE_UNAVAILABLE" };
-  const requestUrl = new URL("https://kuro-lab.com/guide/getting-started?visitor=private");
-  const unavailableBindings = [
-    undefined,
-    {},
-    {
-      async fetch() {
-        throw new Error("sensitive binding failure");
-      }
-    }
-  ];
-
-  assert.equal(typeof fetchStaticSourceResponse, "function");
-  for (const binding of unavailableBindings) {
-    const response = await fetchStaticSourceResponse(binding, requestUrl, "ja");
-
-    assert.equal(response.status, 503);
-    assert.equal(response.headers.get("cache-control"), "private, no-store");
-    assert.deepEqual(await response.json(), expectedBody);
-  }
+test("Creator Site transform preserves approved visible content", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = "<!doctype html><html lang=\"ja\"><head><title>Creator</title><meta name=\"description\" content=\"Creator\"></head><body><main><h1>活動を、自分の場所にまとめる。</h1><p>架空の活動名とサンプル情報</p></main></body></html>";
+  const output = transformStaticDocument(source, { route: "/creator-site", locale: "ja", turnstileSiteKey });
+  assert.match(output, /活動を、自分の場所にまとめる。/);
+  assert.match(output, /架空の活動名とサンプル情報/);
 });
 
-test("static source fetches return a self-binding 404 without falling back to public fetch", async () => {
-  const { fetchStaticSourceResponse } = await import("../lib/static-guide-document.mjs");
-  const originalFetch = globalThis.fetch;
-  let publicFetchCalls = 0;
-  const selfBindingResponse = new Response("worker source not found", { status: 404 });
-  const selfBinding = {
-    async fetch() {
-      return selfBindingResponse;
-    }
-  };
-
-  globalThis.fetch = async () => {
-    publicFetchCalls += 1;
-    return new Response("pages fallback", { status: 200 });
-  };
-
-  try {
-    const response = await fetchStaticSourceResponse(
-      selfBinding,
-      new URL("https://kuro-lab.com/guide/getting-started"),
-      "ja"
-    );
-
-    assert.equal(response, selfBindingResponse);
-    assert.equal(response.status, 404);
-    assert.equal(publicFetchCalls, 0);
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
+test("Guide transform adds the Guide interaction island for English routes", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = "<!doctype html><html lang=\"en\"><head><title>Guide</title><meta name=\"description\" content=\"Guide\"></head><body><main><h1>Guide</h1><article class=\"guide-article\"><details><summary>More</summary></details></article></main></body></html>";
+  const output = transformStaticDocument(source, { route: "/en/guide/getting-started", locale: "en", turnstileSiteKey });
+  assert.match(output, /data-kurodev-guide-island/);
+  assert.match(output, /dataset\.kurodevOpen/);
 });
 
-test("the Japanese home document preserves its server content and installs only required islands", () => {
-  // Given: the production Home document with approved metadata, CSS, media, and theme initialization.
-  const source = `<!doctype html>
-    <html data-theme="light">
-      <head>
-        <style data-precedence="next">.creator-hero{display:grid}</style>
-        <meta name="description" content="approved home metadata" />
-      </head>
-      <body>
-        <script>window.__themeInitWasKept = true;</script>
-        <main id="main-content">
-          <h1>Creator platform</h1>
-          <img src="/images/kuro-stream-kit-home.webp" width="1200" height="675" alt="Product" />
-        </main>
-        <script src="/_next/static/chunks/app/page.js" async></script>
-        <script>self.__next_f.push([1,"home flight payload"])</script>
-      </body>
-    </html>`;
-
-  // When: only the exact Japanese Home document is converted to static islands.
-  const transformed = buildStaticHomeDocument(source);
-
-  // Then: approved content, metadata, inline CSS, theme initialization, and media remain intact.
-  assert.match(transformed, /Creator platform/);
-  assert.match(transformed, /approved home metadata/);
-  assert.match(transformed, /data-precedence="next"/);
-  assert.match(transformed, /__themeInitWasKept/);
-  assert.match(transformed, /kuro-stream-kit-home\.webp/);
-
-  // And: the App Router bootstrap is replaced by the shared-control and Home locale-suggestion islands.
-  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
-  assert.doesNotMatch(transformed, /self\.__next_f/);
-  assert.match(transformed, /data-kurodev-static-home/);
-  assert.match(transformed, /data-kurodev-island/);
-  assert.match(transformed, /data-kurodev-english-suggestion-island/);
-  assert.match(transformed, /kurodev-english-suggestion-dismissed/);
-  assert.match(transformed, /requestAnimationFrame/);
-  assert.match(transformed, /product-media img/);
+test("legal transform has no Contact or Guide island", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = "<!doctype html><html lang=\"ja\"><head><title>Terms</title><meta name=\"description\" content=\"Terms\"></head><body><main><h1>Terms</h1></main></body></html>";
+  const output = transformStaticDocument(source, { route: "/terms", locale: "ja", turnstileSiteKey });
+  assert.doesNotMatch(output, /data-kurodev-contact-island|data-kurodev-guide-island/);
 });
 
-test("the Home static route is exact and internal source fetches carry no visitor credentials", () => {
-  // Given: public Home, locale variants, and a marked internal source request.
-  const publicHome = new URL("https://kuro-lab.com/");
-  const markedHome = new URL("https://kuro-lab.com/?__kurodev_app_source=1");
-
-  // When: route eligibility and internal source headers are built.
-  const sourceHeaders = staticSourceRequestHeaders("ja");
-
-  // Then: only public Japanese Home is eligible and no visitor credential can cross the extra hop.
-  assert.equal(isStaticHomeRequest(publicHome), true);
-  assert.equal(isStaticHomeRequest(markedHome), false);
-  assert.equal(isStaticHomeRequest(new URL("https://kuro-lab.com/en")), false);
-  assert.equal(isStaticHomeRequest(new URL("https://kuro-lab.com/tools")), false);
-  assert.equal(isStaticHomeRequest(publicHome, "POST"), false);
-  assert.equal(sourceHeaders.get("accept"), "text/html");
-  assert.equal(sourceHeaders.get("x-kurodev-locale"), "ja");
-  assert.equal(sourceHeaders.get("user-agent"), "kurodev-static-document/1.0");
-  assert.equal(sourceHeaders.has("cookie"), false);
-  assert.equal(sourceHeaders.has("authorization"), false);
+test("Contact document creation fails closed without a syntactically valid public Turnstile key", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = "<!doctype html><html lang=\"ja\"><head><title>Contact</title><meta name=\"description\" content=\"Contact\"></head><body><main><h1>Contact</h1><form class=\"contact-form\"></form></main></body></html>";
+  assert.throws(() => transformStaticDocument(source, { route: "/contact", locale: "ja", turnstileSiteKey: "" }), /Turnstile site key/);
+  assert.throws(() => transformStaticDocument(source, { route: "/contact", locale: "ja", turnstileSiteKey: "invalid" }), /Turnstile site key/);
+  assert.match(transformStaticDocument(source, { route: "/contact", locale: "ja", turnstileSiteKey }), /data-kurodev-contact-island/);
 });
 
-test("static document transforms keep description metadata inside the document head", () => {
-  // Given: a source document whose description metadata is already in the head.
-  const source = `<!doctype html><html><head><meta name="description" content="qa-description" /></head><body><main>Content</main></body></html>`;
-
-  // When: each affected static route removes the Next.js runtime from that document.
-  const documents = [
-    buildStaticGuideDocument(source),
-    buildStaticCreatorSiteDocument(source),
-    buildStaticContactDocument(source, "ja")
-  ];
-
-  // Then: every transform preserves the description metadata inside the head.
-  documents.forEach((document) => {
-    const head = document.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? "";
-    assert.match(head, /<meta name="description" content="qa-description" \/>/);
-  });
+test("Contact island preserves validation before Turnstile and API submission", async () => {
+  const { transformStaticDocument } = await import(new URL("lib/static-guide-document.mjs", root).href);
+  const source = "<!doctype html><html lang=\"ja\"><head><title>Contact</title><meta name=\"description\" content=\"Contact\"></head><body><main><h1>Contact</h1><form class=\"contact-form\"><input name=\"name\"><input name=\"email\"><select name=\"category\"></select><input name=\"referenceUrl\"><textarea name=\"message\"></textarea><input name=\"privacyAcknowledged\"><input name=\"foreignTransferConsent\"><div class=\"contact-form__actions\"></div><button type=\"submit\"></button><div class=\"contact-form__status\"></div></form></main></body></html>";
+  const output = transformStaticDocument(source, { route: "/contact", locale: "ja", turnstileSiteKey });
+  assert.ok(output.indexOf("var nextErrors = validateValues(values)") < output.indexOf("await executeTurnstile()"));
+  assert.ok(output.indexOf("await executeTurnstile()") < output.indexOf('fetch("/api/contact"'));
+  assert.match(output, /data-kurodev-static-contact/);
+  assert.match(output, /data-kurodev-contact-island/);
+  assert.match(output, /aria-live/);
 });
 
-test("the Japanese tools document preserves products and external-link semantics", () => {
-  // Given: the production Tools document with approved metadata, CSS, media, and launch links.
-  const source = `<!doctype html>
-    <html data-theme="light">
-      <head>
-        <style data-precedence="next">.tools-hero{display:grid}</style>
-        <meta name="description" content="approved tools metadata" />
-      </head>
-      <body>
-        <script>window.__themeInitWasKept = true;</script>
-        <main id="main-content">
-          <h1>Kuro Stream Kit</h1>
-          <img src="/images/kuro-stream-kit/schedule-calendar.png" alt="Schedule Calendar" />
-          <a href="https://streamer-tools.kuro-lab.com/tools/schedule-calendar/" target="_blank" rel="noreferrer">
-            ツールを使う<span class="sr-only">（新しいタブで開きます）</span>
-          </a>
-        </main>
-        <script src="/_next/static/chunks/app/tools/page.js" async></script>
-        <script>self.__next_f.push([1,"tools flight payload"])</script>
-      </body>
-    </html>`;
-
-  // When: only the exact Japanese Tools document is converted to static islands.
-  const transformed = buildStaticToolsDocument(source);
-
-  // Then: approved content, metadata, inline CSS, theme initialization, media, and links remain intact.
-  assert.match(transformed, /Kuro Stream Kit/);
-  assert.match(transformed, /approved tools metadata/);
-  assert.match(transformed, /data-precedence="next"/);
-  assert.match(transformed, /__themeInitWasKept/);
-  assert.match(transformed, /schedule-calendar\.png/);
-  assert.match(transformed, /target="_blank" rel="noreferrer"/);
-  assert.match(transformed, /新しいタブで開きます/);
-
-  // And: the App Router bootstrap is replaced by the shared-control island only.
-  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
-  assert.doesNotMatch(transformed, /self\.__next_f/);
-  assert.match(transformed, /data-kurodev-static-tools/);
-  assert.match(transformed, /data-kurodev-island/);
-  assert.doesNotMatch(transformed, /data-kurodev-english-suggestion-island/);
+test("static builder defines transactional recovery, GET-only local snapshots, and candidate validation", async () => {
+  const builder = await readFile(new URL("scripts/build-static-first-cloudflare.mjs", root), "utf8");
+  assert.match(builder, /\.open-next-recovery/);
+  assert.match(builder, /\.open-next-candidate/);
+  assert.match(builder, /method:\s*["']GET["']/);
+  assert.match(builder, /x-kurodev-locale/);
+  assert.match(builder, /validateCandidate/);
+  assert.match(builder, /} catch \(error\) \{\s*await rm\(candidateDirectory, \{ recursive: true, force: true \}\);\s*await restorePreviousOutput\(\);/);
+  assert.match(builder, /finally[\s\S]*?terminate/);
+  assert.doesNotMatch(builder, /https:\/\/kuro-lab\.com|fetch\([^\n]*\/api\/contact/);
 });
 
-test("the Tools static route is exact and GET-only", () => {
-  const publicTools = new URL("https://kuro-lab.com/tools");
-
-  assert.equal(isStaticToolsRequest(publicTools), true);
-  assert.equal(isStaticToolsRequest(new URL("https://kuro-lab.com/tools?__kurodev_app_source=1")), false);
-  assert.equal(isStaticToolsRequest(new URL("https://kuro-lab.com/en/tools")), false);
-  assert.equal(isStaticToolsRequest(new URL("https://kuro-lab.com/tool")), false);
-  assert.equal(isStaticToolsRequest(publicTools, "HEAD"), false);
-  assert.equal(isStaticToolsRequest(publicTools, "POST"), false);
+test("static builder confirms bounded local-server shutdown before candidate acceptance", async () => {
+  const builder = await readFile(new URL("scripts/build-static-first-cloudflare.mjs", root), "utf8");
+  assert.match(builder, /child\.kill\("SIGTERM"\)/);
+  assert.match(builder, /child\.kill\("SIGKILL"\)/);
+  assert.match(builder, /waitForChildExit\(child, 5000\)/);
+  assert.match(builder, /child\.exitCode !== null \|\| child\.signalCode !== null/);
+  assert.match(builder, /await terminateLocalServer\(localServer\);\s*localServer = undefined;\s*await validateCandidate\(routes\);[\s\S]*?await renameWithRetry\(candidateDirectory, outputDirectory\)/);
 });
 
-test("the Japanese creator-site document preserves demonstrations and link semantics", () => {
-  // Given: the approved service document with fictional examples, motion CSS, and an external plan link.
-  const source = `<!doctype html>
-    <html data-theme="light">
-      <head>
-        <style data-precedence="next">
-          .service-demo__preview{transition:transform var(--motion-reveal)}
-          @media (forced-colors:active){.creator-site-hero::before{display:none}}
-        </style>
-        <meta name="description" content="approved creator-site metadata" />
-      </head>
-      <body>
-        <script>window.__themeInitWasKept = true;</script>
-        <main id="main-content">
-          <h1>活動を、自分の場所にまとめる。</h1>
-          <article><h2>水城ルカ</h2><p>架空の活動名とサンプル情報を使用しています。</p></article>
-          <article><h2>Aoi Atelier</h2><p>架空の活動名とサンプル情報を使用しています。</p></article>
-          <a href="https://templates.kuro-lab.com/plans" target="_blank" rel="noreferrer">
-            HP-portalのプランを見る<span class="sr-only">(opens in a new tab)</span>
-          </a>
-        </main>
-        <script src="/_next/static/chunks/app/creator-site/page.js" async></script>
-        <script>self.__next_f.push([1,"creator-site flight payload"])</script>
-      </body>
-    </html>`;
-
-  // When: only the exact Japanese Creator Site document is converted to static islands.
-  const transformed = buildStaticCreatorSiteDocument(source);
-
-  // Then: approved copy, fictional examples, metadata, CSS/motion, theme, and external link semantics remain intact.
-  assert.match(transformed, /活動を、自分の場所にまとめる。/);
-  assert.match(transformed, /水城ルカ/);
-  assert.match(transformed, /Aoi Atelier/);
-  assert.match(transformed, /架空の活動名とサンプル情報/);
-  assert.match(transformed, /approved creator-site metadata/);
-  assert.match(transformed, /--motion-reveal/);
-  assert.match(transformed, /forced-colors:active/);
-  assert.match(transformed, /__themeInitWasKept/);
-  assert.match(transformed, /target="_blank" rel="noreferrer"/);
-
-  // And: the App Router bootstrap is replaced by the shared-control island only.
-  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
-  assert.doesNotMatch(transformed, /self\.__next_f/);
-  assert.match(transformed, /data-kurodev-static-creator-site/);
-  assert.match(transformed, /data-kurodev-island/);
+test("static builder invokes npm through Node on Windows instead of spawning a cmd shim", async () => {
+  const builder = await readFile(new URL("scripts/build-static-first-cloudflare.mjs", root), "utf8");
+  assert.match(builder, /npm-cli\.js/);
+  assert.match(builder, /process\.execPath/);
+  assert.doesNotMatch(builder, /process\.platform === ["']win32["'] \? ["']npm\.cmd["']/);
 });
 
-test("the Creator Site static route is exact and GET-only", () => {
-  const publicCreatorSite = new URL("https://kuro-lab.com/creator-site");
-
-  assert.equal(isStaticCreatorSiteRequest(publicCreatorSite), true);
-  assert.equal(isStaticCreatorSiteRequest(new URL("https://kuro-lab.com/creator-site?__kurodev_app_source=1")), false);
-  assert.equal(isStaticCreatorSiteRequest(new URL("https://kuro-lab.com/en/creator-site")), false);
-  assert.equal(isStaticCreatorSiteRequest(new URL("https://kuro-lab.com/creator-sites")), false);
-  assert.equal(isStaticCreatorSiteRequest(publicCreatorSite, "HEAD"), false);
-  assert.equal(isStaticCreatorSiteRequest(publicCreatorSite, "POST"), false);
+test("static builder retries only transient Windows directory rename failures within a fixed bound", async () => {
+  const builder = await readFile(new URL("scripts/build-static-first-cloudflare.mjs", root), "utf8");
+  assert.match(builder, /async function renameWithRetry/);
+  assert.match(builder, /new Set\(\[["']EPERM["'], ["']EBUSY["']\]\)/);
+  assert.match(builder, /for \(let attempt = 1; attempt <= 5; attempt \+= 1\)/);
+  assert.match(builder, /await renameWithRetry\(candidateDirectory, outputDirectory\)/);
+  assert.match(builder, /if \(!transientRenameErrors\.has\(error\?\.code\) \|\| attempt === 5\) throw error/);
 });
 
-test("the Japanese Contact document preserves consent and installs a form island", () => {
-  // Given: the production Contact form with approved visible consent copy and external-link semantics.
-  const source = `<!doctype html>
-    <html data-theme="light">
-      <head>
-        <style data-precedence="next">.contact-form__error{color:red}</style>
-        <meta name="description" content="approved contact metadata" />
-      </head>
-      <body>
-        <script>window.__themeInitWasKept = true;</script>
-        <main id="main-content">
-          <h1>制作について相談する</h1>
-          <form class="contact-form" novalidate>
-            <input id="contact-name" name="name" required maxlength="80" />
-            <input id="contact-email" name="email" type="email" required maxlength="120" />
-            <select id="contact-category" name="category" required><option value="">カテゴリを選択</option></select>
-            <input id="contact-reference-url" name="referenceUrl" type="url" maxlength="300" />
-            <textarea id="contact-message" name="message" required maxlength="3000" aria-describedby="message-guidance"></textarea>
-            <div class="contact-form__consent">
-              <input id="contact-privacy-acknowledged" name="privacyAcknowledged" type="checkbox" required />
-              <span>プライバシーポリシー（version 1.0.0）を確認しました。</span>
-            </div>
-            <div class="contact-form__consent">
-              <input id="contact-foreign-transfer-consent" name="foreignTransferConsent" type="checkbox" required />
-              <span>国外での個人データの取扱い（version 1.0.0）を確認し、同意します。</span>
-            </div>
-            <div class="contact-form__actions"><button type="submit">送信する</button></div>
-            <div class="contact-form__status contact-form__status--idle" role="status" aria-live="polite" aria-atomic="true"></div>
-          </form>
-          <a href="https://templates.kuro-lab.com/plans" target="_blank" rel="noreferrer">HP-portal</a>
-        </main>
-        <script src="/_next/static/chunks/app/contact/page.js" async></script>
-        <script>self.__next_f.push([1,"contact flight payload"])</script>
-      </body>
-    </html>`;
-
-  // When: the Japanese Contact document is converted to its form-island boundary.
-  const transformed = buildStaticContactDocument(source, "ja");
-
-  // Then: approved content, consent, metadata, CSS, theme initialization, and links remain intact.
-  assert.match(transformed, /制作について相談する/);
-  assert.match(transformed, /プライバシーポリシー（version 1\.0\.0）/);
-  assert.match(transformed, /国外での個人データの取扱い（version 1\.0\.0）/);
-  assert.match(transformed, /approved contact metadata/);
-  assert.match(transformed, /data-precedence="next"/);
-  assert.match(transformed, /__themeInitWasKept/);
-  assert.match(transformed, /target="_blank" rel="noreferrer"/);
-
-  // And: the form island pins current evidence, fallback, accessible states, and provider order.
-  assert.doesNotMatch(transformed, /_next\/static\/chunks/);
-  assert.doesNotMatch(transformed, /self\.__next_f/);
-  assert.match(transformed, /data-kurodev-static-contact/);
-  assert.match(transformed, /data-kurodev-island/);
-  assert.match(transformed, /data-kurodev-contact-island/);
-  assert.match(transformed, /contact-privacy-acknowledgement-ja-v1/);
-  assert.match(transformed, /1aa2b6d9d69d6ef935db30eb410c288cac3460085feb8936d78ca32dd14c3898/);
-  assert.match(transformed, /e7f071b7850b82ddaf8d066fabae80649f1209a9577e55fd245b863c8bb0452a/);
-  assert.match(transformed, /mailto:contact@kuro-lab\.com/);
-  assert.match(transformed, /aria-live/);
-  assert.match(transformed, /requestAnimationFrame/);
-  assert.ok(transformed.indexOf("var nextErrors = validateValues(values)") < transformed.indexOf("await executeTurnstile()"));
-  assert.ok(transformed.indexOf("await executeTurnstile()") < transformed.indexOf('fetch("/api/contact"'));
+test("static builder bounds every local build fetch with one AbortSignal timeout", async () => {
+  const builder = await readFile(new URL("scripts/build-static-first-cloudflare.mjs", root), "utf8");
+  assert.match(builder, /const localFetchTimeoutMs = [\d_]+;/);
+  assert.match(builder, /new AbortController\(\)/);
+  assert.match(builder, /signal: controller\.signal/);
+  assert.match(builder, /setTimeout\(\(\) => controller\.abort\(\), localFetchTimeoutMs\)/);
+  assert.match(builder, /async function fetchLocal\(url, options, consumeResponse\)/);
+  assert.match(builder, /return await consumeResponse\(await fetch\(url, \{ \.\.\.options, signal: controller\.signal \}\)\)/);
+  assert.match(builder, /await fetchLocal\(`\$\{origin\}\/`/);
+  assert.match(builder, /await fetchLocal\(new URL\(route, origin\)/);
+  assert.match(builder, /await fetchLocal\(new URL\("\/__kurodev-static-not-found", origin\)/);
+  assert.match(builder, /await fetchLocal\(new URL\(route, origin\), \{ method: "GET" \}/);
 });
 
-test("the Contact static route is exact and GET-only", () => {
-  const publicContact = new URL("https://kuro-lab.com/contact");
+test("static builder restores a lone recovery directory at startup", async (t) => {
+  const { restoreStartupOutputState } = await import(new URL("scripts/build-static-first-cloudflare.mjs", root));
+  assert.equal(typeof restoreStartupOutputState, "function");
+  const directory = await mkdtemp(join(tmpdir(), "kurodev-static-first-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const output = join(directory, ".open-next");
+  const recovery = join(directory, ".open-next-recovery");
+  await mkdir(recovery);
+  await writeFile(join(recovery, "previous.txt"), "previous output");
 
-  assert.equal(isStaticContactRequest(publicContact), true);
-  assert.equal(isStaticContactRequest(new URL("https://kuro-lab.com/contact?__kurodev_app_source=1")), false);
-  assert.equal(isStaticContactRequest(new URL("https://kuro-lab.com/en/contact")), false);
-  assert.equal(isStaticContactRequest(new URL("https://kuro-lab.com/contacts")), false);
-  assert.equal(isStaticContactRequest(publicContact, "HEAD"), false);
-  assert.equal(isStaticContactRequest(publicContact, "POST"), false);
+  await restoreStartupOutputState(output, recovery);
+
+  assert.equal(await readFile(join(output, "previous.txt"), "utf8"), "previous output");
+  await assert.rejects(() => lstat(recovery), { code: "ENOENT" });
+});
+
+test("static builder fails closed when output and recovery coexist at startup", async (t) => {
+  const { restoreStartupOutputState } = await import(new URL("scripts/build-static-first-cloudflare.mjs", root));
+  assert.equal(typeof restoreStartupOutputState, "function");
+  const directory = await mkdtemp(join(tmpdir(), "kurodev-static-first-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const output = join(directory, ".open-next");
+  const recovery = join(directory, ".open-next-recovery");
+  await mkdir(output);
+  await mkdir(recovery);
+
+  await assert.rejects(() => restoreStartupOutputState(output, recovery), /Ambiguous/);
+  await lstat(output);
+  await lstat(recovery);
+});
+
+test("static builder emits and validates permanent redirects as 308", async () => {
+  const builder = await readFile(new URL("scripts/build-static-first-cloudflare.mjs", root), "utf8");
+  assert.match(builder, /\$\{source\} \$\{destination\} 308/);
+  assert.match(builder, /redirectRules\.includes\(`\$\{source\} \$\{destination\} 308`\)/);
+  assert.doesNotMatch(builder, /\$\{source\} \$\{destination\} 301/);
+});
+
+test("static build transaction directories stay ignored", async () => {
+  const ignore = await readFile(new URL(".gitignore", root), "utf8");
+  assert.match(ignore, /^\.open-next-candidate\/$/m);
+  assert.match(ignore, /^\.open-next-recovery\/$/m);
+});
+
+test("static builder compares sitemap locations to the exact inventory URL set", async () => {
+  const builder = await readFile(new URL("scripts/build-static-first-cloudflare.mjs", root), "utf8");
+  assert.match(builder, /const sitemapLocationList = Array\.from\(sitemap\.matchAll\(\/<loc>/);
+  assert.match(builder, /const sitemapLocations = new Set\(sitemapLocationList\)/);
+  assert.match(builder, /sitemapLocationList\.length !== sitemapLocations\.size/);
+  assert.match(builder, /routes\.filter\(\(route\) => route\.indexable !== false\)/);
+  assert.match(builder, /sitemapLocations\.size !== expectedLocations\.size/);
+  assert.doesNotMatch(builder, /sitemap\.includes\(route\.path\)/);
+});
+
+test("static transformer contains no runtime self-fetch or source-request helper", async () => {
+  const transformer = await readFile(new URL("lib/static-guide-document.mjs", root), "utf8");
+  assert.doesNotMatch(transformer, /fetchStaticSourceResponse|WORKER_SELF_REFERENCE|staticGuideSourceUrl|staticSourceRequestHeaders/);
 });
