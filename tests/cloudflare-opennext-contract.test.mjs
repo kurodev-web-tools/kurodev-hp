@@ -42,6 +42,7 @@ test("OpenNext repository configuration keeps the approved Workers contract", as
     $schema: "node_modules/wrangler/config-schema.json",
     name: "kurodev-hp-opennext",
     main: ".open-next/worker.js",
+    keep_vars: true,
     compatibility_date: "2026-08-01",
     compatibility_flags: ["nodejs_compat", "global_fetch_strictly_public"],
     assets: {
