@@ -2,6 +2,18 @@
 
 ## Current Board
 
+### Static-first Cloudflare implementation（2026-08-04）
+
+#### Current verdict
+- **Static-first local acceptance: PASS; reviewed Draft PR handoff ready**。shared 36-route inventory、transactional static document generation、34-route sitemap、Contact public-key fail-closed validation、public asset-first / `/api/*` Worker boundaryを実装した
+- RED/GREEN contract、`npm test` 141 / 141、lint、43-page Next build、static-first Cloudflare build、artifact/link/media/MIME/redirect/header/404/robots/sitemap/no-Next-runtime validation、Wrangler `4.118.0` strict dry-run、`git diff --check`はPASS。`package-lock.json`は変更していない
+- generated artifactはHTML 37件 / total 130件、forbidden Next runtime document 0件。noindex Guide 2件は生成され、sitemapから除外される
+- fresh read-only semantic reviewの4指摘（local GET timeout、recovery state transition、permanent redirect 308 parity、transaction sibling ignore）を修正し、focused/full verificationを再実行した
+- Windowsのlocal WranglerはHTTP listener開始前に`workerd`が終了し、repository外のminimal Workerでも再現した。これをapplication PASSへ読み替えず、同一sourceをread-onlyでisolated Podman Linux volumeへ移し、別named volumeへunchanged lockfileからexact Node.js `22.22.2`で依存を構築した。dependency entry / lockfile変更はなく、`package.json`変更は承認済みstatic build script追加だけ
+- Linux local WranglerのGET-only probeは代表14 document、unknown / missing asset 404、control files非公開、legacy 308、robots / sitemap / OG / favicon、`GET /api/contact` 405をPASS。375 / 1280 browser QAは26 / 26、JavaScript-disabled readabilityは13 / 13、control / redirect surfaceは8 / 8でPASS。console / page / request / unexpected-origin failureは0、Contact POSTは0
+- exact Lighthouse `13.4.1`は5 routes × mobile / desktop × 3 runs = 30 / 30完走。10 / 10 rowsすべてPerformance / Accessibility / Best Practices / SEO中央値100、meta failure 0。accepted matrixはVM originを`http://localhost`へ転送して計測した
+- sanitized evidenceは2026-08-04 visualization workspaceの`static-first-qa/browser-qa.json`、`static-first-qa/screenshots`、`static-first-qa/lighthouse-13.4.1-localhost-30run`。no Contact POST、live Turnstile / Resend、実PII、secret値確認、Cloudflare upload / deploy / account / Route / DNS / domain変更、merge / cleanup。production activationとlive provider verificationは別承認のまま
+
 ### Cloudflare production protection Gate B1 — local implementation（2026-08-03）
 
 #### Current verdict

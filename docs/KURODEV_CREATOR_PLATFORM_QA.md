@@ -7,12 +7,38 @@
 - Scheduled coordinated production activation date: `2026-08-04`
 - Surface: local integration production build at `http://localhost:3100`
 - Runtime: Next.js `15.5.21`, React / React DOM `18.3.1`
-- Current overall verdict: **GO for the formal Task 14 Chrome / Lighthouse evidence gate; production activation remains pending and unapproved**
+- Current overall verdict: **STATIC-FIRST LOCAL ACCEPTANCE PASS; reviewed implementation is ready for a Draft PR**. The rebuilt static-first artifact passed the repository, local Wrangler, browser, JavaScript-disabled, and Lighthouse contracts below. No upload, deployment, production activation, or provider mutation was performed.
 - Live-provider boundary: no live Turnstile, Siteverify, Resend, Contact delivery, secrets, provider settings, or real-person PII were used.
 
 The seven legal documents and six Contact consent copies use the exact fixed IDs, versions, dates, and SHA-256 values recorded by the active launch manifests and tests. Their public-use gate relies on the repository owner's owner-designated AI-assisted internal substitute and accepted residual risk. No human lawyer or independent human legal reviewer participated, and this evidence must not be described as human or attorney review.
 
 The performance / runner `NO-GO` matrices below this current section are retained as dated history and are superseded for the formal Task 14 Chrome / Lighthouse gate by the 2026-08-03 PR #27 evidence. Earlier independent visual `REVISE` observations are retained as historical product-review notes: the PR #27 source handoff classified Task 14 performance as complete and the remaining work as final promotion, activation, and Task 15. This preflight did not perform a new independent semantic visual review, so it does not rewrite that historical review as a fresh visual acceptance result.
+
+## 2026-08-04 static-first Cloudflare local implementation
+
+### Verified repository and artifact evidence
+
+- Base: fetched `origin/main` merge commit for PR #34; implementation branch `codex/static-first-cloudflare`.
+- RED/GREEN coverage established the shared 36-route inventory, 34-route indexable sitemap set, static transforms, Contact public-key fail-closed behavior, Windows build invocation and bounded rename recovery, asset/API wrapper boundary, unknown URL behavior, and missing-asset behavior without relying on `Sec-Fetch-Mode`.
+- `npm test`: PASS, 141 / 141. `npm run lint`: PASS with no warnings or errors. `npm run build`: PASS, 43 / 43 pages. `npm run build:cloudflare:static`: PASS.
+- Generated static artifact: 37 HTML files and 130 total files; 0 forbidden Next runtime documents; required control files present; both noindex Guide documents contain `noindex` and are absent from the sitemap. Generated `.next` and `.open-next` output remains ignored and untracked.
+- Static validation covers exact inventory output, local links and media, MIME types, redirects, headers, 404, robots, sitemap, and absence of Next bootstrap / Flight runtime from public documents.
+- Installed Wrangler `4.118.0` dry run (`deploy --dry-run --keep-vars --strict`) read 191 assets and exited at the dry-run boundary without upload or deployment. Account, token, deployment, and build identifiers are intentionally omitted.
+- `git diff --check`: PASS. `package-lock.json` is unchanged; no dependency or secret-value change is present.
+- Fresh read-only semantic review identified four concrete gaps. The implementation bounds snapshot and control-file GETs through response-body consumption, restores a lone recovery output while rejecting ambiguous output/recovery coexistence, preserves Next permanent redirects as 308, and ignores both transaction sibling directories. Focused RED/GREEN tests and the full suite passed after these corrections.
+
+### Local Wrangler, browser, and Lighthouse evidence
+
+- The Windows `workerd` failure was retained as an environment observation, not promoted to an application result. The same source was copied read-only into an isolated Podman Linux volume, dependencies were installed only into a separate named volume from the unchanged lockfile under exact Node.js `22.22.2`, and `npm run build:cloudflare:static` passed there. No dependency entry or lockfile was changed; `package.json` changes only by adding the approved static build script.
+- Wrangler `4.118.0` served that Linux-built artifact locally. GET-only probes passed for 14 representative public, Guide, and legal documents; every document had the expected status, locale, title, heading, static-island marker, security headers, and no Next runtime. Unknown URLs and missing assets without `Sec-Fetch-Mode` returned the static 404; `/_headers` and `/_redirects` were not public; `/tool`, `/web`, and `/profile` returned exact 308 redirects; `GET /api/contact` returned 405 through the API boundary. Robots, sitemap, OG, and the document-referenced favicon returned the expected MIME and content. No Contact POST was attempted.
+- Browser QA passed 26 / 26 route-width rows at 375 and 1280 px, 13 / 13 JavaScript-disabled readability rows, and 8 / 8 control/redirect surface rows. The checks covered headings, language, overflow, rendered images, static islands, console/page/request failures, unexpected origins, mobile navigation, theme, skip link, Guide disclosure, and Contact client validation. Contact produced six ordered client errors and focused the first field; recorded Contact POST count was zero.
+- Lighthouse `13.4.1` completed 30 / 30 navigation runs: five routes × mobile/desktop × three runs. All 10 / 10 rows have three-run medians of 100 for Performance, Accessibility, Best Practices, and SEO, with 0 meta failures. The accepted local origin was forwarded as `http://localhost`; a discarded diagnostic attempt against a raw VM HTTP address correctly failed the HTTPS Best Practices audits and is not part of the accepted matrix.
+- Sanitized external evidence labels: `static-first-qa/browser-qa.json`, `static-first-qa/screenshots`, and `static-first-qa/lighthouse-13.4.1-localhost-30run` under the 2026-08-04 Codex visualization workspace. The Lighthouse bundle is the existing exact `13.4.1` runner; its output contains 30 raw JSON reports, summary JSON/Markdown, and checksums.
+
+### Boundary and disposition
+
+- Only local build, GET-oriented runtime/browser verification, an isolated lockfile-based dependency setup, and a Cloudflare dry run were performed. There was no Worker upload, deployment, preview or production activation, Route/DNS/domain/account mutation, Contact submission, live Turnstile/Resend call, real PII use, secret-value inspection, merge, or cleanup.
+- Completion gate: **PASS for Draft PR handoff**. Production deployment, activation, live provider verification, merge, and cleanup remain separate and unperformed.
 
 ## 2026-08-03 Cloudflare production protection Gate B1 local implementation
 

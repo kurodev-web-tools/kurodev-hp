@@ -85,11 +85,14 @@ test("initial theme selection does not animate the whole document", async () => 
 });
 
 test("document language and navigation routes resolve without placeholder pages", async () => {
-  // Given: locale-aware request handling, implemented hubs, and remaining temporary section redirects.
+  // Given: build-time locale inventory, implemented hubs, and remaining temporary section redirects.
   const middlewareUrl = new URL("../middleware.js", import.meta.url);
-  assert.equal(existsSync(middlewareUrl), true, "locale middleware must exist");
-  const middleware = await readFile(middlewareUrl, "utf8");
-  const layout = await readFile(new URL("../app/layout.js", import.meta.url), "utf8");
+  assert.equal(existsSync(middlewareUrl), false, "locale middleware must not re-enter runtime rendering");
+  const [layout, inventory, builder] = await Promise.all([
+    readFile(new URL("../app/layout.js", import.meta.url), "utf8"),
+    readFile(new URL("../lib/public-route-inventory.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../scripts/build-static-first-cloudflare.mjs", import.meta.url), "utf8")
+  ]);
   const nextConfig = await readFile(new URL("../next.config.mjs", import.meta.url), "utf8");
   const japaneseTools = new URL("../app/tools/page.js", import.meta.url);
   const englishTools = new URL("../app/en/tools/page.js", import.meta.url);
@@ -100,9 +103,10 @@ test("document language and navigation routes resolve without placeholder pages"
   const japaneseAbout = new URL("../app/about/page.js", import.meta.url);
   const englishAbout = new URL("../app/en/about/page.js", import.meta.url);
 
-  // When: English language handling and planned route destinations are inspected.
+  // When: English locale ownership and planned route destinations are inspected.
   // Then: /en receives English document semantics and future hubs do not 404.
-  assert.match(middleware, /x-kurodev-locale/);
+  assert.match(inventory, /path === "\/en" \|\| path\.startsWith\("\/en\/"\)/);
+  assert.match(builder, /"x-kurodev-locale": locale/);
   assert.match(layout, /lang=\{locale\}/);
   assert.equal(existsSync(japaneseTools), true, "Japanese Tools hub must replace its temporary redirect");
   assert.equal(existsSync(englishTools), true, "English Tools hub must replace its temporary redirect");

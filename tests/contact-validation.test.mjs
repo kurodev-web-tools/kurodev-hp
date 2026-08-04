@@ -236,14 +236,12 @@ test("Contact links the approved localized Privacy route", async () => {
   assert.doesNotMatch(formSource, /contact-form__privacy-unavailable/);
 });
 
-test("About and Contact are included in the localized sitemap inventory", async () => {
-  // Given: the static sitemap route inventory.
-  const sitemapSource = await readFile(`${repositoryRoot}/app/sitemap.js`, "utf8");
+test("About and Contact are included in the shared localized public route inventory", async () => {
+  const { getPublicRouteInventory } = await import(pathToFileURL(`${repositoryRoot}/lib/public-route-inventory.mjs`).href);
+  const paths = new Set((await getPublicRouteInventory()).map(({ path }) => path));
 
-  // When: Task 11 route entries are inspected.
-  // Then: both About and Contact locale pairs are crawlable.
   for (const route of ["/about", "/contact", "/en/about", "/en/contact"]) {
-    assert.match(sitemapSource, new RegExp(`"${route}"`));
+    assert.equal(paths.has(route), true);
   }
 });
 
