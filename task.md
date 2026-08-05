@@ -14,6 +14,16 @@
 - exact Lighthouse `13.4.1`は5 routes × mobile / desktop × 3 runs = 30 / 30完走。10 / 10 rowsすべてPerformance / Accessibility / Best Practices / SEO中央値100、meta failure 0。accepted matrixはVM originを`http://localhost`へ転送して計測した
 - sanitized evidenceは2026-08-04 visualization workspaceの`static-first-qa/browser-qa.json`、`static-first-qa/screenshots`、`static-first-qa/lighthouse-13.4.1-localhost-30run`。no Contact POST、live Turnstile / Resend、実PII、secret値確認、Cloudflare upload / deploy / account / Route / DNS / domain変更、merge / cleanup。production activationとlive provider verificationは別承認のまま
 
+#### Production release closeout（2026-08-05）
+- **Static-first production release: operational PASS / telemetry evidence PARTIAL**。PR #35のmerge commitはremote `main`と一致し、GitHub external checkはterminal SUCCESS。上の「production activationは別承認」はlocal acceptance時点の履歴であり、その後の各release gateは個別承認のもとで完了した
+- Workers Buildsのproduction設定はbuild commandを`npm run build:cloudflare:static`、deploy commandを非deployのgated commandへ限定した。設定保存はbuildを発火せず、承認済みの単発retryはstatic-first buildとgated deploy stageをSUCCESSで完了し、version upload / production deploymentは作成しなかった
+- reviewed static artifactをtraffic 0の新versionとしてuploadし、version-specific previewのGET-only QAはpublic inventory 36 / 36、legacy redirect 3 / 3、missing path 2 / 2、robots / sitemap / OG / favicon / `GET /api/contact` controlをPASS。sitemapは34 URL、Contact POSTは0
+- preview QA済みversionを別承認でproductionへ1 version / 100% deploy。custom domainと`workers.dev`の代表4 routesずつは直後および約2.18時間後のGET-only checkpointで各8 / 8 PASS、5xx 0、`Set-Cookie` 0、Contact POST 0。rollback triggerはGET evidence上で観測されなかった
+- 予定した2-hour automationはrun evidenceを残さなかったため、同じ承認範囲のmanual read-only checkpointで代替した。automationはowner操作でPAUSED。automationの作成 / 停止はprovider / repository / deploymentを変更していない
+- Cloudflare metrics / logsはGET-only境界内で直接取得できず、新versionの`exceededResources`件数、invocation / CPU / resource / raw-log集計は**UNKNOWN**。0件とは判定せず、異常を観測した事実とも扱わない
+- final closeout時点でexpected account / named profile / Worker identity、production deployment identity、1 version / 100% traffic、active versionの履歴存在、remote `main` / PR #35 containmentをread-onlyで再確認。investigation / artifact worktreeはいずれもclean
+- release作業とcloseoutではRoute / domain / DNS / binding / var / secret / security設定、rollback、追加upload、Contact POST、live Turnstile / Resend、実PII、secret値、dependency / manifest / lockfileを変更していない。Task 15、worktree / branch cleanup、Next.js 16.3移行は後続の別承認gateとする
+
 ### Cloudflare production protection Gate B1 — local implementation（2026-08-03）
 
 #### Current verdict
