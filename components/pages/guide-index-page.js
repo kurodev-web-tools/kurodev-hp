@@ -1,11 +1,15 @@
 import "@/app/styles/guide-page.css";
 import Link from "next/link";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { DisplayLines } from "@/components/ui/section-intro";
 
 const copy = {
   ja: {
     eyebrow: "Guide",
     title: "配信準備と活動発信を、確認しながら進めるガイド。",
+    titleLines: ["配信準備と活動発信を、", "確認しながら進めるガイド。"],
+    tabletLines: ["配信準備と活動発信を、", "確認しながら進めるガイド。"],
+    desktopBreakAfter: 0,
     body: "公開状態を確認したツールの基本操作と、クリエイターサイトを整えるための資料をまとめています。",
     unavailable: "このガイドは英語版がまだありません。日本語ガイドの一覧を表示しています。",
     updated: "更新日",
@@ -58,7 +62,7 @@ export function GuideIndexPage({ locale, guides, translationUnavailable = false 
       <section className="guide-index-hero">
         <div className="site-container guide-index-hero__content">
           <p className="guide-index-hero__eyebrow">{labels.eyebrow}</p>
-          <h1>{labels.title}</h1>
+          <h1>{labels.titleLines ? <DisplayLines lines={labels.titleLines} tabletLines={labels.tabletLines} desktopBreakAfter={labels.desktopBreakAfter} mobileLocked={false} /> : labels.title}</h1>
           <p>{labels.body}</p>
           {translationUnavailable ? <p className="guide-availability-notice" role="status">{labels.unavailable}</p> : null}
         </div>

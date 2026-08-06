@@ -9,13 +9,13 @@
   contain-intrinsic-size: auto 800px;
 }
 
-html[lang="ja"] .creator-site-page .section-intro .display-line {
+html[lang="ja"] .creator-site-page .section-intro h2 > .display-line {
   display: block;
   white-space: nowrap;
 }
 
 @media (max-width: 767px) {
-  html[lang="en"] .creator-site-page .section-intro .display-line {
+  html[lang="en"] .creator-site-page .section-intro h2 > .display-line {
     display: inline;
     white-space: normal;
   }
@@ -72,7 +72,7 @@ html[lang="ja"] .creator-site-page .section-intro .display-line {
   letter-spacing: -0.045em;
 }
 
-.creator-site-hero h1 span {
+.creator-site-hero h1 > .display-line {
   display: block;
 }
 
@@ -464,7 +464,7 @@ html[lang="ja"] .creator-site-page .section-intro .display-line {
   letter-spacing: -0.035em;
 }
 
-.creator-site-final h2 span {
+.creator-site-final h2 > .display-line {
   display: block;
 }
 
@@ -529,6 +529,13 @@ html[lang="ja"] .creator-site-page .section-intro .display-line {
   .service-routes .section-intro h2,
   .service-faq .section-intro h2 {
     font-size: clamp(36px, 3.2vw, 44px);
+  }
+
+  html[lang="ja"] .creator-site-page .service-process .section-intro h2 > .display-line,
+  html[lang="ja"] .creator-site-page .service-routes .section-intro h2 > .display-line,
+  html[lang="ja"] .creator-site-page .creator-site-final h2 > .display-line {
+    display: inline;
+    white-space: normal;
   }
 
   .creator-workflow,

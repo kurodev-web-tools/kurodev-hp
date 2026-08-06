@@ -4,10 +4,12 @@ import { SectionIntro } from "@/components/ui/section-intro";
 export function GuideEntry({ locale, guides }) {
   const title = locale === "ja" ? "迷ったときに、次の一手がわかるガイド。" : "Guides that make the next step clear.";
   const titleLines = locale === "ja" ? ["迷ったときに、", "次の一手がわかる", "ガイド。"] : null;
+  const mobileLines = locale === "ja" ? ["迷ったときに、", "次の一手がわかるガイド。"] : null;
+  const tabletLines = locale === "ja" ? ["迷ったときに、", "次の一手がわかるガイド。"] : null;
   return (
     <section id="guide" className="section-block section-rule">
       <div className="site-container">
-        <SectionIntro eyebrow="Guide" title={title} titleLines={titleLines} />
+        <SectionIntro eyebrow="Guide" title={title} titleLines={titleLines} mobileLines={mobileLines} tabletLines={tabletLines} />
         <div className="guide-list">
           {guides.map((guide) => (
             <Link key={guide.id} className="guide-list__item" href={guide[locale].href}>

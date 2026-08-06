@@ -7,7 +7,7 @@ export function MakerIntroduction({ locale, copy }) {
     <section id="about" className="section-block section-rule maker-intro">
       <div className="site-container maker-intro__grid">
         <div className="maker-intro__mark" aria-hidden="true">k</div>
-        <div><SectionIntro eyebrow="kurodev" title={copy.title} titleLines={copy.titleLines} body={copy.body} /><ActionLink href={localePath(locale, "/about")} variant="quiet">{locale === "ja" ? "kurodevについて" : "About kurodev"}</ActionLink></div>
+        <div><SectionIntro eyebrow="kurodev" title={copy.title} titleLines={copy.titleLines} mobileLines={copy.mobileLines} tabletLines={copy.tabletLines} body={copy.body} /><ActionLink href={localePath(locale, "/about")} variant="quiet">{locale === "ja" ? "kurodevについて" : "About kurodev"}</ActionLink></div>
       </div>
     </section>
   );

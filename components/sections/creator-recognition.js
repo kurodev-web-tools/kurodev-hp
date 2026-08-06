@@ -5,7 +5,7 @@ export function CreatorRecognition({ copy }) {
     <section className="section-block section-rule creator-recognition" aria-labelledby="creator-recognition-title">
       <div className="site-container creator-recognition__layout">
         <div id="creator-recognition-title">
-          <SectionIntro eyebrow={copy.eyebrow} title={copy.title} titleLines={copy.titleLines} body={copy.body} />
+          <SectionIntro eyebrow={copy.eyebrow} title={copy.title} titleLines={copy.titleLines} tabletLines={copy.tabletLines} body={copy.body} />
         </div>
         <ol className="creator-recognition__list">
           {copy.items.map((item, index) => (

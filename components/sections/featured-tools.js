@@ -7,7 +7,7 @@ export function FeaturedTools({ locale, copy, tools }) {
   return (
     <section id="tools" className="section-block section-rule">
       <div className="site-container">
-        <SectionIntro eyebrow={copy.eyebrow} title={copy.title} titleLines={copy.titleLines} body={copy.body} />
+        <SectionIntro eyebrow={copy.eyebrow} title={copy.title} titleLines={copy.titleLines} mobileLines={copy.mobileLines} tabletLines={copy.tabletLines} body={copy.body} />
         <div className="featured-tools">
           {tools.map((tool) => {
             const item = localizedTool(tool, locale);

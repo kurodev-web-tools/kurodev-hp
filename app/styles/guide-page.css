@@ -29,6 +29,11 @@
   text-wrap: balance;
 }
 
+.guide-index-hero h1 > .display-line {
+  display: inline;
+  white-space: normal;
+}
+
 .guide-index-hero__content > p:not(.guide-index-hero__eyebrow, .guide-availability-notice) {
   max-width: 58ch;
   margin: var(--space-6) 0 0;
@@ -295,7 +300,17 @@
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .guide-index-hero h1 {
+    max-width: none;
+  }
+}
+
 @media (min-width: 1024px) {
+  .guide-index-hero h1 {
+    max-width: none;
+  }
+
   .guide-index-hero,
   .guide-index-groups {
     padding-block: var(--space-28);

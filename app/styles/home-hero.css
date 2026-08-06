@@ -57,7 +57,7 @@
   text-wrap: balance;
 }
 
-.creator-hero__title-line {
+.creator-hero h1 > .display-line {
   display: block;
   white-space: nowrap;
 }
@@ -186,6 +186,12 @@
 
   .tool-feature:nth-child(even) .product-media {
     order: 2;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .creator-hero h1 {
+    max-width: 17ch;
   }
 }
 
