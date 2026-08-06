@@ -9,17 +9,6 @@ html[lang="ja"] .case-study-page {
   word-break: auto-phrase;
 }
 
-.works-index-hero::before,
-.case-study-hero::before {
-  position: absolute;
-  inset: 6% 0 auto 46%;
-  height: 72%;
-  background: radial-gradient(circle, var(--studio-light), transparent 68%);
-  content: "";
-  filter: blur(var(--atmosphere-blur));
-  pointer-events: none;
-}
-
 .works-index-hero__layout,
 .case-study-hero > .site-container {
   position: relative;
@@ -510,12 +499,5 @@ html[lang="ja"] .case-study-page {
 
   .case-tools__list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (forced-colors: active) {
-  .works-index-hero::before,
-  .case-study-hero::before {
-    display: none;
   }
 }
