@@ -79,6 +79,22 @@ test("A3-M Soft Pulp keeps the body canvas static, textured, and glow-free", asy
   ]);
 });
 
+test("A3-M Soft Pulp keeps both low-frequency texture tiles seamless", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const decodedCss = css.replace(/data:image\/svg\+xml,([^\"]+)/g, (_, payload) => decodeURIComponent(payload));
+  const lowFrequencyNoise = [...decodedCss.matchAll(/<feTurbulence\b[^>]*baseFrequency=['"]\.018 \.05['"][^>]*>/g)].map(([tag]) => tag);
+
+  assert.equal(lowFrequencyNoise.length, 2);
+  lowFrequencyNoise.forEach((tag) => assert.match(tag, /stitchTiles=['"]stitch['"]/));
+});
+
+test("Works heroes stay free of circular atmosphere glows", async () => {
+  const styles = await readFile(new URL("../app/styles/works-page.css", import.meta.url), "utf8");
+
+  assert.doesNotMatch(styles, /\.works-index-hero::before|\.case-study-hero::before/);
+  assert.doesNotMatch(styles, /radial-gradient\(circle,\s*var\(--studio-light\)/);
+});
+
 test("approved Japanese headings use one comma break on desktop only", async () => {
   const [sectionIntro, componentStyles, creatorPage, creatorContent, creatorStyles, guidePage, guideStyles, aboutPage, aboutContent, aboutStyles, contactStyles] = await Promise.all([
     readFile(new URL("../components/ui/section-intro.js", import.meta.url), "utf8"),
