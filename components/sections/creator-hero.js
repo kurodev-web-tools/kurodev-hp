@@ -1,5 +1,6 @@
 import { ActionLink } from "@/components/ui/action-link";
 import { ProductMedia } from "@/components/ui/product-media";
+import { DisplayLines } from "@/components/ui/section-intro";
 import { localePath } from "@/lib/i18n.mjs";
 
 export function CreatorHero({ locale, copy, flagship, tools }) {
@@ -14,7 +15,7 @@ export function CreatorHero({ locale, copy, flagship, tools }) {
           <p className="creator-hero__eyebrow">kurodev creator studio</p>
           <h1>
             {copy.titleLines
-              ? copy.titleLines.map((line) => <span key={line} className="creator-hero__title-line">{line}</span>)
+              ? <DisplayLines lines={copy.titleLines} tabletLines={copy.tabletLines} desktopLines={copy.titleLines} />
               : copy.title}
           </h1>
           <p className="creator-hero__body">{copy.body}</p>

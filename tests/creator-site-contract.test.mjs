@@ -112,7 +112,7 @@ test("Creator Site headings preserve English word spaces and compact Japanese se
   const groupedHeadings = [japanese.recognition, japanese.outcomes, japanese.workflow, japanese.process, japanese.routes, japanese.faq, japanese.final];
 
   assert.match(sectionIntro, /<Fragment key=\{line\}>/);
-  assert.match(sectionIntro, /<\/span>\{index < titleLines\.length - 1 \? " " : null\}<\/Fragment>/);
+  assert.match(sectionIntro, /desktopBreakAfter[\s\S]*className="desktop-title-line"/);
   groupedHeadings.flatMap((section) => section.titleLines).forEach((line) => {
     assert.ok([...line].length <= 9, `semantic line is too long for the desktop split: ${line}`);
   });
@@ -127,6 +127,6 @@ test("Creator Site headings preserve English word spaces and compact Japanese se
     assert.equal(section.titleLines.join(" "), section.title);
   });
   assert.match(page, /className="creator-site-page"/);
-  assert.match(styles, /html\[lang="ja"\] \.creator-site-page \.section-intro \.display-line/);
-  assert.match(styles, /html\[lang="en"\] \.creator-site-page \.section-intro \.display-line\s*\{[\s\S]*?white-space:\s*normal;/);
+  assert.match(styles, /html\[lang="ja"\] \.creator-site-page \.section-intro h2 > \.display-line/);
+  assert.match(styles, /html\[lang="en"\] \.creator-site-page \.section-intro h2 > \.display-line\s*\{[\s\S]*?white-space:\s*normal;/);
 });

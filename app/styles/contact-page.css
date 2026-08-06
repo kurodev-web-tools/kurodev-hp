@@ -13,16 +13,6 @@
   padding-block: var(--space-16) var(--space-20);
 }
 
-.contact-hero::before {
-  position: absolute;
-  inset: 8% 0 auto 48%;
-  height: 72%;
-  background: radial-gradient(circle, var(--studio-light), transparent 68%);
-  content: "";
-  filter: blur(var(--atmosphere-blur));
-  pointer-events: none;
-}
-
 .contact-hero__layout,
 .contact-form-section__layout,
 .contact-pricing__layout {
@@ -438,11 +428,5 @@
 @media (min-width: 1024px) and (max-width: 1150px) {
   .contact-page--ja .contact-hero h1 {
     font-size: 48px;
-  }
-}
-
-@media (forced-colors: active) {
-  .contact-hero::before {
-    display: none;
   }
 }

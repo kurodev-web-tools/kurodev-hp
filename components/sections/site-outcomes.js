@@ -5,13 +5,13 @@ export function SiteOutcomes({ locale, outcomes, workflow, demonstrations }) {
     <>
       <section className="section-block section-rule site-outcomes" aria-labelledby="site-outcomes-title">
         <div className="site-container site-outcomes__layout">
-          <div id="site-outcomes-title"><SectionIntro eyebrow={outcomes.eyebrow} title={outcomes.title} titleLines={outcomes.titleLines} body={outcomes.body} /></div>
+          <div id="site-outcomes-title"><SectionIntro eyebrow={outcomes.eyebrow} title={outcomes.title} titleLines={outcomes.titleLines} tabletLines={outcomes.tabletLines} body={outcomes.body} /></div>
           <ul className="site-outcomes__list">
             {outcomes.items.map((item, index) => <li key={item}><span>{String(index + 1).padStart(2, "0")}</span><strong>{item}</strong></li>)}
           </ul>
         </div>
         <div className="site-container creator-workflow">
-          <div><SectionIntro eyebrow={workflow.eyebrow} title={workflow.title} titleLines={workflow.titleLines} body={workflow.body} /></div>
+          <div><SectionIntro eyebrow={workflow.eyebrow} title={workflow.title} titleLines={workflow.titleLines} mobileLines={workflow.mobileLines} body={workflow.body} /></div>
           <ul>{workflow.capabilities.map((capability) => <li key={capability}>{capability}</li>)}</ul>
         </div>
       </section>
